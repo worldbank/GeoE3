@@ -4,11 +4,11 @@
  <widget class="QWidget" name="AnalysisDialogBase">
   <property name="geometry">
    <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1173</width>
-    <height>809</height>
-   </rect>
+     <x>0</x>
+     <y>0</y>
+     <width>900</width>
+     <height>700</height>
+    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>

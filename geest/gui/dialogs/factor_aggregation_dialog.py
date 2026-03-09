@@ -5,9 +5,10 @@ This module contains functionality for factor aggregation dialog.
 """
 
 from qgis.core import Qgis
-from qgis.PyQt.QtCore import Qt, QUrl
+from qgis.PyQt.QtCore import QByteArray, QSettings, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices, QFont, QPixmap
 from qgis.PyQt.QtWidgets import (
+    QApplication,
     QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
@@ -15,6 +16,7 @@ from qgis.PyQt.QtWidgets import (
     QHeaderView,
     QLabel,
     QPushButton,
+    QScrollArea,
     QSizePolicy,
     QSpacerItem,
     QTableWidget,
@@ -78,10 +80,19 @@ class FactorAggregationDialog(CustomBaseDialog):
 
         self.weighting_column_visible = len(self.guids) > 1
 
-        # Layout setup
-        layout = QVBoxLayout(self)
-        self.resize(800, 600)
-        layout.setContentsMargins(20, 20, 20, 20)  # Add padding around the layout
+        # Layout setup: outer layout holds scroll area + button box
+        outer_layout = QVBoxLayout(self)
+        outer_layout.setContentsMargins(0, 0, 0, 10)
+
+        # Scrollable body
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QScrollArea.NoFrame)
+        scroll_widget = QWidget()
+        layout = QVBoxLayout(scroll_widget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        scroll_area.setWidget(scroll_widget)
+        outer_layout.addWidget(scroll_area)
 
         self.banner_label = CustomBannerLabel(
             "The Geospatial Enabling Environments for Employment Tool",
@@ -99,9 +110,6 @@ class FactorAggregationDialog(CustomBaseDialog):
         # Positioning the title label with a 10px offset from the left and bottom of the banner
         self.title_label.setGeometry(10, self.banner_label.height() - 30, self.banner_label.width() - 20, 20)
         self.title_label.setMargin(10)
-
-        # Update layout
-        layout.addWidget(self.banner_label)
         # Hierarchy label
         parent_item = self.tree_item.parent()
         if parent_item:
@@ -204,13 +212,12 @@ class FactorAggregationDialog(CustomBaseDialog):
         )
         self.help_label.setOpenExternalLinks(True)
         self.help_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.help_label)
         self.help_label.linkActivated.connect(self.open_link_in_browser)
         help_layout.addWidget(self.help_label)
         help_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         layout.addLayout(help_layout)
 
-        # Buttons
+        # Buttons — outside the scroll area so they remain always visible
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         auto_calculate_button = QPushButton("Balance Weights")
         toggle_guid_button = QPushButton("Show GUIDs")
@@ -227,14 +234,49 @@ class FactorAggregationDialog(CustomBaseDialog):
         toggle_guid_button.clicked.connect(self.toggle_guid_column)
         self.guid_column_visible = False  # Track GUID column visibility
 
-        layout.addWidget(self.button_box)
-        self.setLayout(layout)
+        button_wrapper = QWidget()
+        button_wrapper_layout = QHBoxLayout(button_wrapper)
+        button_wrapper_layout.setContentsMargins(20, 0, 20, 0)
+        button_wrapper_layout.addWidget(self.button_box)
+        outer_layout.addWidget(button_wrapper)
+        self.setLayout(outer_layout)
         self.populate_table()  # Populate the table after initializing data_sources and weightings
         self.validate_weightings()
+        self.restore_dialog_geometry()
 
     def open_link_in_browser(self, url: str):
         """Open the given URL in the user's default web browser using QDesktopServices."""
         QDesktopServices.openUrl(QUrl(url))
+
+    def restore_dialog_geometry(self):
+        """Restore the dialog geometry from QSettings, or apply a sensible default."""
+        settings = QSettings()
+        geometry = settings.value("FactorAggregationDialog/geometry_v2", QByteArray())
+        if geometry:
+            try:
+                self.restoreGeometry(geometry)
+                screen = QApplication.desktop().screenGeometry()
+                if self.width() > int(screen.width() * 0.85) or self.height() > int(screen.height() * 0.85):
+                    settings.remove("FactorAggregationDialog/geometry_v2")
+                else:
+                    return
+            except Exception:
+                pass
+        # Sensible default: cap at 900px wide, 80% screen height
+        screen = QApplication.desktop().screenGeometry()
+        width = min(900, int(screen.width() * 0.65))
+        height = min(int(screen.height() * 0.80), 750)
+        self.resize(width, height)
+
+    def save_geometry(self):
+        """Save the dialog geometry to QSettings."""
+        settings = QSettings()
+        settings.setValue("FactorAggregationDialog/geometry_v2", self.saveGeometry())
+
+    def closeEvent(self, event):
+        """Save geometry before closing."""
+        self.save_geometry()
+        super().closeEvent(event)
 
     def refresh_configuration(self, attributes: dict):
         """Refresh the configuration widget and table.
@@ -490,6 +532,7 @@ class FactorAggregationDialog(CustomBaseDialog):
     def accept_changes(self):
         """Handle the OK button by applying changes and closing the dialog."""
         self.save_weightings_to_model()
+        self.save_geometry()
         self.accept()
 
     def validate_weightings(self):

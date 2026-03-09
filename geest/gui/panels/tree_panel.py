@@ -1583,10 +1583,6 @@ class TreePanel(QWidget):
             analysis_item: The analysis item to edit.
         """
         dialog = AnalysisAggregationDialog(analysis_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.saveWeightingsToModel()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
@@ -1602,10 +1598,6 @@ class TreePanel(QWidget):
         if not dimension_data:
             dimension_data = {}
         dialog = DimensionAggregationDialog(dimension_name, dimension_data, dimension_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.saveWeightingsToModel()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
@@ -1621,10 +1613,6 @@ class TreePanel(QWidget):
         if not factor_data:
             factor_data = {}
         dialog = FactorAggregationDialog(factor_name, factor_data, factor_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.save_weightings_to_model()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
