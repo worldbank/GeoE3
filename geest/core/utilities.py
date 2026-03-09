@@ -30,6 +30,7 @@ from qgis.core import (
     QgsVectorLayer,
     QgsWkbTypes,
 )
+from qgis.utils import iface
 
 from ..utilities import log_message
 from .json_tree_item import JsonTreeItem
@@ -163,6 +164,11 @@ def add_to_map(
 
         # Set the layer itself to be visible
         layer_tree_layer.setItemVisibilityChecked(True)
+
+        # Invalidate cached tiles for this layer and force an immediate canvas redraw
+        repaint_layer = existing_layer if existing_layer is not None else layer
+        repaint_layer.triggerRepaint()
+        iface.mapCanvas().refresh()
 
         log_message(
             f"Layer {layer.name()} and its parent groups are now visible.",
