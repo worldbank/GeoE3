@@ -1060,7 +1060,7 @@
                     "guid": "44e22a0e-bc17-486e-8e2c-9652cfe2f42e",
                     "indicators": [
                         {
-                            "indicator": "Water points (OSM), catch basins, water valves and fire hydrants",
+                            "indicator": "Location of facilities that need water supply and sanitation services to function",
                             "id": "Water_Sanitation",
                             "output_filename": "WAS_output",
                             "description": "",

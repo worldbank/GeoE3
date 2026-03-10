@@ -835,7 +835,7 @@
                     "dimension_weighting": 0.142857142857143,
                     "indicators": [
                         {
-                            "indicator": "Water points (OSM), catch basins, water valves and fire hydrants",
+                            "indicator": "Location of facilities that need water supply and sanitation services to function",
                             "id": "Water_Sanitation",
                             "output_filename": "WAS_output",
                             "description": "",

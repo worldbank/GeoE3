@@ -50,6 +50,8 @@ class WorkflowBase(QObject):
     progressChanged = pyqtSignal(float)
     # Signal for status message changes - shows what step is currently running
     statusChanged = pyqtSignal(str)
+    # Signal emitted when the workflow fails - propagated to the UI as an error notification
+    workflowError = pyqtSignal(str)
 
     def __init__(
         self,
@@ -605,6 +607,7 @@ class WorkflowBase(QObject):
                     attrs["error_file"] = error_path
                     attrs["error"] = f"Failed to process {self.workflow_name}: {e}"
                 log_layer_count()  # For performance tuning, write the number of open layers to a log file
+                self.workflowError.emit(f"Failed to process {self.workflow_name}: {e}")
                 return False
 
     def _create_workflow_directory(self) -> str:

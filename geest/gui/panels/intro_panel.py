@@ -4,8 +4,8 @@
 This module contains functionality for intro panel.
 """
 
-from PyQt5.QtWidgets import QWidget
 from qgis.core import Qgis  # noqa F401
+from qgis.PyQt.QtWidgets import QWidget
 from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtGui import QFont
 

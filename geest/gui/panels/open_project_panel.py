@@ -6,12 +6,10 @@ This module contains functionality for open project panel.
 
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFontMetrics
-from PyQt5.QtWidgets import QComboBox, QFileDialog, QWidget
 from qgis.core import Qgis  # noqa F401
-from qgis.PyQt.QtCore import QSettings, pyqtSignal
-from qgis.PyQt.QtGui import QFont
+from qgis.PyQt.QtCore import Qt, QSettings, pyqtSignal
+from qgis.PyQt.QtGui import QFont, QFontMetrics
+from qgis.PyQt.QtWidgets import QComboBox, QFileDialog, QWidget
 
 from geest.core import WorkflowQueueManager
 from geest.gui.widgets import CustomBannerLabel

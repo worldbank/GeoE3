@@ -90,11 +90,11 @@ class JsonTreeModel(QAbstractItemModel):
         geoe3_by_population = json_data.get("geoe3_by_population", "")
         geoe3_by_population_subnational_aggregation = json_data.get("geoe3_by_population_subnational_aggregation", "")
         geoe3_score_subnational_aggregation = json_data.get("geoe3_score_subnational_aggregation", "")
-        opportunities_by_geoe3_score_by_population_subnational_aggregation = json_data.get(
-            "opportunities_by_geoe3_score_by_population_subnational_aggregation", ""
+        geoe3_score_ghsl_masked_subnational_aggregation = json_data.get(
+            "geoe3_score_ghsl_masked_subnational_aggregation", ""
         )
-        opportunities_by_geoe3_score_subnational_aggregation = json_data.get(
-            "opportunities_by_geoe3_score_subnational_aggregation", ""
+        geoe3_score_by_population_ghsl_masked_subnational_aggregation = json_data.get(
+            "geoe3_score_by_population_ghsl_masked_subnational_aggregation", ""
         )
         geoe3_by_population_by_opportunities_mask_result_file = json_data.get(
             "geoe3_by_population_by_opportunities_mask_result_file", ""
@@ -126,8 +126,8 @@ class JsonTreeModel(QAbstractItemModel):
             "geoe3_by_population": geoe3_by_population,
             "geoe3_by_population_subnational_aggregation": geoe3_by_population_subnational_aggregation,
             "geoe3_score_subnational_aggregation": geoe3_score_subnational_aggregation,
-            "opportunities_by_geoe3_score_by_population_subnational_aggregation": opportunities_by_geoe3_score_by_population_subnational_aggregation,
-            "opportunities_by_geoe3_score_subnational_aggregation": opportunities_by_geoe3_score_subnational_aggregation,
+            "geoe3_score_ghsl_masked_subnational_aggregation": geoe3_score_ghsl_masked_subnational_aggregation,
+            "geoe3_score_by_population_ghsl_masked_subnational_aggregation": geoe3_score_by_population_ghsl_masked_subnational_aggregation,
             "geoe3_by_population_by_opportunities_mask_result_file": geoe3_by_population_by_opportunities_mask_result_file,
             "geoe3_by_population_by_opportunities_mask_result": geoe3_by_population_by_opportunities_mask_result,
         }

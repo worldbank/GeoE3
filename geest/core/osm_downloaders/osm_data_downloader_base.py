@@ -25,12 +25,14 @@ from qgis import processing  # QGIS processing API
 from qgis.core import (
     Qgis,
     QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
     QgsFeature,
     QgsFeedback,
     QgsField,
     QgsGeometry,
     QgsNetworkAccessManager,
     QgsPointXY,
+    QgsProject,
     QgsRectangle,
     QgsVectorFileWriter,
     QgsVectorLayer,
@@ -352,6 +354,9 @@ class OSMDataDownloaderBase(ABC):
         log_message(f"GeoPackage written to: {self.output_path} table: {self.filename}")  # noqa E231
         log_message(f"Total processing time: {total_end - total_start:.2f}s")  # noqa E231
 
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(self.output_crs)
+
     def process_point_response(self) -> None:
         """Process the OSM response and save it as a GeoPackage."""
         # Read from XML file (consistent with process_line_response)
@@ -378,6 +383,9 @@ class OSMDataDownloaderBase(ABC):
                 log_message(f"Added {features_added} features to the layer...")
         QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
         log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
 
     def process_polygon_response(self) -> None:
         """Process OSM XML response and extract polygon features to GeoPackage.
@@ -438,6 +446,9 @@ class OSMDataDownloaderBase(ABC):
         # Write output to GeoPackage
         QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
         log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
 
     def process_mixed_to_point_response(self) -> None:
         """Process OSM response containing mixed geometries (points and polygons).
@@ -539,3 +550,118 @@ class OSMDataDownloaderBase(ABC):
         # Write output to GeoPackage
         QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
         log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
+
+    def _clip_to_study_area(self, data_crs: QgsCoordinateReferenceSystem) -> None:
+        """Clip the downloaded OSM data to the study area polygon, removing bbox overhang.
+
+        Skipped with a warning if study_area.gpkg is missing or invalid.
+
+        Args:
+            data_crs: CRS of the OSM layer at self.output_path. Lines use
+                self.output_crs; all other types use EPSG:4326.
+        """
+        # Derive the study_area.gpkg path: output is always
+        # <working_dir>/study_area/<filename>.gpkg so study_area_dir is the parent.
+        study_area_dir = os.path.dirname(self.output_path)
+        study_area_gpkg = os.path.join(study_area_dir, "study_area.gpkg")
+
+        if not os.path.exists(study_area_gpkg):
+            log_message(
+                f"study_area.gpkg not found at {study_area_gpkg} — skipping AOI clip.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Load study_area_polygons (stored in the project CRS)
+        study_area_layer = QgsVectorLayer(
+            f"{study_area_gpkg}|layername=study_area_polygons",
+            "study_area_polygons",
+            "ogr",
+        )
+        if not study_area_layer.isValid() or study_area_layer.featureCount() == 0:
+            log_message(
+                "study_area_polygons layer is invalid or empty — skipping AOI clip.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Dissolve all study area polygons into one combined geometry
+        combined_geom = QgsGeometry()
+        for feat in study_area_layer.getFeatures():
+            geom = feat.geometry()
+            if combined_geom.isEmpty():
+                combined_geom = QgsGeometry(geom)
+            else:
+                combined_geom = combined_geom.combine(geom)
+
+        if combined_geom.isEmpty() or not combined_geom.isGeosValid():
+            combined_geom = combined_geom.makeValid()
+            if not combined_geom.isGeosValid():
+                log_message(
+                    "Combined study area geometry is invalid — skipping AOI clip.",
+                    level=Qgis.Warning,
+                )
+                return
+
+        # Reproject the study area geometry to the CRS of the OSM data if they differ
+        source_crs = study_area_layer.crs()
+        if source_crs != data_crs:
+            transform = QgsCoordinateTransform(source_crs, data_crs, QgsProject.instance())
+            combined_geom.transform(transform)
+
+        # Build a temporary in-memory overlay layer for native:clip
+        geom_type = "MultiPolygon" if combined_geom.isMultipart() else "Polygon"
+        overlay_layer = QgsVectorLayer(f"{geom_type}?crs={data_crs.authid()}", "aoi_clip_mask", "memory")
+        overlay_provider = overlay_layer.dataProvider()
+        aoi_feature = QgsFeature()
+        aoi_feature.setGeometry(combined_geom)
+        overlay_provider.addFeatures([aoi_feature])
+        overlay_layer.updateExtents()
+
+        # Load the OSM layer that was just written
+        osm_layer = QgsVectorLayer(
+            f"{self.output_path}|layername={self.filename}",
+            self.filename,
+            "ogr",
+        )
+        if not osm_layer.isValid():
+            log_message(
+                f"Could not load {self.filename} from {self.output_path} for AOI clip — skipping.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Run the clip into a temporary path, then replace the original
+        tmp_path = self.output_path.replace(".gpkg", "_clipped_tmp.gpkg")
+        try:
+            result = processing.run(
+                "native:clip",
+                {
+                    "INPUT": osm_layer,
+                    "OVERLAY": overlay_layer,
+                    "OUTPUT": f"ogr:dbname='{tmp_path}' table=\"{self.filename}\" (geom)",
+                },
+            )
+            if not (result and "OUTPUT" in result):
+                log_message("native:clip returned no output — skipping AOI clip.", level=Qgis.Warning)
+                return
+
+            # Replace the original gpkg with the clipped version
+            if os.path.exists(tmp_path):
+                if os.path.exists(self.output_path):
+                    os.remove(self.output_path)
+                os.rename(tmp_path, self.output_path)
+                log_message(f"OSM data clipped to study area polygon and saved to {self.output_path}")
+            else:
+                log_message("Clipped output file not created — skipping replacement.", level=Qgis.Warning)
+
+        except Exception as e:
+            log_message(f"AOI clip failed ({e}) — keeping unclipped data.", level=Qgis.Warning)
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass

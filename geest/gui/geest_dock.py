@@ -252,6 +252,7 @@ class GeestDock(QDockWidget):
             tree_layout.setContentsMargins(0, 0, 0, 0)  # Minimize padding
             tree_layout.addWidget(self.tree_widget)
             self.stacked_widget.addWidget(tree_panel)
+            self.tree_widget.set_message_bar(self.message_bar)  # Pass dock message bar for error notifications
             self.tree_widget.switch_to_next_tab.connect(
                 # Switch to the next tab when the button is clicked
                 lambda: self.stacked_widget.setCurrentIndex(HELP_PANEL)

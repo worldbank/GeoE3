@@ -417,7 +417,26 @@ When this option is **not selected**, the analysis focuses on generic employment
      </property>
     </widget>
    </item>
-   <item row="16" column="0">
+    <item row="15" column="0">
+     <widget class="QLabel" name="processing_info_label">
+      <property name="visible">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::PlainText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignJustify|Qt::AlignTop</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="0">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0" rowspan="2">
       <widget class="QPushButton" name="previous_button">
@@ -492,20 +511,20 @@ When this option is **not selected**, the analysis focuses on generic employment
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QProgressBar" name="progress_bar">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
+      <item row="1" column="1">
+       <widget class="QProgressBar" name="progress_bar">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
    </item>
    <item row="1" column="0">
     <widget class="QLabel" name="label_2">

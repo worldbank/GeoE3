@@ -12,7 +12,7 @@ See the LICENSE file in the project root for more information.
 
 import os
 
-from PyQt5.QtCore import pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 from qgis.core import Qgis, QgsMessageLog, QgsTask
 
 

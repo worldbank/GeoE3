@@ -7,9 +7,8 @@ This module contains functionality for workflow queue.
 from functools import partial
 from typing import List
 
-from PyQt5.QtCore import QObject, pyqtSignal
 from qgis.core import QgsApplication
-from qgis.PyQt.QtCore import QMutex, QMutexLocker
+from qgis.PyQt.QtCore import QMutex, QMutexLocker, QObject, pyqtSignal
 
 from geest.core import setting
 from geest.utilities import log_message

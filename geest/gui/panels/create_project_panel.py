@@ -114,6 +114,8 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
 
         self.progress_bar.setVisible(False)
         self.child_progress_bar.setVisible(False)
+        self.processing_info_label.setVisible(False)
+        self.processing_info_label.setText("")
         # Ensure crs is set on first load
         self.layer_changed(self.layer_combo.currentLayer())
 
@@ -322,6 +324,8 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         for widget in self.findChildren(QWidget):
             # Regional scale is now enabled with H3 hexagonal grids
             widget.setEnabled(True)
+        self.processing_info_label.setVisible(False)
+        self.processing_info_label.setText("")
 
     def reference_layer(self):
         """Get the admin boundary reference layer.
@@ -395,17 +399,25 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.progress_bar.setEnabled(True)
         self.progress_bar.setValue(int(progress))
         if progress == 0:
-            self.progress_bar.setFormat("Processing study area...")
+            self.progress_bar.setFormat("Downloading GHSL data and building analysis grid...")
             self.progress_bar.setMinimum(0)
             self.progress_bar.setMaximum(0)  # makes it bounce indefinitely
+            self.processing_info_label.setText("Downloading GHSL data and building analysis grid. Do not close QGIS.")
+            self.processing_info_label.setVisible(True)
+            self.processing_info_label.setEnabled(True)
         else:
             # This is a sneaky hack to show the exact progress in the label
             # since QProgressBar only takes ints. See Qt docs for more info.
             # Use the 'setFormat' method to display the exact float:
-            float_value_as_string = f"Total: {progress}%"
+            float_value_as_string = f"Processing study area — {progress}%"
             self.progress_bar.setFormat(float_value_as_string)
             self.progress_bar.setMinimum(0)
-            self.progress_bar.setMaximum(100)  # makes it bounce indefinitely
+            self.progress_bar.setMaximum(100)
+            self.processing_info_label.setText(
+                "Processing study area. Bounding boxes will appear on the map as each area completes."
+            )
+            self.processing_info_label.setVisible(True)
+            self.processing_info_label.setEnabled(True)
         self.add_bboxes_to_map()  # will just refresh them if already there
 
     # Slot that listens for changes in the progress object which is used to measure subtask progress
@@ -421,7 +433,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         # This is a sneaky hack to show the exact progress in the label
         # since QProgressBar only takes ints. See Qt docs for more info.
         # Use the 'setFormat' method to display the exact float:
-        float_value_as_string = f"Current geometry : {progress}%"  # noqa: E203
+        float_value_as_string = f"Current area: {progress}%"
         self.child_progress_bar.setFormat(float_value_as_string)
 
     def on_task_terminated(self):
@@ -434,7 +446,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.progress_bar.setFormat("Processing aborted")
+        self.progress_bar.setFormat("Aborted — check settings and retry")
         self.child_progress_bar.setVisible(False)
         self.enable_widgets()
 
@@ -451,6 +463,10 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.child_progress_bar.setMaximum(0)  # Indeterminate/bouncing
         self.child_progress_bar.setFormat("Generating study area report...")
         self.child_progress_bar.setVisible(True)
+
+        self.processing_info_label.setText("Generating study area report — will open automatically when ready.")
+        self.processing_info_label.setVisible(True)
+        self.processing_info_label.setEnabled(True)
 
         # Start report generation in background
         gpkg_path = os.path.join(self.working_dir, "study_area", "study_area.gpkg")
@@ -469,7 +485,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.child_progress_bar.setMinimum(0)
         self.child_progress_bar.setMaximum(100)
         self.child_progress_bar.setValue(100)
-        self.child_progress_bar.setFormat("Report generated successfully!")
+        self.child_progress_bar.setFormat("Complete")
 
         self.enable_widgets()
         self.switch_to_next_tab.emit()
@@ -483,7 +499,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.child_progress_bar.setMinimum(0)
         self.child_progress_bar.setMaximum(100)
         self.child_progress_bar.setValue(0)
-        self.child_progress_bar.setFormat(f"Error: {error_msg}")
+        self.child_progress_bar.setFormat(f"Report failed — continuing")
 
         self.enable_widgets()
         self.switch_to_next_tab.emit()
@@ -514,7 +530,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
             log_message("User chose to abort due to GHSL failure", tag="Geest", level=Qgis.Info)
             processor.set_ghsl_user_response(continue_without=False)
             # Update progress bar to show abort
-            self.progress_bar.setFormat("Aborted - GHSL download failed")
+            self.progress_bar.setFormat("Aborted — GHSL download failed")
             self.enable_widgets()
 
     def update_recent_projects(self, directory):
@@ -566,6 +582,13 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         # Women's considerations section
         self.women_considerations_checkbox.setFont(QFont("Arial", font_size))
         self.women_considerations_description.setFont(QFont("Arial", font_size))
+
+        # Processing info label
+        self.processing_info_label.setFont(QFont("Arial", font_size))
+
+        # Progress bars use a fixed small font so text never wraps inside the bar
+        self.progress_bar.setFont(QFont("Arial", 9))
+        self.child_progress_bar.setFont(QFont("Arial", 9))
 
     def add_bboxes_to_map(self):
         """Add the study area layers to the map.

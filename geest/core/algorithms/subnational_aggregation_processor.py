@@ -131,23 +131,23 @@ class SubnationalAggregationProcessingTask(QgsTask):
             self.geoe3_by_population_folder = None
         # These two folders are optional - will only be set if user configured mask for
         # job opportunities in analysis properties dialog
-        self.opportunities_by_geoe3_score_folder = os.path.join(working_directory, "opportunities_by_geoe3_score")
+        self.geoe3_score_ghsl_masked_folder = os.path.join(working_directory, "geoe3_score_ghsl_masked")
 
-        if not os.path.exists(self.opportunities_by_geoe3_score_folder):
+        if not os.path.exists(self.geoe3_score_ghsl_masked_folder):
             log_message(
-                f"GeoE3 folder not found.\n{self.geoe3_score_folder}\nPlease run GeoE3 raster processing first."
+                f"GeoE3 GHSL masked folder not found.\n{self.geoe3_score_ghsl_masked_folder}\nPlease run GeoE3 raster processing first."
             )
-            self.opportunities_by_geoe3_score_folder = None
+            self.geoe3_score_ghsl_masked_folder = None
 
-        self.opportunities_by_geoe3_by_population_folder = os.path.join(
-            working_directory, "opportunities_by_geoe3_score_by_population"
+        self.geoe3_score_by_population_ghsl_masked_folder = os.path.join(
+            working_directory, "geoe3_score_by_population_ghsl_masked"
         )
 
-        if not os.path.exists(self.geoe3_by_population_folder):
+        if not os.path.exists(self.geoe3_score_by_population_ghsl_masked_folder):
             log_message(
-                f"GeoE3 folder not found.\n{self.opportunities_by_geoe3_score_by_population}\nPlease run GeoE3 raster processing first."
+                f"GeoE3 by population GHSL masked folder not found.\n{self.geoe3_score_by_population_ghsl_masked_folder}\nPlease run GeoE3 raster processing first."
             )
-            self.opportunities_by_geoe3_by_population_folder = None
+            self.geoe3_score_by_population_ghsl_masked_folder = None
 
         self.force_clear = force_clear
         if self.force_clear and os.path.exists(self.output_dir):
@@ -205,11 +205,11 @@ class SubnationalAggregationProcessingTask(QgsTask):
                     qml_path=os.path.join(self.output_dir, f"{layer_name}.qml"),
                 )
                 self.item.setAttribute(f"{layer_name}", f"{output}|layername={layer_name}")
-            if self.opportunities_by_geoe3_score_folder:
-                log_message("Calculating Opportunities by GeoE3 Score Aggregation")
-                layer_name = "opportunities_by_geoe3_score_subnational_aggregation"
+            if self.geoe3_score_ghsl_masked_folder:
+                log_message("Calculating GeoE3 Score GHSL Masked Aggregation")
+                layer_name = "geoe3_score_ghsl_masked_subnational_aggregation"
                 raster_layer_path = os.path.join(
-                    self.opportunities_by_geoe3_score_folder,
+                    self.geoe3_score_ghsl_masked_folder,
                     "geoe3_by_opportunities_mask.vrt",
                 )
                 output = self.aggregate(
@@ -222,11 +222,11 @@ class SubnationalAggregationProcessingTask(QgsTask):
                     qml_path=os.path.join(self.output_dir, f"{layer_name}.qml"),
                 )
                 self.item.setAttribute(f"{layer_name}", f"{output}|layername={layer_name}")
-            if self.opportunities_by_geoe3_by_population_folder:
-                log_message("Calculating Opportunities by GeoE3 x Population Score Aggregation")
-                layer_name = "opportunities_by_geoe3_score_by_population_subnational_aggregation"
+            if self.geoe3_score_by_population_ghsl_masked_folder:
+                log_message("Calculating GeoE3 Score by Population GHSL Masked Aggregation")
+                layer_name = "geoe3_score_by_population_ghsl_masked_subnational_aggregation"
                 raster_layer_path = os.path.join(
-                    self.opportunities_by_geoe3_by_population_folder,
+                    self.geoe3_score_by_population_ghsl_masked_folder,
                     "geoe3_by_population_by_opportunities_mask.vrt",
                 )
                 output = self.aggregate(

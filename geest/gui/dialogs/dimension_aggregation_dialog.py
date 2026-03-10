@@ -5,9 +5,10 @@ This module contains functionality for dimension aggregation dialog.
 """
 
 from qgis.core import Qgis
-from qgis.PyQt.QtCore import Qt, QUrl
+from qgis.PyQt.QtCore import QByteArray, QSettings, Qt, QUrl
 from qgis.PyQt.QtGui import QColor, QDesktopServices, QPixmap
 from qgis.PyQt.QtWidgets import (
+    QApplication,
     QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
@@ -15,6 +16,7 @@ from qgis.PyQt.QtWidgets import (
     QHeaderView,
     QLabel,
     QPushButton,
+    QScrollArea,
     QSizePolicy,
     QSpacerItem,
     QTableWidget,
@@ -72,10 +74,19 @@ class DimensionAggregationDialog(CustomBaseDialog):
 
     def _setup_factor_weighting_ui(self):
         """Setup the normal factor weighting UI with table of factors."""
-        # Layout setup
-        layout = QVBoxLayout(self)
-        self.resize(800, 600)  # Set a wider dialog size
-        layout.setContentsMargins(20, 20, 20, 20)  # Add padding around the layout
+        # Outer layout holds scroll area + button box
+        outer_layout = QVBoxLayout(self)
+        outer_layout.setContentsMargins(0, 0, 0, 10)
+
+        # Scrollable body
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setFrameShape(QScrollArea.NoFrame)
+        scroll_widget = QWidget()
+        layout = QVBoxLayout(scroll_widget)
+        layout.setContentsMargins(20, 20, 20, 20)
+        scroll_area.setWidget(scroll_widget)
+        outer_layout.addWidget(scroll_area)
 
         self.banner_label = CustomBannerLabel(
             "The Geospatial Enabling Environments for Employment Tool",
@@ -192,13 +203,12 @@ class DimensionAggregationDialog(CustomBaseDialog):
         )
         self.help_label.setOpenExternalLinks(True)
         self.help_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.help_label)
         self.help_label.linkActivated.connect(self.open_link_in_browser)
         help_layout.addWidget(self.help_label)
         help_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         layout.addLayout(help_layout)
 
-        # QDialogButtonBox for OK and Cancel
+        # Button box — outside the scroll area so it remains always visible
         self.button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         auto_calculate_button = QPushButton("Balance Weights")
         self.button_box.addButton(auto_calculate_button, QDialogButtonBox.ActionRole)
@@ -215,14 +225,49 @@ class DimensionAggregationDialog(CustomBaseDialog):
         self.guid_column_visible = False  # Track GUID column visibility
         self.table.setColumnHidden(4, not self.guid_column_visible)  # Hide GUID column by default
 
-        layout.addWidget(self.button_box)
+        button_wrapper = QWidget()
+        button_wrapper_layout = QHBoxLayout(button_wrapper)
+        button_wrapper_layout.setContentsMargins(20, 0, 20, 0)
+        button_wrapper_layout.addWidget(self.button_box)
+        outer_layout.addWidget(button_wrapper)
 
         # Initial validation check
         self.validate_weightings()
+        self.restore_dialog_geometry()
 
     def open_link_in_browser(self, url: str):
         """Open the given URL in the user's default web browser using QDesktopServices."""
         QDesktopServices.openUrl(QUrl(url))
+
+    def restore_dialog_geometry(self):
+        """Restore the dialog geometry from QSettings, or apply a sensible default."""
+        settings = QSettings()
+        geometry = settings.value("DimensionAggregationDialog/geometry_v2", QByteArray())
+        if geometry:
+            try:
+                self.restoreGeometry(geometry)
+                screen = QApplication.desktop().screenGeometry()
+                if self.width() > int(screen.width() * 0.85) or self.height() > int(screen.height() * 0.85):
+                    settings.remove("DimensionAggregationDialog/geometry_v2")
+                else:
+                    return
+            except Exception:
+                pass
+        # Sensible default: cap at 900px wide, 80% screen height
+        screen = QApplication.desktop().screenGeometry()
+        width = min(900, int(screen.width() * 0.65))
+        height = min(int(screen.height() * 0.80), 750)
+        self.resize(width, height)
+
+    def save_geometry(self):
+        """Save the dialog geometry to QSettings."""
+        settings = QSettings()
+        settings.setValue("DimensionAggregationDialog/geometry_v2", self.saveGeometry())
+
+    def closeEvent(self, event):
+        """Save geometry before closing."""
+        self.save_geometry()
+        super().closeEvent(event)
 
     def toggle_guid_column(self):
         """Toggle the visibility of the GUID column."""
@@ -369,4 +414,5 @@ class DimensionAggregationDialog(CustomBaseDialog):
     def accept_changes(self):
         """Handle the OK button by applying changes and closing the dialog."""
         self.saveWeightingsToModel()  # Assign weightings when changes are accepted
+        self.save_geometry()
         self.accept()

@@ -4,9 +4,9 @@
 This module contains functionality for setup panel.
 """
 
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget
 from qgis.PyQt.QtCore import pyqtSignal
+from qgis.PyQt.QtGui import QFont
+from qgis.PyQt.QtWidgets import QWidget
 
 from geest.gui.widgets import CustomBannerLabel
 from geest.utilities import (

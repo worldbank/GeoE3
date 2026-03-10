@@ -291,6 +291,8 @@ class WorkflowJob(QgsTask):
         self._workflow.progressChanged.connect(self.updateProgress)
         # Forward status messages from workflow to job signal for UI display
         self._workflow.statusChanged.connect(self.updateStatus)
+        # Forward workflow errors to job error signal for UI notification
+        self._workflow.workflowError.connect(self.error_occurred)
 
         # Initialize the class-level profiling if needed
         self.__class__.initialize_profiling()

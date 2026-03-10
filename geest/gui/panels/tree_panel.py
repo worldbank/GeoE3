@@ -44,6 +44,7 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 from qgis.utils import iface
+from qgis.gui import QgsMessageBar
 
 from geest.core import JsonTreeItem, WorkflowQueueManager
 from geest.core.algorithms import (
@@ -309,6 +310,7 @@ class TreePanel(QWidget):
         self.workflow_queue = []
         self.workflow_scope_item = None
         self.queue_manager.processing_completed.connect(self.run_next_workflow_queue)
+        self.queue_manager.processing_error.connect(self.on_processing_error)
 
     def on_item_double_clicked(self, index):
         """⚙️ On item double clicked.
@@ -1184,14 +1186,14 @@ class TreePanel(QWidget):
         )
         add_to_map(
             item,
-            key="opportunities_by_geoe3_score_subnational_aggregation",
-            layer_name="GeoE3 Score by Opportunities Aggregate",
+            key="geoe3_score_ghsl_masked_subnational_aggregation",
+            layer_name="GeoE3 Score GHSL Masked Aggregate",
             group="GeoE3",
         )
         add_to_map(
             item,
-            key="opportunities_by_geoe3_score_by_population_subnational_aggregation",
-            layer_name="GeoE3 Score by Population by Opportunities Aggregate",
+            key="geoe3_score_by_population_ghsl_masked_subnational_aggregation",
+            layer_name="GeoE3 Score by Population GHSL Masked Aggregate",
             group="GeoE3",
         )
 
@@ -1583,10 +1585,6 @@ class TreePanel(QWidget):
             analysis_item: The analysis item to edit.
         """
         dialog = AnalysisAggregationDialog(analysis_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.saveWeightingsToModel()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
@@ -1602,10 +1600,6 @@ class TreePanel(QWidget):
         if not dimension_data:
             dimension_data = {}
         dialog = DimensionAggregationDialog(dimension_name, dimension_data, dimension_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.saveWeightingsToModel()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
@@ -1621,10 +1615,6 @@ class TreePanel(QWidget):
         if not factor_data:
             factor_data = {}
         dialog = FactorAggregationDialog(factor_name, factor_data, factor_item, parent=self)
-        dialog.resize(
-            int(QApplication.desktop().screenGeometry().width() * 0.9),
-            int(QApplication.desktop().screenGeometry().height() * 0.9),
-        )
         if dialog.exec_():  # If OK was clicked
             dialog.save_weightings_to_model()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
@@ -1972,6 +1962,39 @@ class TreePanel(QWidget):
             status = status[: max_len - 3] + "..."
         self.status_label.setText(status)
         self.status_label.setToolTip(status)  # Show full text on hover
+
+    def set_message_bar(self, message_bar: "QgsMessageBar") -> None:
+        """Set the dock-level message bar used for error notifications.
+
+        Args:
+            message_bar: The QgsMessageBar embedded in the plugin dock widget.
+        """
+        self._message_bar = message_bar
+
+    def on_processing_error(self, error_message: str):
+        """Slot called when a workflow job reports an error.
+
+        Updates the status label and pushes a visible error notification
+        to the plugin's own message bar (top of the dock panel).
+
+        Args:
+            error_message: The error message from the failed workflow job.
+        """
+        log_message(f"Processing error: {error_message}", level=Qgis.Critical)
+        # Update the status label (truncated, full text on hover)
+        max_len = 35
+        short = error_message if len(error_message) <= max_len else error_message[: max_len - 3] + "..."
+        self.status_label.setText(short)
+        self.status_label.setToolTip(error_message)
+        # Push to the plugin-level message bar (top of dock), falling back to
+        # the QGIS main window bar if set_message_bar() was never called.
+        bar = getattr(self, "_message_bar", None) or iface.messageBar()
+        bar.pushMessage(
+            "GeoE3 Processing Error",
+            error_message,
+            level=Qgis.Critical,
+            duration=0,  # stays until dismissed
+        )
 
     @pyqtSlot(bool)
     def on_workflow_completed(self, item, success):

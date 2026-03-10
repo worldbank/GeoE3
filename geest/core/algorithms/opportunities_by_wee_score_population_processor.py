@@ -73,7 +73,7 @@ class OpportunitiesByWeeScorePopulationProcessingTask(QgsTask):
         self.item = item
         self.study_area_gpkg_path = study_area_gpkg_path
 
-        self.output_dir = os.path.join(working_directory, "opportunities_by_geoe3_score_by_population")
+        self.output_dir = os.path.join(working_directory, "geoe3_score_by_population_ghsl_masked")
         os.makedirs(self.output_dir, exist_ok=True)
 
         # These folders should already exist from the analysis and opportunities mask processor

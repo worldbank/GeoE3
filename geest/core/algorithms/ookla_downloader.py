@@ -154,22 +154,34 @@ class OoklaDownloader:
             return f"https://{bucket}.s3.amazonaws.com/{key}"
         return input_uri
 
-    def _ensure_local_parquet(self, input_uri: str) -> str:
+    def _ensure_local_parquet(self, input_uri: str, progress_offset: int = 0, progress_scale: int = 100) -> str:
         """
         Download a remote Parquet to local cache if needed and return local path.
+
+        Args:
+            input_uri (str): The S3 or HTTPS URI of the Parquet file.
+            progress_offset (int): Base progress value to offset into (e.g. 0 for first file, 50 for second).
+            progress_scale (int): Range of progress values this download covers (e.g. 50 for each of two files).
         """
         cache_dir = self._local_cache_root()
         filename = os.path.basename(input_uri)
         local_path = os.path.join(cache_dir, filename)
         if os.path.exists(local_path) and os.path.getsize(local_path) > 0:
             log_message(f"Using cached Ookla parquet: {local_path}")
+            if self.feedback is not None:
+                self.feedback.setProgress(progress_offset + progress_scale)
             return local_path
 
         url = self._s3_to_https(input_uri)
         tmp_path = f"{local_path}.tmp"
         log_message(f"Downloading Ookla parquet to local cache: {url}")
+        log_message(f"Ookla cache location: {local_path}")
         try:
             with urllib.request.urlopen(url) as response, open(tmp_path, "wb") as handle:
+                total_size = int(response.headers.get("Content-Length", 0))
+                downloaded = 0
+                if total_size > 0:
+                    log_message(f"Ookla parquet file size: {total_size // 1_000_000} MB")
                 while True:
                     if self.feedback is not None and self.feedback.isCanceled():
                         raise OoklaException("Ookla parquet download canceled.")
@@ -177,6 +189,14 @@ class OoklaDownloader:
                     if not chunk:
                         break
                     handle.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 0 and self.feedback is not None:
+                        chunk_progress = int(downloaded / total_size * progress_scale)
+                        self.feedback.setProgress(progress_offset + chunk_progress)
+                    if downloaded % (40 * 1024 * 1024) == 0 or not chunk:
+                        mb_done = downloaded // 1_000_000
+                        mb_total = total_size // 1_000_000 if total_size else "?"
+                        log_message(f"Ookla download: {mb_done} MB / {mb_total} MB")
             os.replace(tmp_path, local_path)
         except Exception:
             if os.path.exists(tmp_path):
@@ -213,8 +233,12 @@ class OoklaDownloader:
         fixed_input_uri = self.FIXED_INTERNET_URL
         mobile_input_uri = self.MOBILE_INTERNET_URL
         if self.use_local_cache:
-            fixed_input_uri = self._ensure_local_parquet(self.FIXED_INTERNET_URL)
-            mobile_input_uri = self._ensure_local_parquet(self.MOBILE_INTERNET_URL)
+            log_message("Downloading fixed broadband Ookla parquet (1/2)...")
+            fixed_input_uri = self._ensure_local_parquet(self.FIXED_INTERNET_URL, progress_offset=0, progress_scale=50)
+            log_message("Downloading mobile broadband Ookla parquet (2/2)...")
+            mobile_input_uri = self._ensure_local_parquet(
+                self.MOBILE_INTERNET_URL, progress_offset=50, progress_scale=50
+            )
 
         # Check if use cache is enabled and files exist
         if self.use_cache and os.path.exists(combined_output_file):

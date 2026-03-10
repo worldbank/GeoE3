@@ -12,6 +12,7 @@ from qgis.PyQt.QtCore import QByteArray, QSettings, Qt, QUrl
 from qgis.PyQt.QtGui import QDesktopServices, QPixmap
 from qgis.PyQt.QtWidgets import (
     QAbstractScrollArea,
+    QApplication,
     QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
@@ -199,21 +200,27 @@ class AnalysisAggregationDialog(FORM_CLASS, CustomBaseDialog):
         Restore the dialog geometry from QSettings.
         """
         settings = QSettings()
-        # Restore geometry (fall back to empty QByteArray if setting not found)
-        geometry = settings.value("AnalysisAggregationDialog/geometry", QByteArray())
+        geometry = settings.value("AnalysisAggregationDialog/geometry_v2", QByteArray())
         log_window_geometry(geometry)
         if geometry:
             log_message("Restoring dialog geometry")
             try:
                 self.restoreGeometry(geometry)
+                # Sanity-check: if the restored size is still oversized, discard it
+                screen = QApplication.desktop().screenGeometry()
+                if self.width() > int(screen.width() * 0.85) or self.height() > int(screen.height() * 0.85):
+                    log_message("Restored geometry too large, resetting to default", tag="Geest", level=Qgis.Warning)
+                    settings.remove("AnalysisAggregationDialog/geometry_v2")
+                else:
+                    return
             except Exception:
                 log_message("Restoring geometry failed", tag="Geest", level=Qgis.Warning)
-                pass
-        else:
-            log_message("No saved geometry found, resizing dialog")
-            # Resize the dialog to be almost as large as the main window
-            main_window = self.parent().window() if self.parent() else self.screen().availableGeometry()
-            self.resize(int(main_window.width() * 0.9), int(main_window.height() * 0.9))
+        log_message("No saved geometry found, resizing dialog")
+        # Sensible default: cap at 900px wide, 80% screen height
+        screen = QApplication.desktop().screenGeometry()
+        width = min(900, int(screen.width() * 0.65))
+        height = min(int(screen.height() * 0.80), 750)
+        self.resize(width, height)
 
     def save_geometry(self):
         """
@@ -221,7 +228,7 @@ class AnalysisAggregationDialog(FORM_CLASS, CustomBaseDialog):
         """
         log_message("Saving dialog geometry")
         settings = QSettings()
-        settings.setValue("AnalysisAggregationDialog/geometry", self.geometry())
+        settings.setValue("AnalysisAggregationDialog/geometry_v2", self.saveGeometry())
 
     def closeEvent(self, event):
         """⚙️ Closeevent.
@@ -229,9 +236,7 @@ class AnalysisAggregationDialog(FORM_CLASS, CustomBaseDialog):
         Args:
             event: Event.
         """
-        # Save geometry before closing
-        settings = QSettings()
-        settings.setValue("AnalysisAggregationDialog/geometry", self.saveGeometry())
+        self.save_geometry()
         super().closeEvent(event)
 
     def setup_table(self):

@@ -112,7 +112,9 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         if self.ookla_downloaded:
             return
 
-        log_message("Downloading OOKLA data (this may take several minutes)...")
+        log_message("Downloading Ookla data (this may take several minutes)...")
+        self.updateStatus("Downloading Ookla data — this may take several minutes...")
+        self.progressChanged.emit(1.0)
 
         # Bridge feedback to workflow progress signals
         bridge_feedback = ProgressBridgeFeedback(self, self.feedback)
@@ -120,6 +122,7 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         # Prepare Ookla coverage layer - adds a minute or two to the workflow
         # and requires internet access
         ookla_layer_path = os.path.join(self.working_directory, "study_area")
+        log_message(f"Ookla output will be saved to: {ookla_layer_path}")
         downloader = OoklaDownloader(
             extents=self.study_area_bbox,
             output_path=ookla_layer_path,
@@ -128,10 +131,18 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
             delete_existing=True,
             feedback=bridge_feedback,  # Use bridge feedback for progress visibility
         )
-        downloader.extract_data(output_crs=self.target_crs)
+        self.updateStatus("Ookla: fetching broadband data (may take several minutes)...")
+        try:
+            downloader.extract_data(output_crs=self.target_crs)
+        except Exception as e:
+            error_msg = f"Ookla download failed: {e}"
+            log_message(error_msg, level=Qgis.Critical)
+            self.updateStatus(error_msg)
+            raise
         self.ookla_layer_path = os.path.join(ookla_layer_path, "ookla_combined.gpkg")
         self.ookla_downloaded = True
-        log_message("OOKLA data download complete")
+        log_message("Ookla data download complete")
+        self.updateStatus("Ookla download complete")
 
     def _process_features_for_area(
         self,
