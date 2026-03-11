@@ -361,6 +361,10 @@ class GeestDock(QDockWidget):
                 self.tree_widget.set_working_directory(geest_project)
                 self.stacked_widget.setCurrentIndex(TREE_PANEL)  # Tree tab
                 self.road_network_widget.set_working_directory(geest_project)
+                saved_path = self.tree_widget.road_network_layer_path()
+                if saved_path:
+                    log_message(f"Restoring road network layer from model: {saved_path}")
+                    self.road_network_widget.restore_layer_from_path(saved_path)
 
     def on_panel_changed(self, index: int) -> None:
         """
