@@ -156,15 +156,17 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         """
         log_message(f"Spatial scale changed: {value}")
         if value == "regional":
-            # Regional scale uses H3 hexagonal grids (resolution L6)
-            self.cell_size_spinbox.setValue(5000)
-            self.cell_size_spinbox.setSingleStep(1000)
-            self.cell_size_spinbox.setSuffix(" m (H3 L6)")
+            # Regional scale uses H3 hexagonal grids (resolution L6) - fixed size
+            self.cell_size_spinbox.hide()
         elif value == "national":
+            self.cell_size_spinbox.show()
+            self.description2.show()
             self.cell_size_spinbox.setValue(1000)
             self.cell_size_spinbox.setSingleStep(100)
             self.cell_size_spinbox.setSuffix(" m")
         elif value == "local":
+            self.cell_size_spinbox.show()
+            self.description2.show()
             self.cell_size_spinbox.setValue(100)
             self.cell_size_spinbox.setSingleStep(10)
             self.cell_size_spinbox.setSuffix(" m")

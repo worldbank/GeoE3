@@ -159,9 +159,11 @@ class GridFromBboxTask(QgsTask):
                 wkt = f"POLYGON(({x} {y},{x} {y2},{x2} {y2},{x2} {y},{x} {y}))"
                 cell_polygon = ogr.CreateGeometryFromWkt(wkt)
 
-                # Check intersection
+                # Check intersection and clip to study area boundary
                 if self.geom.Intersects(cell_polygon):
-                    self.features_out.append(cell_polygon)
+                    clipped_polygon = self.geom.Intersection(cell_polygon)
+                    if clipped_polygon and not clipped_polygon.IsEmpty():
+                        self.features_out.append(clipped_polygon)
 
     def finished(self, result):
         """Called in the main thread after run() completes.
