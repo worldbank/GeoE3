@@ -1035,7 +1035,7 @@ class TreePanel(QWidget):
         """
         add_to_map(
             item,
-            key="geoe3_by_opportunities_mask_result_file",
+            key="geoe3_score_ghsl_masked_result_file",
             layer_name="Masked GeoE3 Score",
             group="GeoE3",
         )

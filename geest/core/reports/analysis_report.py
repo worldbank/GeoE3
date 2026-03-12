@@ -226,9 +226,9 @@ class AnalysisReport(BaseReport):
             model = json.load(f)
 
         # Print the analysis geoe3, geoe3 by population etc maps first
-        self.page_descriptions["geoe3_by_opportunities"] = "GeoE3 By Opportunities Analysis Map"
-        layer_uri = model.get("geoe3_by_opportunities_mask_result_file")
-        if self._add_map_page("GeoE3 by Opportunities Mask", "geoe3_by_opportunities", layer_uri, current_page):
+        self.page_descriptions["geoe3_score_ghsl_masked"] = "GeoE3 Score GHSL Masked Analysis Map"
+        layer_uri = model.get("geoe3_score_ghsl_masked_result_file")
+        if self._add_map_page("GeoE3 Score GHSL Masked", "geoe3_score_ghsl_masked", layer_uri, current_page):
             current_page += 1
 
         # Iterate through dimensions, factors, and indicators

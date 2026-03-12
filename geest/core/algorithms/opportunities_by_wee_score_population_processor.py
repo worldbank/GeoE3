@@ -95,8 +95,8 @@ class OpportunitiesByWeeScorePopulationProcessingTask(QgsTask):
             self.target_crs = layer.crs()
             del layer
         self.output_rasters: List[str] = []
-        self.result_file_key = "geoe3_by_population_by_opportunities_mask_result_file"
-        self.result_key = "geoe3_by_population_by_opportunities_mask_result"
+        self.result_file_key = "geoe3_score_by_population_ghsl_masked_result_file"
+        self.result_key = "geoe3_score_by_population_ghsl_masked_result"
         log_message("Initialized Opportunities Mask by GeoE3 Score by Population Processing Task")
 
     def run(self) -> bool:
@@ -188,7 +188,7 @@ class OpportunitiesByWeeScorePopulationProcessingTask(QgsTask):
             geoe3_score_by_population_layer = QgsRasterLayer(geoe3_score_by_population_path, "POP")
             self.validate_rasters(mask_layer, geoe3_score_by_population_layer, dimension_check=False)
 
-            output_path = os.path.join(self.output_dir, f"geoe3_by_population_by_opportunities_mask_{index}.tif")
+            output_path = os.path.join(self.output_dir, f"geoe3_score_by_population_ghsl_masked_{index}.tif")
             if not self.force_clear and os.path.exists(output_path):
                 log_message(f"Reusing existing raster: {output_path}")
                 self.output_rasters.append(output_path)
@@ -223,8 +223,8 @@ class OpportunitiesByWeeScorePopulationProcessingTask(QgsTask):
         Returns:
             str: Path to the generated VRT file.
         """
-        vrt_path = os.path.join(self.output_dir, "geoe3_by_population_by_opportunities_mask.vrt")
-        qml_path = os.path.join(self.output_dir, "geoe3_by_population_by_opportunities_mask.qml")
+        vrt_path = os.path.join(self.output_dir, "geoe3_score_by_population_ghsl_masked.vrt")
+        qml_path = os.path.join(self.output_dir, "geoe3_score_by_population_ghsl_masked.qml")
         source_qml = resources_path("resources", "qml", "geoe3_by_population_score.qml")
 
         params = {

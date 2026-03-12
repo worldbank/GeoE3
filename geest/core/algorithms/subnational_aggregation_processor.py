@@ -210,7 +210,7 @@ class SubnationalAggregationProcessingTask(QgsTask):
                 layer_name = "geoe3_score_ghsl_masked_subnational_aggregation"
                 raster_layer_path = os.path.join(
                     self.geoe3_score_ghsl_masked_folder,
-                    "geoe3_by_opportunities_mask.vrt",
+                    "geoe3_score_ghsl_masked.vrt",
                 )
                 output = self.aggregate(
                     cleaned_aggregation_layer,
@@ -227,7 +227,7 @@ class SubnationalAggregationProcessingTask(QgsTask):
                 layer_name = "geoe3_score_by_population_ghsl_masked_subnational_aggregation"
                 raster_layer_path = os.path.join(
                     self.geoe3_score_by_population_ghsl_masked_folder,
-                    "geoe3_by_population_by_opportunities_mask.vrt",
+                    "geoe3_score_by_population_ghsl_masked.vrt",
                 )
                 output = self.aggregate(
                     cleaned_aggregation_layer,
