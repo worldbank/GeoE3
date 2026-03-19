@@ -19,6 +19,7 @@ from qgis.core import (
 
 from geest.core import JsonTreeItem
 from geest.core.algorithms import AreaIterator
+from geest.core.constants import GDAL_OUTPUT_DATA_TYPE
 from geest.utilities import log_message, resources_path
 
 
@@ -182,7 +183,7 @@ class OpportunitiesByWeeScoreProcessingTask(QgsTask):
                 "NO_DATA": None,
                 "EXTENT_OPT": 3,
                 "PROJWIN": None,
-                "RTYPE": 0,
+                "RTYPE": GDAL_OUTPUT_DATA_TYPE,
                 "OPTIONS": "",
                 "EXTRA": "",
                 "OUTPUT": output_path,
