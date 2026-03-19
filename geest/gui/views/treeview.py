@@ -6,7 +6,7 @@ This module contains functionality for treeview.
 
 import uuid
 
-from qgis.core import Qgis
+from qgis.core import Qgis, QgsProject
 from qgis.PyQt.QtCore import QAbstractItemModel, QModelIndex, Qt, pyqtSignal
 from qgis.PyQt.QtGui import QColor
 from qgis.PyQt.QtWidgets import QMessageBox, QTreeView
@@ -102,6 +102,7 @@ class JsonTreeModel(QAbstractItemModel):
         geoe3_by_population_by_opportunities_mask_result = json_data.get(
             "geoe3_by_population_by_opportunities_mask_result", ""
         )
+        qgis_project_path = json_data.get("qgis_project_path", "")
         # Store special properties in the attributes dictionary
         analysis_attributes = {
             "analysis_name": analysis_name,
@@ -130,6 +131,7 @@ class JsonTreeModel(QAbstractItemModel):
             "geoe3_score_by_population_ghsl_masked_subnational_aggregation": geoe3_score_by_population_ghsl_masked_subnational_aggregation,
             "geoe3_by_population_by_opportunities_mask_result_file": geoe3_by_population_by_opportunities_mask_result_file,
             "geoe3_by_population_by_opportunities_mask_result": geoe3_by_population_by_opportunities_mask_result,
+            "qgis_project_path": qgis_project_path,
         }
 
         for prefix in [
@@ -466,6 +468,12 @@ class JsonTreeModel(QAbstractItemModel):
             # because the roads are used for native routing analysis
             # by some of the algorithms
             if item.role == "analysis":
+                existing_qgis_path = item.attribute("qgis_project_path")
+                current_qgis_path = QgsProject.instance().fileName()
+                if not existing_qgis_path or (current_qgis_path and current_qgis_path == existing_qgis_path):
+                    qgis_project_path = current_qgis_path
+                else:
+                    qgis_project_path = existing_qgis_path
                 json_data = {
                     "analysis_name": item.attribute("analysis_name"),
                     "description": item.attribute("description"),
@@ -473,6 +481,7 @@ class JsonTreeModel(QAbstractItemModel):
                     "analysis_cell_size_m": item.attribute("analysis_cell_size_m"),
                     "analysis_scale": item.attribute("analysis_scale"),
                     "road_network_layer_path": item.attribute("road_network_layer_path"),
+                    "qgis_project_path": qgis_project_path,
                     "guid": item.guid,  # Serialize UUID
                     "dimensions": [recurse_tree(child) for child in item.childItems],
                 }

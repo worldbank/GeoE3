@@ -63,6 +63,7 @@ class GeestDock(QDockWidget):
             json_file: Path to a JSON file used for the TreePanel.
         """
         self.initialised = False
+        self._suppress_qgis_project_changed = False  # Flag to prevent signal loop
         super().__init__(parent)
         # Get the plugin version from metadata.txt
         self.plugin_version = version()
@@ -171,6 +172,11 @@ class GeestDock(QDockWidget):
             self.open_project_widget.set_working_directory.connect(
                 # Switch to the previous tab when the button is clicked
                 lambda: self.tree_widget.set_working_directory(self.open_project_widget.working_dir)
+            )
+
+            self.open_project_widget.project_loaded.connect(
+                # Open the associated QGIS project after project is loaded
+                lambda: self.open_associated_qgis_project()
             )
 
             # CREATE_PROJECT_PANEL = 4
@@ -346,11 +352,12 @@ class GeestDock(QDockWidget):
 
         This is called by the main plugin class whenever the QGIS project changes.
         """
+        if self._suppress_qgis_project_changed:
+            return
         project_path = QgsProject.instance().fileName()
         log_message(f"QGIS project changed to {project_path}")
         if project_path:
             checksum = hash(project_path)
-            # Check our settings to see if we have a Geest project associated with this project
             geest_project = setting(str(checksum), None, prefer_project_setting=True)
             log_message(
                 f"Geest project path : {geest_project} ({checksum})",  # noqa E225
@@ -365,6 +372,41 @@ class GeestDock(QDockWidget):
                 if saved_path:
                     log_message(f"Restoring road network layer from model: {saved_path}")
                     self.road_network_widget.restore_layer_from_path(saved_path)
+                if self.tree_widget.working_directory:
+                    self.tree_widget.set_qgis_project_path(project_path)
+
+    def open_associated_qgis_project(self) -> None:
+        """Open the QGIS project associated with the current Geest project.
+
+        Reads the qgis_project_path from the model and opens it if it exists
+        and differs from the current project.
+        """
+        qgis_path = self.tree_widget.qgis_project_path()
+        if not qgis_path or not qgis_path.strip():
+            return
+        if not os.path.exists(qgis_path):
+            log_message(
+                f"Associated QGIS project not found: {qgis_path}",
+                tag="Geest",
+                level=Qgis.Warning,
+            )
+            return
+        current_path = QgsProject.instance().fileName()
+        if qgis_path == current_path:
+            log_message("QGIS project is already open", tag="Geest", level=Qgis.Info)
+            return
+        log_message(f"Opening associated QGIS project: {qgis_path}", tag="Geest", level=Qgis.Info)
+        self._suppress_qgis_project_changed = True
+        try:
+            QgsProject.instance().read(qgis_path)
+        except Exception as e:
+            log_message(
+                f"Failed to open QGIS project: {e}",
+                tag="Geest",
+                level=Qgis.Critical,
+            )
+        finally:
+            self._suppress_qgis_project_changed = False
 
     def on_panel_changed(self, index: int) -> None:
         """

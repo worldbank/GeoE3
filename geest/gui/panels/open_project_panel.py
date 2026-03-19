@@ -35,6 +35,7 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
     switch_to_next_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
     switch_to_previous_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
     set_working_directory = pyqtSignal(str)  # Signal to set the working directory
+    project_loaded = pyqtSignal(str)  # Signal emitted after project is fully loaded
 
     def __init__(self):
         """🏗️ Initialize the instance."""
@@ -177,6 +178,7 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
             # Switch to the next tab if an existing project is found
             self.switch_to_next_tab.emit()
             self.set_working_directory.emit(self.working_dir)
+            self.project_loaded.emit(self.working_dir)
         else:
             self.switch_to_previous_tab.emit()
             # QMessageBox.critical(

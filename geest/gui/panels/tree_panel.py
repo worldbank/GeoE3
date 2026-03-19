@@ -12,6 +12,7 @@ import subprocess  # nosec B404
 import traceback
 from functools import partial
 from logging import getLogger
+from typing import Optional
 
 from qgis.core import (
     Qgis,
@@ -553,6 +554,33 @@ class TreePanel(QWidget):
                 log_message(f"Error setting road network path: {str(e)}", level=Qgis.Critical)
         else:
             log_message("No road network layer path provided.")
+
+    def qgis_project_path(self) -> Optional[str]:
+        """Get the associated QGIS project path from the analysis item.
+
+        Returns:
+            str: The QGIS project path, or None if not set.
+        """
+        analysis_item = self.model.get_analysis_item()
+        if analysis_item:
+            return analysis_item.attribute("qgis_project_path")
+        return None
+
+    def set_qgis_project_path(self, qgis_path: str) -> None:
+        """Set the associated QGIS project path in the analysis item.
+
+        Args:
+            qgis_path: The QGIS project path to store.
+        """
+        if qgis_path:
+            log_message(f"Setting qgis_project_path in model to {qgis_path}")
+            analysis_item = self.model.get_analysis_item()
+            if analysis_item:
+                try:
+                    analysis_item.setAttribute("qgis_project_path", qgis_path)
+                    self.save_json_to_working_directory()
+                except Exception as e:
+                    log_message(f"Error setting qgis project path: {str(e)}", level=Qgis.Critical)
 
     @pyqtSlot()
     def set_ghsl_layer_path(self, ghsl_layer_path: str):
