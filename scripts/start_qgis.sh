@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "🪛 Running QGIS with the GEEST profile:"
+echo "🪛 Running QGIS with the GEOE3 profile:"
 echo "--------------------------------"
 echo "Do you want to enable debug mode?"
 choice=$(gum choose "🪲 Yes" "🐞 No")
@@ -30,4 +30,4 @@ GEEST_LOG=${GEEST_LOG} \
     GEEST_EXPERIMENTAL=${GEEST_EXPERIMENTAL} \
     GEEST_TEST_DIR=${GEEST_TEST_DIR} \
     RUNNING_ON_LOCAL=1 \
-    nix run .#default -- --profile GEEST2
+    nix run .#default -- --profile GEOE3
