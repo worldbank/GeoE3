@@ -6,7 +6,7 @@ import unittest
 from osgeo import ogr
 from qgis.core import QgsFeedback, QgsRectangle
 
-from geest.core.algorithms.ookla_downloader import OoklaDownloader, OoklaException
+from geoe3.core.algorithms.ookla_downloader import OoklaDownloader, OoklaException
 
 
 class DummyFeedback(QgsFeedback):

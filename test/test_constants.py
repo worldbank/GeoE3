@@ -20,7 +20,7 @@ __revision__ = "$Format:%H$"
 
 import unittest
 
-from geest.core.constants import APPLICATION_NAME, GDAL_OUTPUT_DATA_TYPE
+from geoe3.core.constants import APPLICATION_NAME, GDAL_OUTPUT_DATA_TYPE
 
 
 class TestConstants(unittest.TestCase):

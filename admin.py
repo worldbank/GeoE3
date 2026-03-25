@@ -18,7 +18,7 @@ import httpx
 import typer
 
 LOCAL_ROOT_DIR = Path(__file__).parent.resolve()
-SRC_NAME = "geest"
+SRC_NAME = "geoe3"
 PACKAGE_NAME = SRC_NAME.replace("_", "")
 TEST_FILES = ["test", "test_suite.py", "docker-compose.yml", "scripts"]
 # Vendored dependencies to bundle with the plugin

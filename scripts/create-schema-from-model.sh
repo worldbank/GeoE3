@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Creating geest/resources/schema.json based on the structure of geest/resources/model.json"
+echo "Creating geoe3/resources/schema.json based on the structure of geoe3/resources/model.json"
 
-geest/core/generate_schema.py
+geoe3/core/generate_schema.py

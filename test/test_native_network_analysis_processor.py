@@ -18,7 +18,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from geest.core.algorithms.native_network_analysis_processor import (
+from geoe3.core.algorithms.native_network_analysis_processor import (
     NativeNetworkAnalysisProcessingTask,
 )
 

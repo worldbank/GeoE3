@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 from qgis.core import Qgis
 
 # Import the utilities module
-from geest.utilities import (
+from geoe3.utilities import (
     calculate_utm_zone,
     calculate_utm_zone_from_layer,
     geest_layer_ids,
@@ -157,9 +157,9 @@ class TestUtilities(unittest.TestCase):
     def test_calculate_utm_zone(self):
         """Test calculate_utm_zone function."""
         # Mock osr.SpatialReference and osr.CoordinateTransformation
-        with patch("geest.utilities.osr.SpatialReference"), patch(
-            "geest.utilities.osr.CoordinateTransformation"
-        ), patch("geest.utilities.ogr.Geometry") as mock_geometry:
+        with patch("geoe3.utilities.osr.SpatialReference"), patch(
+            "geoe3.utilities.osr.CoordinateTransformation"
+        ), patch("geoe3.utilities.ogr.Geometry") as mock_geometry:
 
             # Mock the point transformation
             mock_point = MagicMock()
@@ -175,7 +175,7 @@ class TestUtilities(unittest.TestCase):
             self.assertEqual(calculate_utm_zone((0, 10, -10, 0), "4326"), 32731)
 
             # Test without source EPSG
-            with patch("geest.utilities.log_message") as mock_log:
+            with patch("geoe3.utilities.log_message") as mock_log:
                 mock_point.GetX.return_value = 5
                 mock_point.GetY.return_value = 5
                 self.assertEqual(calculate_utm_zone((0, 10, 0, 10)), 32631)
@@ -187,7 +187,7 @@ class TestUtilities(unittest.TestCase):
     @patch("logging.warning")
     @patch("logging.critical")
     @patch("logging.debug")
-    @patch("geest.utilities.setting")
+    @patch("geoe3.utilities.setting")
     def test_log_message(
         self,
         mock_setting,
@@ -278,8 +278,8 @@ class TestUtilities(unittest.TestCase):
 
     @unittest.skip("TODO Check and fix")
     @patch("qgis.core.QgsProject")
-    @patch("geest.utilities.get_free_memory_mb")
-    @patch("geest.utilities.log_message")
+    @patch("geoe3.utilities.get_free_memory_mb")
+    @patch("geoe3.utilities.log_message")
     @patch("datetime.datetime")
     def test_log_layer_count(self, mock_datetime, mock_log_message, mock_free_memory, mock_project):
         """Test log_layer_count function."""
@@ -313,7 +313,7 @@ class TestUtilities(unittest.TestCase):
         self.assertTrue("ui" in call_args)
         self.assertTrue("test.ui" in call_args)
 
-    @patch("geest.utilities.calculate_utm_zone")
+    @patch("geoe3.utilities.calculate_utm_zone")
     def test_calculate_utm_zone_from_layer(self, mock_calc_utm):
         """Test calculate_utm_zone_from_layer function."""
         # Setup mock layer
@@ -335,7 +335,7 @@ class TestUtilities(unittest.TestCase):
         mock_calc_utm.assert_called_once_with((0, 10, 0, 10), "4326")
         self.assertEqual(result, 32601)
 
-    @patch("geest.utilities.log_message")
+    @patch("geoe3.utilities.log_message")
     def test_log_window_geometry(self, mock_log_message):
         """Test log_window_geometry function."""
         # Test with QRect
@@ -363,8 +363,8 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(mock_log_message.call_count, 2)  # Two calls for warning
 
     @unittest.skip("TODO Check and fix")
-    @patch("geest.utilities.is_qgis_dark_theme_active")
-    @patch("geest.utilities.resources_path")
+    @patch("geoe3.utilities.is_qgis_dark_theme_active")
+    @patch("geoe3.utilities.resources_path")
     @patch("qgis.PyQt.QtGui.QPixmap")
     def test_theme_background_image(self, mock_qpixmap, mock_resources_path, mock_is_dark):
         """Test theme_background_image function."""
@@ -383,8 +383,8 @@ class TestUtilities(unittest.TestCase):
         theme_background_image()
         mock_qpixmap.assert_called_once_with("/path/to/light-image.png")
 
-    @patch("geest.utilities.is_qgis_dark_theme_active")
-    @patch("geest.utilities.resources_path")
+    @patch("geoe3.utilities.is_qgis_dark_theme_active")
+    @patch("geoe3.utilities.resources_path")
     def test_theme_stylesheet(self, mock_resources_path, mock_is_dark):
         """Test theme_stylesheet function."""
         mock_resources_path.return_value = "/path/to/resources"

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from qgis.core import QgsRectangle
 
-from geest.core.osm_downloaders.osm_roads_downloader import OSMRoadsDownloader
+from geoe3.core.osm_downloaders.osm_roads_downloader import OSMRoadsDownloader
 
 
 class TestOSMRoadsDownloader(unittest.TestCase):
@@ -12,20 +12,20 @@ class TestOSMRoadsDownloader(unittest.TestCase):
         self.mock_extents = QgsRectangle(35.34463, 8.6056, 35.35706, 8.64769)
         self.mock_output_path = "test_osm_roads_output.gpkg"
 
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
     def test_initialization_without_canvas(self, mock_submit_query):
         downloader = OSMRoadsDownloader(extents=self.mock_extents, output_path=self.mock_output_path)
 
         self.assertEqual(downloader.extents, self.mock_extents)
         self.assertEqual(downloader.output_path, self.mock_output_path)
 
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
     def test_set_output_type_called(self, mock_submit_query):
         downloader = OSMRoadsDownloader(extents=self.mock_extents, output_path=self.mock_output_path)
         self.assertEqual(downloader.output_type, "line")
 
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.set_osm_query")
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.set_osm_query")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
     def test_osm_query_and_submission(self, mock_submit_query, mock_set_osm_query):
         _ = OSMRoadsDownloader(extents=self.mock_extents, output_path=self.mock_output_path)
 
@@ -33,8 +33,8 @@ class TestOSMRoadsDownloader(unittest.TestCase):
         mock_submit_query.assert_called_once()
         self.assertIn("[out:xml][timeout:60];", mock_set_osm_query.call_args[0][0])
 
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
-    @patch("geest.core.osm_downloaders.osm_roads_downloader.log_message")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.OSMDataDownloaderBase.submit_query")
+    @patch("geoe3.core.osm_downloaders.osm_roads_downloader.log_message")
     def test_log_message_called(self, mock_log_message, mock_submit_query):
         OSMRoadsDownloader(extents=self.mock_extents, output_path=self.mock_output_path)
         expected_calls = [

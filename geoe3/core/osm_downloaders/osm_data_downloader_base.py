@@ -1,0 +1,667 @@
+# -*- coding: utf-8 -*-
+"""📦 Osm Data Downloader Base module.
+
+This module contains functionality for osm data downloader base.
+"""
+
+try:
+    from defusedxml import ElementTree as ET
+except ImportError:
+    # Fallback to standard library with warning
+    import warnings
+    import xml.etree.ElementTree as ET  # nosec B405
+
+    warnings.warn(
+        "defusedxml not available, falling back to xml.etree.ElementTree. "
+        "Consider installing defusedxml for better security: pip install defusedxml",
+        UserWarning,
+    )
+import os
+import time
+from abc import ABC
+
+from osgeo import ogr
+from qgis import processing  # QGIS processing API
+from qgis.core import (
+    Qgis,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsFeature,
+    QgsFeedback,
+    QgsField,
+    QgsGeometry,
+    QgsNetworkAccessManager,
+    QgsPointXY,
+    QgsProject,
+    QgsRectangle,
+    QgsVectorFileWriter,
+    QgsVectorLayer,
+)
+from qgis.PyQt.QtCore import QByteArray, QUrl, QVariant
+from qgis.PyQt.QtNetwork import QNetworkRequest
+
+from geoe3.utilities import log_message
+
+from .query_preparation import QueryPreparation
+
+
+class OSMDataDownloaderBase(ABC):
+    """🎯 O S M Data Downloader Base.
+
+    Attributes:
+        base_url: Base url.
+        delete_gpkg: Delete gpkg.
+        extents: Extents.
+        feedback: Feedback.
+        filename: Filename.
+    """
+
+    def __init__(
+        self,
+        extents: QgsRectangle,
+        output_path: str = None,
+        output_crs: QgsCoordinateReferenceSystem = None,
+        filename: str = None,  # will also set the layer name in the gpkg
+        use_cache: bool = False,
+        delete_gpkg: bool = True,
+        feedback: QgsFeedback = None,
+    ):
+        """Initialize the OSMDataDownloaderBase class.
+
+        Args:
+            extents: A QgsRectangle object containing the bounding box coordinates.
+            output_path: The output path for the GeoPackage file.
+            output_crs: The coordinate reference system for the output.
+            filename: The filename (also sets the layer name in the gpkg).
+            use_cache: Whether to use cached data if available.
+            delete_gpkg: Whether to delete existing GeoPackage before writing.
+            feedback: QgsFeedback object for progress reporting.
+
+        Raises:
+            ValueError: If extents or output_path is not set.
+        """
+        self.base_url = "https://overpass-api.de/api/interpreter?info=QgisQuickOSMPlugin"
+        self.network_manager = QgsNetworkAccessManager()
+        self.osm_query = None  # The raw Overpass API query
+        self.formatted_query = None  # The Overpass API query with bbox substituted
+        self.output_type = None  # Possible values: 'point', 'line', 'polygon'
+        # These are required
+        self.extents = extents  # The bounding box extents (S, E, N, W)
+        self.output_path = output_path  # The output path for the GeoPackage
+        self.output_crs = output_crs
+
+        self.filename = filename  # will also set the layer name in the gpkg
+        self.use_cache = use_cache
+        self.delete_gpkg = delete_gpkg
+        self.feedback = feedback
+
+        # Use the base name of the output path + .xml to store the overpass response
+        self.output_xml_path = output_path.replace(".gpkg", ".xml")
+
+        if os.path.exists(self.output_xml_path) and not self.use_cache:
+            log_message("OSM xml file exists but use_cache is false: Deleting existing XML file...")
+            os.remove(self.output_xml_path)
+        # if the xml exists but contains the strin 'busy' then delete it and re-query
+        if os.path.exists(self.output_xml_path):
+            # delete the cache if it is not a valid response
+            if not self.check_results():
+                log_message("OSM xml file exists but contains error messages: Deleting existing XML file...")
+                os.remove(self.output_xml_path)
+        if self.extents is None:
+            raise ValueError("Bounding box extents not set.")
+        if self.output_path is None:
+            raise ValueError("Output path not set.")
+
+    def check_results(self) -> bool:
+        """Check if the xml contains busy or error messages.
+
+        Returns:
+            bool: True if the results are valid, False if they contain errors.
+        """
+        # Stream the file in case it is large
+        with open(self.output_xml_path, "r", encoding="utf-8") as xml_file:
+            for line in xml_file:
+                if "busy" in line:
+                    log_message("OSM xml file indicates server busy...")
+                    return False
+                if "error" in line:
+                    log_message("OSM xml file indicates an error...")
+                    return False
+        # delete the existing xml file if it exists
+        os.remove(self.output_xml_path)
+
+        return True  # No issues found
+
+    def set_osm_query(self, query: str) -> None:
+        """Set the Overpass API query.
+
+        Setting the query will also set the formatted query with the bounding box
+        coordinates substituted.
+
+        Args:
+            query: The Overpass API query string. Use string formatting to substitute
+                the bounding box coordinates. e.g. "node["highway"="motorway"]({S},{E},{N},{W});"
+
+        Raises:
+            ValueError: If extents or query is not set.
+        """
+        if self.extents is None:
+            raise ValueError("Bounding box extents not set.")
+        if query is None:
+            raise ValueError("OSM query not provided.")
+        self.osm_query = query
+        self.osm_query = self.osm_query.replace("\n", "%0A")
+        preparer = QueryPreparation(self.osm_query, self.extents)
+        final_query = preparer.prepare_query()
+        self.formatted_query = final_query
+        log_message("OSM Query Set")
+
+    def _set_output_type(self, output_type: str) -> None:
+        """Set the output type for the data.
+
+        Args:
+            output_type: The type of output data ('point', 'line', 'polygon', 'mixed_to_point').
+
+        Raises:
+            ValueError: If output_type is not a valid type.
+        """
+        if output_type not in ["point", "line", "polygon", "mixed_to_point"]:
+            raise ValueError("Invalid output type. Must be 'point', 'line', 'polygon', or 'mixed_to_point'.")
+        self.output_type = output_type
+
+    def submit_query(self) -> None:
+        """Download OSM data using the Overpass API and save it as a shapefile.
+
+        Raises:
+            ValueError: If the query or output path is not set.
+            RuntimeError: If the request fails or if the response is not valid.
+        """
+        if self.use_cache and os.path.exists(self.output_xml_path):
+            log_message(f"Using cached data from {self.output_xml_path}")
+            return
+
+        request = QNetworkRequest()
+        request.setUrl(QUrl(self.base_url))
+
+        if self.formatted_query is None:
+            raise ValueError("OSM query not set. Please set the query before submitting.")
+        if self.output_path is None:
+            raise ValueError("Output path not set. Please set the output path before submitting.")
+
+        # Send the request and connect the finished signal
+        log_message("Sending request to Overpass API...")
+        # delete the existing xml file if it exists
+        if os.path.exists(self.output_xml_path):
+            os.remove(self.output_xml_path)
+
+        with open(self.output_xml_path, "wb") as output_file:
+            response = self.network_manager.blockingPost(request, QByteArray(f"data={self.formatted_query}".encode()))
+            output_file.write(response.content().data())
+        log_message("Request sent. Response received...")
+
+        # Check HTTP status code
+        status_code = response.attribute(QNetworkRequest.HttpStatusCodeAttribute)
+        log_message(f"HTTP Status Code: {status_code}")
+        if status_code is None:
+            # Get more detailed error information
+            error_code = response.error()
+            error_string = response.errorString()
+            log_message(f"Network error code: {error_code}, message: {error_string}", level=Qgis.Critical)
+            raise RuntimeError(
+                f"Network error: {error_string}. " "Please check your internet connection and try again."
+            )
+
+        if status_code == 404:
+            raise RuntimeError(f"Error 404: Endpoint {self.base_url} not found.")
+        elif status_code == 401:
+            raise ValueError("Invalid API token. Please check your credentials.")
+        elif status_code == 429:
+            raise RuntimeError("API quota exceeded. Please try again later.")
+        elif status_code >= 400:
+            # Generic error handling for other client/server errors
+            raise RuntimeError(f"HTTP Error {status_code}: {response.content()}")
+
+        if status_code == 200:
+            return
+        else:
+            raise RuntimeError(f"Request failed with error: {response.errorMessage()}")
+
+    def process_response(self) -> bool:
+        """Process the downloaded OSM data and save it as a GeoPackage.
+
+        This method will call the appropriate processing method based on the output type.
+
+        Raises:
+            ValueError: If output_type is invalid.
+            Exception: If processing fails.
+        """
+        if self.output_type == "point":
+            log_message("Processing point data...")
+            try:
+                self.process_point_response()
+            except Exception as e:
+                log_message(f"Error processing point data: {e}")
+                raise e
+
+        elif self.output_type == "line":
+            log_message("Processing line data...")
+            self.process_line_response()
+        elif self.output_type == "polygon":
+            log_message("Processing polygon data...")
+            self.process_polygon_response()
+        elif self.output_type == "mixed_to_point":
+            log_message("Processing mixed data (points + polygons converted to centroids)...")
+            try:
+                self.process_mixed_to_point_response()
+            except Exception as e:
+                log_message(f"Error processing mixed data: {e}")
+                raise e
+        else:
+            raise ValueError("Invalid output type. Must be 'point', 'line', 'polygon', or 'mixed_to_point'.")
+
+    def process_line_response(self) -> None:
+        """
+        Process the streamed OSM XML response and efficiently save the 'lines' layer into a GeoPackage.
+
+        This method uses OGR's built-in CopyLayer functionality for optimal performance, similar to ogr2ogr.
+        If self.output_crs is provided, the data will be reprojected from EPSG:4326 to the specified CRS.
+        It provides indeterminate progress feedback since exact feature count is unavailable.
+
+        If the GeoPackage already exists:
+        - When 'delete_gpkg' is True, the whole GeoPackage file is removed and recreated.
+        - When 'delete_gpkg' is False, only the target layer ('OSM_Line_Data') is removed if it exists,
+        and then recreated without deleting the entire GeoPackage.
+
+        Raises:
+            RuntimeError: If the input XML cannot be read or if the output GeoPackage layer cannot be created.
+        """
+        total_start = time.perf_counter()
+
+        self.feedback.setProgress(20)
+
+        # Open input OSM XML data source
+        osm_driver = ogr.GetDriverByName("OSM")
+        osm_data_source = osm_driver.Open(self.output_xml_path, 0)
+        if osm_data_source is None:
+            raise RuntimeError(f"Failed to open OSM XML file: {self.output_xml_path}")
+
+        lines_layer = osm_data_source.GetLayerByName("lines")
+        if lines_layer is None:
+            raise RuntimeError("No 'lines' layer found in the OSM XML file.")
+
+        gpkg_driver = ogr.GetDriverByName("GPKG")
+        working_layer = self.filename + "_4326"
+        if os.path.exists(self.output_path):
+            if self.delete_gpkg:
+                gpkg_driver.DeleteDataSource(self.output_path)
+                output_data_source = gpkg_driver.CreateDataSource(self.output_path)
+            else:
+                output_data_source = gpkg_driver.Open(self.output_path, update=1)
+                # Remove existing layer if present
+                existing_layer = output_data_source.GetLayerByName(self.filename)
+                if existing_layer:
+                    output_data_source.DeleteLayer(self.filename)
+                existing_layer = output_data_source.GetLayerByName(working_layer)
+                if existing_layer:
+                    output_data_source.DeleteLayer(working_layer)
+        else:
+            output_data_source = gpkg_driver.CreateDataSource(self.output_path)
+
+        if output_data_source is None:
+            raise RuntimeError(f"Failed to create or open GeoPackage: {self.output_path}")
+
+        self.feedback.setProgress(40)
+
+        # Perform layer copy with reprojection if specified
+        output_layer = output_data_source.CopyLayer(lines_layer, working_layer)
+        if output_layer is None:
+            raise RuntimeError("Failed to copy lines layer to GeoPackage.")
+
+        self.feedback.setProgress(60)
+
+        # Cleanup data sources
+        osm_data_source = None
+        output_data_source = None
+
+        # Now use QGIS processing to reproject the layer from 4326 to the project crs
+        # I tried to do this in one operation passing options for crs to CopyLayer
+        # but it seems it is not supported / working
+        log_message(f"Using CRS: {self.output_crs.authid()} for OSM download")
+        # source_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+        # transform_context = QgsProject.instance().transformContext()
+
+        # transform = QgsCoordinateTransform(
+        #    source_crs, self.output_crs, transform_context
+        # )
+        # pipeline = transform.coordinateOperation().projString()
+
+        result = processing.run(
+            "native:reprojectlayer",
+            {
+                "INPUT": f"{self.output_path}|layername={self.filename}_4326",
+                "TARGET_CRS": self.output_crs,
+                "CONVERT_CURVED_GEOMETRIES": False,
+                "OUTPUT": f"ogr:dbname='{self.output_path}' table=\"{self.filename}\" (geom)",  # noqa E231
+            },
+        )
+
+        if not (result and "OUTPUT" in result):
+            raise RuntimeError(f"Failed to reproject OSM data to {self.output_crs.authid()}")
+
+        self.feedback.setProgress(100)
+
+        total_end = time.perf_counter()
+        log_message(f"GeoPackage written to: {self.output_path} table: {self.filename}")  # noqa E231
+        log_message(f"Total processing time: {total_end - total_start:.2f}s")  # noqa E231
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(self.output_crs)
+
+    def process_point_response(self) -> None:
+        """Process the OSM response and save it as a GeoPackage."""
+        # Read from XML file (consistent with process_line_response)
+        with open(self.output_xml_path, "r", encoding="utf-8") as f:
+            response_data = f.read()
+        root = ET.fromstring(response_data)  # nosec B314
+        layer = QgsVectorLayer("Point?crs=EPSG:4326", "OSM Point Data", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes([QgsField("id", QVariant.String)])
+        layer.updateFields()
+        features_added = 0
+        log_message("Finding and processing all nodes...")
+
+        for node in root.findall(".//node"):
+            node_id = node.get("id")
+            lat = float(node.get("lat"))
+            lon = float(node.get("lon"))
+            feature = QgsFeature()
+            feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(lon, lat)))
+            feature.setAttributes([node_id])
+            provider.addFeature(feature)
+            features_added += 1
+            if features_added % 1000 == 0:
+                log_message(f"Added {features_added} features to the layer...")
+        QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
+        log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
+
+    def process_polygon_response(self) -> None:
+        """Process OSM XML response and extract polygon features to GeoPackage.
+
+        This method reads the cached OSM XML file, extracts polygon (way) features,
+        and writes them to a GeoPackage file.
+
+        Raises:
+            FileNotFoundError: If the XML file does not exist.
+            Exception: If XML parsing or GeoPackage writing fails.
+        """
+        # Read the cached OSM XML response
+        with open(self.output_xml_path, "r", encoding="utf-8") as f:
+            response_data = f.read()
+        root = ET.fromstring(response_data)  # nosec B314
+
+        # Build node index: maps OSM node IDs to (lon, lat) coordinates
+        # This one-time indexing prevents repeated XML tree searches
+        log_message("Building node index for fast lookup...")
+        node_index = {}
+        for node in root.findall(".//node"):
+            node_id = node.get("id")
+            lat = float(node.get("lat"))
+            lon = float(node.get("lon"))
+            node_index[node_id] = (lon, lat)
+        log_message(f"Indexed {len(node_index)} nodes")
+
+        # Create output layer
+        layer = QgsVectorLayer("Polygon?crs=EPSG:4326", "OSM Polygon Data", "memory")
+        provider = layer.dataProvider()
+        provider.addAttributes([QgsField("id", QVariant.String)])
+        layer.updateFields()
+        features_added = 0
+        log_message("Processing polygon features...")
+
+        # Extract polygon features from OSM ways
+        for way in root.findall(".//way"):
+            way_id = way.get("id")
+            coords = []
+
+            # Resolve node references to coordinates using the pre-built index
+            for nd in way.findall("nd"):
+                ref = nd.get("ref")
+                if ref in node_index:
+                    lon, lat = node_index[ref]
+                    coords.append(QgsPointXY(lon, lat))
+
+            # Only add closed polygons (first and last coordinates must match)
+            if coords and coords[0] == coords[-1]:
+                feature = QgsFeature()
+                feature.setGeometry(QgsGeometry.fromPolygonXY([coords]))
+                feature.setAttributes([way_id])
+                provider.addFeature(feature)
+                features_added += 1
+                if features_added % 1000 == 0:
+                    log_message(f"Added {features_added} features to the layer...")
+
+        # Write output to GeoPackage
+        QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
+        log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
+
+    def process_mixed_to_point_response(self) -> None:
+        """Process OSM response containing mixed geometries (points and polygons).
+
+        This method extracts both point features (OSM nodes with tags) and polygon
+        features (OSM ways), converts polygons to their centroids, and merges
+        everything into a unified point layer.
+
+        Raises:
+            FileNotFoundError: If the XML file does not exist.
+            Exception: If XML parsing or GeoPackage writing fails.
+        """
+        log_message("Processing mixed geometry types (points + polygon centroids)...")
+
+        # Read the cached OSM XML response
+        with open(self.output_xml_path, "r", encoding="utf-8") as f:
+            response_data = f.read()
+        root = ET.fromstring(response_data)  # nosec B314
+
+        # Build node index: maps OSM node IDs to (lon, lat) coordinates
+        # This one-time indexing prevents O(n²) performance from repeated XML tree searches
+        log_message("Building node index for fast lookup...")
+        node_index = {}
+        for node in root.findall(".//node"):
+            node_id = node.get("id")
+            lat = float(node.get("lat"))
+            lon = float(node.get("lon"))
+            node_index[node_id] = (lon, lat)
+        log_message(f"Indexed {len(node_index)} nodes")
+
+        # Create output layer with point geometry
+        layer = QgsVectorLayer("Point?crs=EPSG:4326", "OSM Mixed Data", "memory")
+        provider = layer.dataProvider()
+
+        # Define attribute schema
+        provider.addAttributes([QgsField("osm_id", QVariant.String), QgsField("geom_type", QVariant.String)])
+        layer.updateFields()
+
+        features_added = 0
+
+        # Extract tagged point features from OSM nodes
+        # Note: Only nodes with tags are included; untagged nodes are just polygon vertices
+        log_message("Extracting tagged point features from OSM nodes...")
+        for node in root.findall(".//node"):
+            if not node.findall("tag"):
+                continue  # Skip untagged nodes (they're only polygon vertices)
+
+            node_id = node.get("id")
+            lon, lat = node_index[node_id]
+
+            feature = QgsFeature()
+            feature.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(lon, lat)))
+            feature.setAttributes([node_id, "point"])
+            provider.addFeature(feature)
+            features_added += 1
+
+            if features_added % 1000 == 0:
+                log_message(f"Added {features_added} point features...")
+
+        points_count = features_added
+        log_message(f"Extracted {points_count} point features from OSM nodes")
+
+        # Extract polygon features and convert to centroids
+        log_message("Extracting polygon features and converting to centroids...")
+        polygon_count = 0
+
+        for way in root.findall(".//way"):
+            way_id = way.get("id")
+            coords = []
+
+            # Resolve node references to coordinates using the pre-built index
+            for nd in way.findall("nd"):
+                ref = nd.get("ref")
+                if ref in node_index:
+                    lon, lat = node_index[ref]
+                    coords.append(QgsPointXY(lon, lat))
+
+            # Process only closed polygons (minimum 3 vertices + closed ring)
+            if coords and len(coords) >= 3 and coords[0] == coords[-1]:
+                polygon_geom = QgsGeometry.fromPolygonXY([coords])
+
+                # Calculate centroid for valid polygons
+                if polygon_geom.isGeosValid():
+                    centroid = polygon_geom.centroid()
+
+                    feature = QgsFeature()
+                    feature.setGeometry(centroid)
+                    feature.setAttributes([way_id, "polygon_centroid"])
+                    provider.addFeature(feature)
+                    features_added += 1
+                    polygon_count += 1
+
+                    if polygon_count % 1000 == 0:
+                        log_message(f"Converted {polygon_count} polygons to centroids...")
+
+        log_message(f"Converted {polygon_count} polygon features to centroids")
+        log_message(f"Total features: {features_added} ({points_count} points + {polygon_count} polygon centroids)")
+
+        # Write output to GeoPackage
+        QgsVectorFileWriter.writeAsVectorFormat(layer, self.output_path, "UTF-8", layer.crs(), "GPKG")
+        log_message(f"GeoPackage written to: {self.output_path}")
+
+        # Clip the downloaded data to the study area polygon (removes bbox overhang)
+        self._clip_to_study_area(QgsCoordinateReferenceSystem("EPSG:4326"))
+
+    def _clip_to_study_area(self, data_crs: QgsCoordinateReferenceSystem) -> None:
+        """Clip the downloaded OSM data to the study area polygon, removing bbox overhang.
+
+        Skipped with a warning if study_area.gpkg is missing or invalid.
+
+        Args:
+            data_crs: CRS of the OSM layer at self.output_path. Lines use
+                self.output_crs; all other types use EPSG:4326.
+        """
+        # Derive the study_area.gpkg path: output is always
+        # <working_dir>/study_area/<filename>.gpkg so study_area_dir is the parent.
+        study_area_dir = os.path.dirname(self.output_path)
+        study_area_gpkg = os.path.join(study_area_dir, "study_area.gpkg")
+
+        if not os.path.exists(study_area_gpkg):
+            log_message(
+                f"study_area.gpkg not found at {study_area_gpkg} — skipping AOI clip.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Load study_area_polygons (stored in the project CRS)
+        study_area_layer = QgsVectorLayer(
+            f"{study_area_gpkg}|layername=study_area_polygons",
+            "study_area_polygons",
+            "ogr",
+        )
+        if not study_area_layer.isValid() or study_area_layer.featureCount() == 0:
+            log_message(
+                "study_area_polygons layer is invalid or empty — skipping AOI clip.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Dissolve all study area polygons into one combined geometry
+        combined_geom = QgsGeometry()
+        for feat in study_area_layer.getFeatures():
+            geom = feat.geometry()
+            if combined_geom.isEmpty():
+                combined_geom = QgsGeometry(geom)
+            else:
+                combined_geom = combined_geom.combine(geom)
+
+        if combined_geom.isEmpty() or not combined_geom.isGeosValid():
+            combined_geom = combined_geom.makeValid()
+            if not combined_geom.isGeosValid():
+                log_message(
+                    "Combined study area geometry is invalid — skipping AOI clip.",
+                    level=Qgis.Warning,
+                )
+                return
+
+        # Reproject the study area geometry to the CRS of the OSM data if they differ
+        source_crs = study_area_layer.crs()
+        if source_crs != data_crs:
+            transform = QgsCoordinateTransform(source_crs, data_crs, QgsProject.instance())
+            combined_geom.transform(transform)
+
+        # Build a temporary in-memory overlay layer for native:clip
+        geom_type = "MultiPolygon" if combined_geom.isMultipart() else "Polygon"
+        overlay_layer = QgsVectorLayer(f"{geom_type}?crs={data_crs.authid()}", "aoi_clip_mask", "memory")
+        overlay_provider = overlay_layer.dataProvider()
+        aoi_feature = QgsFeature()
+        aoi_feature.setGeometry(combined_geom)
+        overlay_provider.addFeatures([aoi_feature])
+        overlay_layer.updateExtents()
+
+        # Load the OSM layer that was just written
+        osm_layer = QgsVectorLayer(
+            f"{self.output_path}|layername={self.filename}",
+            self.filename,
+            "ogr",
+        )
+        if not osm_layer.isValid():
+            log_message(
+                f"Could not load {self.filename} from {self.output_path} for AOI clip — skipping.",
+                level=Qgis.Warning,
+            )
+            return
+
+        # Run the clip into a temporary path, then replace the original
+        tmp_path = self.output_path.replace(".gpkg", "_clipped_tmp.gpkg")
+        try:
+            result = processing.run(
+                "native:clip",
+                {
+                    "INPUT": osm_layer,
+                    "OVERLAY": overlay_layer,
+                    "OUTPUT": f"ogr:dbname='{tmp_path}' table=\"{self.filename}\" (geom)",
+                },
+            )
+            if not (result and "OUTPUT" in result):
+                log_message("native:clip returned no output — skipping AOI clip.", level=Qgis.Warning)
+                return
+
+            # Replace the original gpkg with the clipped version
+            if os.path.exists(tmp_path):
+                if os.path.exists(self.output_path):
+                    os.remove(self.output_path)
+                os.rename(tmp_path, self.output_path)
+                log_message(f"OSM data clipped to study area polygon and saved to {self.output_path}")
+            else:
+                log_message("Clipped output file not created — skipping replacement.", level=Qgis.Warning)
+
+        except Exception as e:
+            log_message(f"AOI clip failed ({e}) — keeping unclipped data.", level=Qgis.Warning)
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except Exception:
+                    pass

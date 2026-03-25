@@ -16,7 +16,7 @@ import unittest
 
 from qgis.core import QgsFeedback, QgsRectangle
 
-from geest.core.algorithms.ghsl_downloader import GHSLDownloader
+from geoe3.core.algorithms.ghsl_downloader import GHSLDownloader
 
 
 class TestGHSLDownloader(unittest.TestCase):

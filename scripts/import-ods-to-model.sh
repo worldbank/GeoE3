@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Importing geest/resources/geest.ods to geest/resources/model.json"
+echo "Importing geoe3/resources/geoe3.ods to geoe3/resources/model.json"
 
-geest/core/generate_model.py
+geoe3/core/generate_model.py
