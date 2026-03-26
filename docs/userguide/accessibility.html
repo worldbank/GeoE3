@@ -453,12 +453,12 @@ document.write(`
   <section id="accessibility">
 <h1>Accessibility<a class="headerlink" href="#accessibility" title="Permalink to this heading">#</a></h1>
 <p align="justify">
-The Accessibility Dimension evaluates women’s daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where women live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
+The Accessibility Dimension evaluates people's daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where people live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
 </p>
 <section id="general-overview">
 <h2>General Overview<a class="headerlink" href="#general-overview" title="Permalink to this heading">#</a></h2>
 <hr class="docutils" />
-<p>This tool evaluates how easily women can access essential services and amenities, considering their caregiving roles and daily travel needs. It uses geospatial area analysis with OpenStreetMap (OSM) data to measure accessibility for several factors, including:</p>
+<p>This tool evaluates how easily people can access essential services and amenities, considering their potential caregiving roles and daily travel needs. It uses geospatial area analysis with OpenStreetMap (OSM) data to measure accessibility for several factors, including:</p>
 <ul class="simple">
 <li><p><strong>Women’s Travel Patterns:</strong> Access to everyday services like pharmacies, markets, supermarkets, childcare centers, schools and parks.</p></li>
 <li><p><strong>Access to Public Transport:</strong> Proximity to bus stops, train stations and other transport facilities.</p></li>
@@ -472,7 +472,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <hr class="docutils" />
 <p>💡 <strong>Tip</strong>: If evidence from the local context suggests alternative thresholds and increments are more appropriate, the user can alter these increments. If the selected travel mode is driving, the equivalent measurement increments should be in minutes and informed by the local context (for example, if evidence suggests the maximum time that women spend driving is 30 minutes, the increments could be 6, 12, 18, 24, 30).</p>
 <hr class="docutils" />
-<p><strong>Output</strong>: The process generates zones around these amenities, showing how far women can travel on foot or by car within increasing distances or times. Each zone is assigned a score from 5 (high accessibility) to 0 (no accessibility), reflecting decreasing accessibility as distance or travel time increases.</p>
+<p><strong>Output</strong>: The process generates zones around these amenities, showing how far people can travel on foot or by car within increasing distances or times. Each zone is assigned a score from 5 (high accessibility) to 0 (no accessibility), reflecting decreasing accessibility as distance or travel time increases.</p>
 </section>
 <section id="input-accessibility-factors">
 <h2>Input Accessibility factors<a class="headerlink" href="#input-accessibility-factors" title="Permalink to this heading">#</a></h2>
@@ -485,7 +485,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <blockquote>
 <div><ul class="simple">
 <li><p>🖱️🖱️ <strong>Double-click</strong> on the <strong>Women’s Travel Patterns section</strong> to open the pop-up.</p></li>
-<li><p>📝 In the <em>Input</em> field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>point features</strong>) corresponding to the indicators by clicking the three-dot button.</p></li>
+<li><p>📝 In the <em>Input</em> field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>point features</strong>) corresponding to the indicators by clicking the three-dot button. You can also use the <strong>Download from OSM</strong> function to extract the latest data from OpenStreetMap.</p></li>
 <li><p>🔧 <strong>Travel mode (optional)</strong>: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.</p></li>
 <li><p>⚖️ <strong>Assign Weights</strong>: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.</p></li>
 <li><p>🚫 <strong>Exclude Unused Factors (optional)</strong>: If a specific factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</p></li>
@@ -577,7 +577,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <section id="access-to-public-transport">
 <h3>Access to Public Transport<a class="headerlink" href="#access-to-public-transport" title="Permalink to this heading">#</a></h3>
 <p align="justify">
-<strong>Access to Public Transport</strong> focuses on the availability and proximity of public transportation stops, which is crucial for women, especially those who rely on buses, trains, or trams to access jobs, education, and essential services.
+<strong>Access to Public Transport</strong> focuses on the availability and proximity of public transportation stops, which is crucial for people that rely on buses, trains, or trams to access jobs, education, and essential services.
 </p>
 <p><strong>Locate Access to Public Transport Section</strong></p>
 <blockquote>
@@ -665,7 +665,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <section id="access-to-health-facilities">
 <h3>Access to Health Facilities<a class="headerlink" href="#access-to-health-facilities" title="Permalink to this heading">#</a></h3>
 <p align="justify">
-<strong>Access to Health Facilities</strong> evaluates how easily women can reach healthcare services in terms of distance, impacting their well-being and ability to participate in the workforce.
+<strong>Access to Health Facilities</strong> evaluates how easily people can reach healthcare services in terms of distance, impacting their well-being and ability to participate in the workforce.
 </p>
 <p><strong>Locate Access to Health Facilities Section</strong></p>
 <blockquote>
@@ -745,7 +745,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <section id="access-to-education-and-training-facilities">
 <h3>Access to Education and Training Facilities<a class="headerlink" href="#access-to-education-and-training-facilities" title="Permalink to this heading">#</a></h3>
 <p align="justify">
-<strong>Access to Education and Training Facilities</strong> assesses the proximity to higher education institutions and training centers, influencing women’s ability to gain necessary qualifications.
+<strong>Access to Education and Training Facilities</strong> assesses the proximity to higher education institutions and training centers, influencing people’s ability to gain necessary qualifications.
 </p>
 <p><strong>Locate Access to Education and Training Facilities Section</strong></p>
 <blockquote>
@@ -825,7 +825,7 @@ The Accessibility Dimension evaluates women’s daily mobility by examining thei
 <section id="access-to-financial-facilities">
 <h3>Access to Financial Facilities<a class="headerlink" href="#access-to-financial-facilities" title="Permalink to this heading">#</a></h3>
 <p align="justify">
-<strong>Access to Financial Facilities</strong> focuses on the proximity of banks and financial institutions, which is essential for women’s economic empowerment and ability to access credit.
+<strong>Access to Financial Facilities</strong> focuses on the proximity of banks and financial institutions, which is essential for people’s economic empowerment and ability to access credit.
 </p>
 <p><strong>Locate Access to Financial Facilities Section</strong></p>
 <blockquote>
