@@ -479,7 +479,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20weights.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/ACC_2.0.jpg"
     alt="Accessibility Weights"
     style="width:75%;"
     title="Click to enlarge"
