@@ -46,7 +46,7 @@ This tool evaluates how easily people can access essential services and amenitie
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20input.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/WTP_2.0.jpg"
     alt="WTP input"
     style="width:75%;"
     title="Click to enlarge"
@@ -147,7 +147,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/APT.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/PT_2.0.jpg"
     alt="APT input"
     style="width:75%;"
     title="Click to enlarge"
@@ -240,7 +240,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AHF.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/HF_2.0.jpg"
     alt="AHF input"
     style="width:75%;"
     title="Click to enlarge"
@@ -322,7 +322,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AET.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/EF_2.0.jpg"
     alt="AET input"
     style="width:75%;"
     title="Click to enlarge"
@@ -404,7 +404,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AFF.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FF_2.0.jpg"
     alt="AFF input"
     style="width:75%;"
     title="Click to enlarge"
