@@ -14,6 +14,7 @@ from qgis.core import (
     QgsMapLayerProxyModel,
     QgsProject,
     QgsVectorLayer,
+    QgsWkbTypes,
 )
 from qgis.PyQt.QtCore import QSettings, Qt, pyqtSignal, pyqtSlot
 from qgis.PyQt.QtGui import QFont, QPixmap
@@ -380,6 +381,18 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
 
         if not layer.isValid():
             QMessageBox.critical(self, "Error", "Could not load the road network layer.")
+            return
+
+        # Check geometry type - only accept lines (using wkbType for compatibility)
+        if QgsWkbTypes.geometryType(layer.wkbType()) != QgsWkbTypes.GeometryType.LineGeometry:
+            geometry_name = QgsWkbTypes.displayString(layer.wkbType())
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Road network layer must be a line (polyline) layer.\n"
+                f"Selected file contains: {geometry_name} geometry.\n"
+                "Please select a line/polyline layer.",
+            )
             return
 
         # Check if reprojection is needed
