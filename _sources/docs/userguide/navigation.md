@@ -1,6 +1,6 @@
 ## Navigation
 
-The GEEST plugin interface is intuitive and easy to navigate. In this section, the streamlined workflow ensures an efficient transition from setup to core spatial analysis. For detailed instructions on each step, refer to the sections below.
+The GEOE3 plugin interface is intuitive and easy to navigate. In this section, the streamlined workflow ensures an efficient transition from setup to core spatial analysis. For detailed instructions on each step, refer to the sections below.
 
 ### Accessing the Plugin
 
@@ -8,14 +8,14 @@ The GEEST plugin interface is intuitive and easy to navigate. In this section, t
 After installing the plugin, its interface should automatically appear:
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_1st.png"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_1st.png"
     alt="Plugin Interface"
     style="width:45%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
 </p>
 
-> 1. **Locate the Toolbar Icon**  <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Tool%20icon.jpg" alt="Toolbar Icon" style="width:5%;" title="Click to enlarge" onclick="window.open(this.src, '_blank')">
+> 1. **Locate the Toolbar Icon**  <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Tool%20icon.jpg" alt="Toolbar Icon" style="width:5%;" title="Click to enlarge" onclick="window.open(this.src, '_blank')">
 > Find the plugin’s icon in the QGIS toolbar.
 >
 > 2. **Open the Plugin**
@@ -28,31 +28,31 @@ Once the plugin window is open, press the right arrow buttons highlighted in red
 
 <p align="center">
   <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_2nd.png"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_2nd.png"
     alt="First Page Next"
     style="width:45%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
   <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_3rd.png"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_3rd.png"
     alt="Second Page Next"
     style="width:45%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
 </p>
 
-- **Welcome to GEEST Page**: This is the introductory page of the plugin, providing an overview of its purpose and functionality. It serves as the starting point to familiarize users with the plugin's capabilities and its relevance to geospatial analysis.
+- **Welcome to GEOE3 Page**: This is the introductory page of the plugin, providing an overview of its purpose and functionality. It serves as the starting point to familiarize users with the plugin's capabilities and its relevance to geospatial analysis.
 
 - **About Page**: This page offers detailed information about the plugin, including its contributors, development background, and licensing. It highlights the open-source nature of the tool and acknowledges the organizations or individuals involved in its creation.
 
-#### GEEST Project Selection
+#### GEOE3 Project Selection
 
 In this step, you need to select a project folder to begin your work. The plugin provides you with two options:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_set.png"
-    alt="Geest Project"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_set.png"
+    alt="GeoE3 Project"
     style="width:55%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -63,20 +63,20 @@ Option 1: **Open an Existing Project**:
 
 <p align="center">
  <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/GEEST%20project%20open.jpg"
-    alt="Open Geest Project"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/GEOE3%20project%20open.jpg"
+    alt="Open GeoE3 Project"
     style="width:55%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
 </p>
 
 Option 2: **Create a New Project**:
-   Choose this option to start a new project. The plugin will guide you through creating a new folder that will store the GEEST project files and working analysis results for spatial processing.
+   Choose this option to start a new project. The plugin will guide you through creating a new folder that will store the GEOE3 project files and working analysis results for spatial processing.
 
 <p align="center">
  <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_create1.png"
-    alt="New Geest Project"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_create1.png"
+    alt="New GeoE3 Project"
     style="width:75%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -118,8 +118,8 @@ How to Create a New Folder
 
 <p align="center">
  <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_road.png"
-    alt="New Geest Project"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_road.png"
+    alt="New GeoE3 Project"
     style="width:45%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -145,15 +145,15 @@ How to Create a New Folder
 ### Pre-Processing
 
 ---
-Once you have completed all required inputs on the **GEEST Project Creation** screen, follow these steps to proceed:
+Once you have completed all required inputs on the **GEOE3 Project Creation** screen, follow these steps to proceed:
 
 ---
 
 #### 1. Verify the Project Folder Path
 >
-> - Ensure that the **folder path** displayed at the bottom of the interface is correct. This path indicates where the GEEST plugin will store analysis outputs and working files.
+> - Ensure that the **folder path** displayed at the bottom of the interface is correct. This path indicates where the GEOE3 plugin will store analysis outputs and working files.
 > - **Example Path**:
-> `C:/Work/GEEST/Analysis/Country/01152025`
+> `C:/Work/GEOE3/Analysis/Country/01152025`
 
 ---
 Important Notes:
@@ -169,8 +169,8 @@ Important Notes:
 > - Clicking this button confirms all selected settings and initiates the first step of the processing workflow — splitting the study area into grids. After the area is successfully split into grids, the interface transitions to the **Processing Data Interface**, where you can initiate the main analysis.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/GEEST%20project%20final.jpg"
-    alt="Geest Project final"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/GEOE3%20project%20final.jpg"
+    alt="GeoE3 Project final"
     style="width:55%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -179,8 +179,8 @@ Important Notes:
 > - Now the process of splitting the area into grids has started, and a progress bar is displayed in the interface. Once completed, a report titled **Study Area Report** will open automatically. This report, along with all grid-splitting outputs, is saved in the project directory under the `/study_area` folder. This report summarizes the processing time and provides an explanation of each generated output, including: study area bounding boxes, polygons, grid cells and processing chunks.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/navigation_report.png"
-    alt="Geest Project final"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/navigation_report.png"
+    alt="GeoE3 Project final"
     style="width:55%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -205,8 +205,8 @@ Once this pre-processing step is completed, you will seamlessly transition to th
 3. Results will be saved in the selected project folder for further use.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/GEEST%20data%20processing%20UI.jpg"
-    alt="Geest data processing"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/GEOE3%20data%20processing%20UI.jpg"
+    alt="GeoE3 data processing"
     style="width:65%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -220,8 +220,8 @@ This marks the completion of the project setup and transition to the core analys
 The data processing interface serves as the central hub for managing, configuring, and processing inputs across multiple dimensions and factors within the project. This interface is designed to streamline workflows and provide users with a clear overview of the processing status. Below is a guide to understanding the key components of this interface:
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Nav_understand.jpg"
-    alt="Geest data processing"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Nav_understand.jpg"
+    alt="GeoE3 data processing"
     style="width:65%;"
     title="Click to enlarge"
     onclick="window.open(this.src, '_blank')">
@@ -289,4 +289,4 @@ The data processing interface serves as the central hub for managing, configurin
 | 🖥️ **Monitor Progress**    | Use status widgets to track progress and troubleshoot errors promptly.                   |
 | 📖 **Use Help Resources**   | Refer to the Help section or GitHub documentation for additional support.                |
 
-By keeping these considerations in mind, you can ensure a smooth and efficient workflow while minimizing errors and maximizing the utility of the GEEST plugin.
+By keeping these considerations in mind, you can ensure a smooth and efficient workflow while minimizing errors and maximizing the utility of the GEOE3 plugin.

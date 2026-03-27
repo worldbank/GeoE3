@@ -1,7 +1,7 @@
 ## Insights
 
 <p align="justify">
-The final aggregation of all three dimensions is carried out by applying weights to each dimension, ensuring a balanced and comprehensive representation. This tab provides users with deeper insights by identifying regions where conditions are optimal—or at least favorable—for women to access job opportunities in a specific sector. The outputs from this tab assign a combined classification score to the input raster, aggregate results at desired adminstrative level and extract aggregated polygons or administrative units intersecting these regions. Additionally, GEEST highlights key infrastructure investments that could boost women's participation in the workforce. Population data can also be incorporated into the analysis to provide more nuanced insights that account for both population levels and enablement. This process integrates proximity data, classification scores, population data and weighted dimensions to support informed decision-making.
+The final aggregation of all three dimensions is carried out by applying weights to each dimension, ensuring a balanced and comprehensive representation. This tab provides users with deeper insights by identifying regions where conditions are optimal—or at least favorable—for women to access job opportunities in a specific sector. The outputs from this tab assign a combined classification score to the input raster, aggregate results at desired adminstrative level and extract aggregated polygons or administrative units intersecting these regions. Additionally, GEOE3 highlights key infrastructure investments that could boost women's participation in the workforce. Population data can also be incorporated into the analysis to provide more nuanced insights that account for both population levels and enablement. This process integrates proximity data, classification scores, population data and weighted dimensions to support informed decision-making.
 </p>
 
 ### Computing the Women’s Enablement Environments Indicator (WEE)
@@ -17,7 +17,7 @@ Before accessing the full insights tab, it is necessary to aggregate all the fac
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WEE_score.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WEE_score.jpg"
     alt="WEE Weights"
     style="width:75%;"
     title="Click to enlarge"
@@ -31,7 +31,7 @@ After configuring the dimensions and adjusting their weights to achieve balance,
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Wee_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Wee_run.jpg"
     alt="Wee Run"
     style="width:75%;"
     title="Click to enlarge"
@@ -75,7 +75,7 @@ This step enables targeted analysis based on job locations, identifying areas wh
 > - 📊 **What can be done**: Explore how WEE scores relate to existing or planned job opportunities. Identify areas with high WEE potential that align with job locations. Can restrict the analysis to areas of specific interest, such as around job sites, within administrative boundaries, or in high-density regions.
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WEE_insights.jpg"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WEE_insights.jpg"
     alt="WEE insights"
     style="width:65%;"
     title="Click to enlarge"
@@ -89,7 +89,7 @@ After configuring the optional features you can initiate the process workflow:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Wee_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Wee_run.jpg"
     alt="Wee Run"
     style="width:75%;"
     title="Click to enlarge"
@@ -111,7 +111,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 **🖥️ Key attributes of WEE Score tab**
 
 <p align="center">
- <img src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WEE_features.jpg"
+ <img src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WEE_features.jpg"
     alt="WEE Score features"
     style="width:65%;"
     title="Click to enlarge"

@@ -1,7 +1,7 @@
 ## Accessibility
 
 <p align="justify">
-The Accessibility Dimension evaluates people's daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where people live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
+The Accessibility Dimension evaluates people's daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where people live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEOE3/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
 </p>
 
 ### General Overview
@@ -112,7 +112,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WTP%20run.jpg"
     alt="WTP run"
     style="width:75%;"
     title="Click to enlarge"
@@ -123,7 +123,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20success.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WTP%20success.jpg"
     alt="WTP success"
     style="width:75%;"
     title="Click to enlarge"
@@ -212,7 +212,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/APT%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/APT%20run.jpg"
     alt="APT run"
     style="width:75%;"
     title="Click to enlarge"
@@ -240,7 +240,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/HF_2.0.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/HF_2.0.jpg"
     alt="AHF input"
     style="width:75%;"
     title="Click to enlarge"
@@ -322,7 +322,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/EF_2.0.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/EF_2.0.jpg"
     alt="AET input"
     style="width:75%;"
     title="Click to enlarge"
@@ -404,7 +404,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FF_2.0.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FF_2.0.jpg"
     alt="AFF input"
     style="width:75%;"
     title="Click to enlarge"
@@ -496,7 +496,7 @@ After configuring the factors and adjusting their weights to achieve balance, yo
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20run.jpg"
     alt="Accessibility Run"
     style="width:75%;"
     title="Click to enlarge"
@@ -526,7 +526,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20add.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20add.jpg"
     alt="Accessibility Add to map"
     style="width:75%;"
     title="Click to enlarge"
@@ -541,7 +541,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20rerun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20rerun.jpg"
     alt="Accessibility Clear and rerun"
     style="width:75%;"
     title="Click to enlarge"

@@ -1,6 +1,6 @@
 # Data Collection
 
-This page provides guidance on finding and collecting relevant data for the GEEST tool, using Saint Lucia as an example. The data sources, layers, indicators and the table structure shown here can serve as references when gathering data for other countries.
+This page provides guidance on finding and collecting relevant data for the GEOE3 tool, using Saint Lucia as an example. The data sources, layers, indicators and the table structure shown here can serve as references when gathering data for other countries.
 
 ## Data Sources for Saint Lucia
 
@@ -285,7 +285,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WBL.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WBL.jpg"
     alt="WBL"
     style="width:45%;"
     title="Click to enlarge"
@@ -299,7 +299,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WBL_data.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WBL_data.jpg"
     alt="WBL"
     style="width:45%;"
     title="Click to enlarge"
@@ -315,7 +315,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Humdata_search.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Humdata_search.jpg"
     alt="Humdata"
     style="width:45%;"
     title="Click to enlarge"
@@ -326,7 +326,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Humdata_download.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Humdata_download.jpg"
     alt="Humdata download"
     style="width:45%;"
     title="Click to enlarge"
@@ -339,7 +339,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/OSM_link.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/OSM_link.jpg"
     alt="OSM link"
     style="width:45%;"
     title="Click to enlarge"
@@ -354,7 +354,7 @@ To access the data for inputting into the tool, visit the provided <a href="http
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/OSM_query.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/OSM_query.jpg"
     alt="OSM query"
     style="width:45%;"
     title="Click to enlarge"
