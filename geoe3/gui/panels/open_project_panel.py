@@ -154,14 +154,28 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
     def update_recent_projects(self, new_project: str):
         """Update the recent projects list in QSettings."""
         recent_projects = self.settings.value("recent_projects", [])
-        if new_project not in recent_projects:
-            recent_projects.append(new_project)
+
+        # Remove if exists (to reorder), then insert at top
+        if new_project in recent_projects:
+            recent_projects.remove(new_project)
+        recent_projects.insert(0, new_project)
+
+        # Limit to 15 items
+        if len(recent_projects) > 15:
+            recent_projects = recent_projects[:15]
+
         self.settings.setValue("recent_projects", recent_projects)
 
         # Update the combo box with the new project
         self.previous_project_combo.clear()
         for project_path in reversed(recent_projects):
             self.add_project_to_combo(project_path)
+
+        # Set current index to the newly selected project
+        for i in range(self.previous_project_combo.count()):
+            if self.previous_project_combo.itemData(i) == new_project:
+                self.previous_project_combo.setCurrentIndex(i)
+                break
 
     def load_project(self, working_directory=None):
         """Load the project from the working directory."""
