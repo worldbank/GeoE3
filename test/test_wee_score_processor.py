@@ -5,7 +5,7 @@ import unittest
 from qgis.core import QgsFeedback, QgsProcessingContext
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.algorithms import WEEByPopulationScoreProcessingTask
+from geoe3.core.algorithms import WEEByPopulationScoreProcessingTask
 
 
 class TestWEEScoreProcessingTask(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestWEEScoreProcessingTask(unittest.TestCase):
 
     def setUp(self):
         self.task = WEEByPopulationScoreProcessingTask(
-            # geest_raster_path=f"{self.working_directory}/wee_masked_0.tif",
+            # geoe3_raster_path=f"{self.working_directory}/wee_masked_0.tif",
             # pop_raster_path=f"{self.working_directory}/population/reclassified_0.tif",
             study_area_gpkg_path=f"{self.working_directory}/study_area/study_area.gpkg",
             working_directory=f"{self.working_directory}",

@@ -1,6 +1,6 @@
-# GEEST Presentations
+# GEOE3 Presentations
 
-This directory contains presentation materials for the GEEST project.
+This directory contains presentation materials for the GEOE3 project.
 
 ## Available Presentations
 
@@ -16,7 +16,7 @@ A comprehensive presentation covering:
 - Benchmarking strategies and best practices
 - Memory analysis and optimization
 - QGIS-specific performance considerations
-- Real-world examples applicable to GEEST
+- Real-world examples applicable to GEOE3
 - Hands-on demonstrations and exercises
 
 ## Viewing the Presentations
@@ -111,7 +111,7 @@ paginate: true
 
 **For Technical Deep-Dive**:
 - Add bonus slides (69+)
-- Extend examples with actual GEEST code
+- Extend examples with actual GEOE3 code
 
 ### Adding Your Own Content
 
@@ -133,7 +133,7 @@ Example:
 \`\`\`python
 # Your code example
 def example_function():
-    return "Hello, GEEST!"
+    return "Hello, GEOE3!"
 \`\`\`
 
 ---
@@ -155,4 +155,4 @@ To add new presentations:
 
 ## License
 
-These presentations are part of the GEEST project and follow the same license terms.
+These presentations are part of the GEOE3 project and follow the same license terms.

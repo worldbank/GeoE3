@@ -1,4 +1,4 @@
-" Local nvim configuration for GEEST project
+" Local nvim configuration for GEOE3 project
 " This file is automatically sourced when opening nvim in this directory
 
 " Alias vim to nvim for this session
@@ -46,7 +46,7 @@ if not vim.g.geest_lsp_configured then
     capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
   end
 
-  print("GEEST LSP configured with QGIS libraries")
+  print("GEOE3 LSP configured with QGIS libraries")
 
   -- GitHub Copilot Configuration
   if pcall(require, 'copilot') then
@@ -142,4 +142,4 @@ set showmatch
 set laststatus=2
 set statusline=%f\ %h%w%m%r\ %=%(%l,%c%V\ %=\ %P%)
 
-echo "GEEST project nvim configuration loaded. QGIS libraries available for LSP."
+echo "GEOE3 project nvim configuration loaded. QGIS libraries available for LSP."

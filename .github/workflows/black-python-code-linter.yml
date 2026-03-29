@@ -23,6 +23,6 @@ jobs:
       - uses: psf/black@stable
         with:
           options: "--check --verbose"
-          src: "./geest"
+          src: "./geoe3"
           # Pin to 25.x to match nixpkgs version used in local development
           version: "~=25.0"

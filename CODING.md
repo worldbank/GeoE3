@@ -1,7 +1,7 @@
 
-# GEEST Coding Guide
+# GEOE3 Coding Guide
 
-This guide outlines coding practices for developing Python code in the GEEST project, including adherence to Python naming conventions, formatting styles, type declarations, and logging mechanisms.
+This guide outlines coding practices for developing Python code in the GEOE3 project, including adherence to Python naming conventions, formatting styles, type declarations, and logging mechanisms.
 
 ## General Guidelines
 
@@ -126,7 +126,7 @@ def save_to_geopackage(features: List[QgsFeature], layer_name: str) -> None:
 
 ### Standardize Log Tags
 
-- **Tag all messages with `'Geest'`** to allow filtering in the QGIS log.
+- **Tag all messages with `'GeoE3'`** to allow filtering in the QGIS log.
 - Use appropriate log levels:
   - **`Qgis.Info`**: For informational messages.
   - **`Qgis.Warning`**: For warnings that do not interrupt the workflow.
@@ -135,9 +135,9 @@ def save_to_geopackage(features: List[QgsFeature], layer_name: str) -> None:
 Examples:
 
 ```python
-QgsMessageLog.logMessage("Created study area grid.", tag="Geest", level=Qgis.Info)
-QgsMessageLog.logMessage("Warning: Invalid geometry found.", tag="Geest", level=Qgis.Warning)
-QgsMessageLog.logMessage("Error transforming geometry.", tag="Geest", level=Qgis.Critical)
+QgsMessageLog.logMessage("Created study area grid.", tag="GeoE3", level=Qgis.Info)
+QgsMessageLog.logMessage("Warning: Invalid geometry found.", tag="GeoE3", level=Qgis.Warning)
+QgsMessageLog.logMessage("Error transforming geometry.", tag="GeoE3", level=Qgis.Critical)
 ```
 
 ## Error Handling
@@ -151,7 +151,7 @@ Example:
 try:
     processor.process_study_area()
 except Exception as e:
-    QgsMessageLog.logMessage(f"Error processing study area: {e}", tag="Geest", level=Qgis.Critical)
+    QgsMessageLog.logMessage(f"Error processing study area: {e}", tag="GeoE3", level=Qgis.Critical)
 ```
 
 ## GUI Development with PyQt5
@@ -206,9 +206,9 @@ geom.transform(transform)
 - **Naming**: Use `snake_case`, `PascalCase`, or `camelCase` as appropriate.
 - **Formatting**: Use `black` for consistent code formatting.
 - **Type Declarations**: Declare types for all variables and function signatures.
-- **Logging**: Use `QgsMessageLog` with the tag `'Geest'`.
+- **Logging**: Use `QgsMessageLog` with the tag `'GeoE3'`.
 - **Error Handling**: Catch and log exceptions appropriately.
 - **PyQt5**: Follow PyQt5's conventions for widget naming and handling.
 - **Docstrings and Comments**: Use meaningful docstrings and comments to explain the code.
 
-Following these guidelines ensures that code within the GEEST project is clear, consistent, and maintainable.
+Following these guidelines ensures that code within the GEOE3 project is clear, consistent, and maintainable.

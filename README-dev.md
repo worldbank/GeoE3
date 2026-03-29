@@ -1,6 +1,6 @@
-# Developer Guide for GEEST 🚀
+# Developer Guide for GEOE3 🚀
 
-Welcome to the GEEST Developer Guide! This document is your one-stop resource for contributing to the project. Whether you're setting up your environment, debugging, or preparing a release, we've got you covered. Let's dive in! 🛠️
+Welcome to the GEOE3 Developer Guide! This document is your one-stop resource for contributing to the project. Whether you're setting up your environment, debugging, or preparing a release, we've got you covered. Let's dive in! 🛠️
 
 ---
 
@@ -26,17 +26,17 @@ In this section, you'll learn how to clone the repository and prepare it for dev
 
 ### Steps
 
-1. **Fork the Repository**: Start by forking the GEEST repository on GitHub.
+1. **Fork the Repository**: Start by forking the GEOE3 repository on GitHub.
 2. **Clone Your Fork**:
 
    ```bash
-   git clone https://github.com/your-username/GEEST.git
+   git clone https://github.com/your-username/GEOE3.git
    ```
 
 3. **Set Up the Plugin Path**:
    - Open QGIS.
    - Navigate to Plugins > Manage and Install Plugins > Settings > Plugin Paths.
-   - Add the path to your local GEEST folder.
+   - Add the path to your local GEOE3 folder.
 
 ---
 
@@ -99,7 +99,7 @@ The `admin.py` script provides various commands for managing the plugin, such as
    - Go to Settings > Options > System > Environment.
    - Add `PYTHONDEBUG=1`.
 2. **Use Logs**:
-   - Check the QGIS log panel for messages tagged with `Geest`.
+   - Check the QGIS log panel for messages tagged with `GeoE3`.
 
 ---
 
@@ -132,11 +132,12 @@ The `admin.py` script provides various commands for managing the plugin, such as
 
 ### Environment Variables
 
-The test system requires the following environment variable:
+The test system requires the following environment variables:
 
-- **`GEEST_TEST_DIR`**: **Required** - Specifies the path to the test directory. This is automatically set by `scripts/start_qgis.sh` and `scripts/start_qgis_ltr.sh` to point to the project's test directory.
+- **`GEOE3_TEST_DIR`**: **Recommended** - Specifies the path to the test directory. This is automatically set by `scripts/start_qgis.sh` and `scripts/start_qgis_ltr.sh` to point to the project's test directory.
+- **`GEEST_TEST_DIR`**: **Fallback** - Kept for backward compatibility.
 
-**Important**: The plugin will fail to run tests if this environment variable is not set. Always use the provided startup scripts when developing.
+**Important**: The plugin will fail to run tests if one of these environment variables is not set. Always use the provided startup scripts when developing.
 
 ### Steps
 
@@ -158,12 +159,12 @@ The test system requires the following environment variable:
 3. **Check Code Coverage**:
 
    ```bash
-   pytest --cov=geest
+   pytest --cov=geoe3
    ```
 
 4. **Run Tests from QGIS Plugin Interface**:
    - Use the "Run Tests" or "Run Single Test" buttons in developer mode
-   - Tests will automatically use the `GEEST_TEST_DIR` environment variable
+   - Tests will automatically use the `GEOE3_TEST_DIR` (or `GEEST_TEST_DIR` fallback) environment variable
 
 ---
 
@@ -184,7 +185,7 @@ The test system requires the following environment variable:
 
 ## Coding Standards 🧑‍💻
 
-To ensure consistency and maintainability, please follow the coding standards outlined in the [CODING.md](CODING.md) file. This document provides guidelines on formatting, naming conventions, and best practices for contributing to the GEEST project.
+To ensure consistency and maintainability, please follow the coding standards outlined in the [CODING.md](CODING.md) file. This document provides guidelines on formatting, naming conventions, and best practices for contributing to the GEOE3 project.
 
 ---
 

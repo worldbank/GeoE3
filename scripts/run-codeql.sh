@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# CodeQL Analysis Script for GEEST
+# CodeQL Analysis Script for GEOE3
 # This script creates a CodeQL database and runs security analysis
 # Usage: ./scripts/run-codeql.sh
 
@@ -18,7 +18,7 @@ DB_PATH="./codeql-database"
 RESULTS_FILE="codeql-results.sarif"
 LANG="python"
 
-echo -e "${BLUE}🔎 CodeQL Analysis for GEEST${NC}"
+echo -e "${BLUE}🔎 CodeQL Analysis for GEOE3${NC}"
 echo "=================================="
 
 # Check if CodeQL CLI is installed

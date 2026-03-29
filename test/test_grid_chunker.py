@@ -3,7 +3,7 @@ import unittest
 
 from osgeo import ogr
 
-from geest.core.tasks.grid_chunker_task import GridChunkerTask
+from geoe3.core.tasks.grid_chunker_task import GridChunkerTask
 
 
 class TestGridChunker(unittest.TestCase):

@@ -1,7 +1,7 @@
 
 # Setting Up Pre-Commit for Python Code Formatting
 
-This guide will walk you through setting up a `pre-commit` hook for automatically formatting all Python files within the `geest` directory using `black`.
+This guide will walk you through setting up a `pre-commit` hook for automatically formatting all Python files within the `geoe3` directory using `black`.
 
 ## Prerequisites
 
@@ -29,14 +29,14 @@ repos:
       - id: black
         name: black
         language_version: python3
-        # Restrict black to only the `geest` directory
+        # Restrict black to only the `geoe3` directory
         additional_dependencies: []
-        args: [geest]
+        args: [geoe3]
 ```
 
 - **`repos`**: Defines the hooks to use. Here, we use the `black` formatter from its GitHub repository.
 - **`rev`**: Specifies the version of `black`. Make sure to replace it with the version you are using.
-- **`args`**: Restricts `black` to format only the Python files within the `geest` directory.
+- **`args`**: Restricts `black` to format only the Python files within the `geoe3` directory.
 
 ## Step 3: Install the Pre-Commit Hook
 
@@ -56,11 +56,11 @@ You can test the hook manually to ensure it works as expected before committing 
 pre-commit run --all-files
 ```
 
-This will apply `black` formatting to all Python files in the `geest` directory.
+This will apply `black` formatting to all Python files in the `geoe3` directory.
 
 ## Step 5: Commit Your Changes
 
-Once the hook is installed, every time you make a commit, the `black` formatter will automatically format your Python code within the `geest` directory. If any changes are made by `black`, the commit will fail, allowing you to review the changes before committing again.
+Once the hook is installed, every time you make a commit, the `black` formatter will automatically format your Python code within the `geoe3` directory. If any changes are made by `black`, the commit will fail, allowing you to review the changes before committing again.
 
 ## Troubleshooting
 
@@ -76,6 +76,6 @@ If you encounter any issues:
 
 ---
 
-After following this guide, you will have a working `pre-commit` hook that formats all Python files in the `geest` directory using `black` before every commit.
+After following this guide, you will have a working `pre-commit` hook that formats all Python files in the `geoe3` directory using `black` before every commit.
 
 Enjoy coding with consistent formatting! 🚀

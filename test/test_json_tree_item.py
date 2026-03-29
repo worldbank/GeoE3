@@ -2,7 +2,7 @@
 import unittest
 from uuid import UUID
 
-from geest.core.json_tree_item import JsonTreeItem
+from geoe3.core.json_tree_item import JsonTreeItem
 
 
 class TestJsonTreeItem(unittest.TestCase):

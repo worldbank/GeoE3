@@ -2,7 +2,7 @@
 
 <p align="justify">
 The Contextual Dimension refers to the laws and policies that shape workplace gender discrimination, financial autonomy, and overall gender empowerment. Although this dimension may vary between countries due to differences in legal frameworks, it remains consistent within a single country, as national policies and regulations are typically applied uniformly across countries.  For more information on data input used from open sources, please refer to the
-    <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
+    <a href="https://worldbank.github.io/GEOE3/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
 </p>
 
 ### Input Contextual factors
@@ -20,7 +20,7 @@ This indicator is composed by the Workplace Index score of the WBL 2024, which i
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WD.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WD.jpg"
     alt="Workplace Discrimination"
     style="width:75%;"
     title="Click to enlarge"
@@ -40,7 +40,7 @@ This indicator is composed by the Workplace Index score of the WBL 2024, which i
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/RF.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/RF.jpg"
     alt="Regulatory Frameworks"
     style="width:75%;"
     title="Click to enlarge"
@@ -60,7 +60,7 @@ This indicator is composed by the Workplace Index score of the WBL 2024, which i
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FI.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FI.jpg"
     alt="Finacial Inclusion"
     style="width:75%;"
     title="Click to enlarge"
@@ -77,7 +77,7 @@ This indicator is composed by the Workplace Index score of the WBL 2024, which i
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Contextual_Weights.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Contextual_Weights.jpg"
     alt="Contextual Weights"
     style="width:75%;"
     title="Click to enlarge"
@@ -94,7 +94,7 @@ After entering the values for the factors and adjusting their weights to achieve
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/contextual_run.png"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/contextual_run.png"
     alt="Contextual Run"
     style="width:55%;"
     title="Click to enlarge"
@@ -105,7 +105,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/CD_run_success.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/CD_run_success.jpg"
     alt="Contextual Run Success"
     style="width:75%;"
     title="Click to enlarge"
@@ -123,7 +123,7 @@ The outputs consist of the Workplace Discrimination, Regulatory Frameworks, and 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/CD_final.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/CD_final.jpg"
     alt="Contextual Final Output"
     style="width:75%;"
     title="Click to enlarge"
@@ -138,7 +138,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/contextual_add.png"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/contextual_add.png"
     alt="Contextual Add to map"
     style="width:55%;"
     title="Click to enlarge"
@@ -153,7 +153,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/CD%20clear%20and%20rerun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/CD%20clear%20and%20rerun.jpg"
     alt="Contextual Clear and rerun"
     style="width:75%;"
     title="Click to enlarge"

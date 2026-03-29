@@ -1,4 +1,4 @@
--- GEEST nvim project configuration
+-- GEOE3 nvim project configuration
 -- Auto-sourced by nvim when exrc is enabled, or source manually with:
 --   :source .nvim.lua
 
@@ -47,7 +47,7 @@ local function float_term(cmd, opts)
   vim.cmd('startinsert')
 end
 
--- Helper to open a bottom split terminal tailing the GEEST log file
+-- Helper to open a bottom split terminal tailing the GEOE3 log file
 local function open_log_tail()
   local tmp_dir = os.getenv("TMPDIR") or os.getenv("TMP") or os.getenv("TEMP") or "/tmp"
   local datestamp = os.date("%Y%m%d")
@@ -63,7 +63,7 @@ local function open_log_tail()
   vim.cmd('botright 12split')
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_win_set_buf(0, buf)
-  vim.api.nvim_buf_set_name(buf, 'GEEST Log')
+  vim.api.nvim_buf_set_name(buf, 'GEOE3 Log')
 
   -- Set buffer options
   vim.bo[buf].buftype = 'nofile'
@@ -79,7 +79,7 @@ local function open_log_tail()
 
   -- Set window title
   vim.wo.winfixheight = true
-  vim.wo.statusline = '%#StatusLine# GEEST Log: ' .. log_file .. ' %='
+  vim.wo.statusline = '%#StatusLine# GEOE3 Log: ' .. log_file .. ' %='
 
   -- Return to the previous window
   vim.cmd('wincmd p')
@@ -164,7 +164,7 @@ end, { desc = 'Open floating terminal' })
 
 vim.api.nvim_create_user_command('GeestLogTail', function()
   open_log_tail()
-end, { desc = 'Open GEEST log tail panel' })
+end, { desc = 'Open GEOE3 log tail panel' })
 
 vim.api.nvim_create_user_command('GeestGitStatus', function()
   float_term('git status && echo "\\n--- Recent commits ---\\n" && git log --oneline -10', { title = ' Git Status ' })
@@ -291,8 +291,8 @@ if wk_ok then
     -- Misc
     { '<leader>pv', '<cmd>GeestGource<cr>', desc = 'Gource visualization' },
     { '<leader>pp', '<cmd>GeestTerm<cr>', desc = 'Floating terminal' },
-    { '<leader>pl', '<cmd>GeestLogTail<cr>', desc = 'Tail GEEST log' },
+    { '<leader>pl', '<cmd>GeestLogTail<cr>', desc = 'Tail GEOE3 log' },
   })
 end
 
-vim.notify("GEEST: Project commands and <leader>p menu loaded", vim.log.levels.INFO)
+vim.notify("GEOE3: Project commands and <leader>p menu loaded", vim.log.levels.INFO)

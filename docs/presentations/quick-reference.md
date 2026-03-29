@@ -62,7 +62,7 @@ def profile_function(func):
 
         QgsMessageLog.logMessage(
             f"{func.__name__} took {duration:.4f}s",
-            tag="Geest-Profile",
+            tag="GeoE3-Profile",
             level=Qgis.Info
         )
         return result
@@ -325,7 +325,7 @@ snakeviz>=2.2.0
 py-spy>=0.3.14
 ```
 
-## Common Profiling Patterns for GEEST
+## Common Profiling Patterns for GEOE3
 
 ### Profile Grid Processing
 
@@ -405,7 +405,7 @@ def process_large_layer(layer_path):
 - [pytest-benchmark Docs](https://pytest-benchmark.readthedocs.io/)
 - [QGIS PyQGIS Cookbook](https://docs.qgis.org/latest/en/docs/pyqgis_developer_cookbook/)
 
-## Next Steps for GEEST
+## Next Steps for GEOE3
 
 1. **Baseline Performance**
    - Profile key operations

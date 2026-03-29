@@ -5,8 +5,8 @@ import unittest
 from qgis.core import QgsFeedback, QgsProcessingContext
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.algorithms import OpportunitiesMaskProcessor
-from geest.core.json_tree_item import JsonTreeItem
+from geoe3.core.algorithms import OpportunitiesMaskProcessor
+from geoe3.core.json_tree_item import JsonTreeItem
 
 
 @unittest.skip("Skip this test for now")

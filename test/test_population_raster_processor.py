@@ -5,7 +5,7 @@ import unittest
 from qgis.core import QgsProcessingContext, QgsProject
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.algorithms import PopulationRasterProcessingTask
+from geoe3.core.algorithms import PopulationRasterProcessingTask
 
 
 class TestPopulationRasterProcessingTask(unittest.TestCase):

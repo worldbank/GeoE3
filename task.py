@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-GEEST Plugin
+GEOE3 Plugin
 
 Author: Your Name
 Copyright: 2024, Your Organization
 License: GPL-3.0-only
 
-This file is part of the GEEST QGIS Plugin. It is available under the terms of the GNU General Public License v3.0 only.
+This file is part of the GEOE3 QGIS Plugin. It is available under the terms of the GNU General Public License v3.0 only.
 See the LICENSE file in the project root for more information.
 """
 
@@ -16,9 +16,9 @@ from qgis.PyQt.QtCore import pyqtSignal
 from qgis.core import Qgis, QgsMessageLog, QgsTask
 
 
-class GEESTTask(QgsTask):
+class GeoE3Task(QgsTask):
     """
-    Custom task for running GEEST plugin operations as a background job.
+    Custom task for running GEOE3 plugin operations as a background job.
     """
 
     finished = pyqtSignal(bool)
@@ -46,7 +46,7 @@ class GEESTTask(QgsTask):
             if self.node.get("processed", False) and os.path.exists(output_path):
                 QgsMessageLog.logMessage(
                     f"{self.node['name']} already processed",
-                    "Geest",
+                    "GeoE3",
                     Qgis.Info,
                 )
                 self.finished.emit(True)
@@ -55,13 +55,13 @@ class GEESTTask(QgsTask):
             # Simulate processing
             self.process_node()
             self.node["processed"] = True
-            QgsMessageLog.logMessage(f"Processed {self.node['name']}", "Geest", Qgis.Info)
+            QgsMessageLog.logMessage(f"Processed {self.node['name']}", "GeoE3", Qgis.Info)
             self.finished.emit(True)
             return True
         except Exception as e:
             QgsMessageLog.logMessage(
                 f"Task failed for {self.node['name']}: {str(e)}",
-                "Geest",
+                "GeoE3",
                 Qgis.Critical,
             )
             self.error.emit()
@@ -80,5 +80,5 @@ class GEESTTask(QgsTask):
         """
         Handles task cancellation.
         """
-        QgsMessageLog.logMessage(f"{self.node['name']} task was cancelled", "GEEST", Qgis.Info)
+        QgsMessageLog.logMessage(f"{self.node['name']} task was cancelled", "GEOE3", Qgis.Info)
         super().cancel()

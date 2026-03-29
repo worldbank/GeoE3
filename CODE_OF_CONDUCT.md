@@ -1,4 +1,4 @@
-# GEEST Plugin Code of Conduct
+# GEOE3 Plugin Code of Conduct
 
 ## Our Pledge
 

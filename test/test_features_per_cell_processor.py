@@ -13,7 +13,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QVariant
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.algorithms.features_per_cell_processor import (
+from geoe3.core.algorithms.features_per_cell_processor import (
     assign_values_to_grid,
     select_grid_cells_and_count_features,
 )

@@ -4,7 +4,7 @@ import unittest
 
 from qgis.PyQt.QtCore import QEventLoop
 
-from geest.core.ors_client import ORSClient
+from geoe3.core.ors_client import ORSClient
 
 
 @unittest.skip("Skip this test for now")

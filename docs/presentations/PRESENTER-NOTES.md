@@ -18,7 +18,7 @@ These notes are designed to help you deliver an effective 1-hour seminar on benc
 | Part 3: Benchmarking | 29-38 | 8 min | Practical examples |
 | Part 4: Memory Analysis | 39-48 | 8 min | Critical for spatial data |
 | Part 5: QGIS-Specific | 49-55 | 7 min | Team-relevant content |
-| Part 6: Real Examples | 56-62 | 8 min | Connect to GEEST work |
+| Part 6: Real Examples | 56-62 | 8 min | Connect to GEOE3 work |
 | Part 7: Best Practices | 63-68 | 5 min | Actionable takeaways |
 | Q&A / Discussion | - | 12 min | Interactive, address questions |
 
@@ -36,17 +36,17 @@ These notes are designed to help you deliver an effective 1-hour seminar on benc
 
 ### Opening (5 min)
 - Start with the "Why Performance Matters" slide
-- Connect to recent GEEST performance discussions
+- Connect to recent GEOE3 performance discussions
 - Set the agenda clearly
 
 ### Middle (40 min)
-- **Demo-focused**: Show actual profiling on GEEST code
+- **Demo-focused**: Show actual profiling on GEOE3 code
 - **Interactive**: Ask team about their performance pain points
 - **Practical**: Use examples from actual workflows
 
 ### Closing (15 min)
 - Summarize key takeaways
-- Discuss next steps for GEEST
+- Discuss next steps for GEOE3
 - Open Q&A
 - Practical exercise suggestion
 
@@ -54,8 +54,8 @@ These notes are designed to help you deliver an effective 1-hour seminar on benc
 
 ### Demo 1: Quick cProfile (5 min)
 ```bash
-# Profile a real GEEST operation
-cd /path/to/GEEST
+# Profile a real GEOE3 operation
+cd /path/to/GEOE3
 python -m cProfile -o profile.prof admin.py build
 python -m pstats profile.prof
 ```
@@ -70,19 +70,19 @@ snakeviz profile.prof
 Open in browser, show interactive exploration of the profile.
 
 ### Demo 3: Memory Profiler (Optional, 3 min)
-Add @profile to a GEEST function and show line-by-line memory usage.
+Add @profile to a GEOE3 function and show line-by-line memory usage.
 
 ## Interactive Elements
 
 ### Poll Questions
 1. "Who has profiled Python code before?" (show of hands)
-2. "What's the biggest performance issue you've encountered in GEEST?"
+2. "What's the biggest performance issue you've encountered in GEOE3?"
 3. "Who's familiar with spatial indices?"
 
 ### Discussion Points
 - **Slide 7**: "What are your performance pain points?"
 - **Slide 46**: "Have you encountered memory issues?"
-- **Slide 62**: "What should we optimize first in GEEST?"
+- **Slide 62**: "What should we optimize first in GEOE3?"
 
 ### Hands-on Exercise (Optional)
 If time permits, have team members:
@@ -128,7 +128,7 @@ Focus on slides: 1-7, 13-20, 29-32, 49-55, 63-68
 
 3. **Have ready**:
    - Terminal for live demos
-   - GEEST repository cloned
+   - GEOE3 repository cloned
    - Profiling tools installed
    - Quick reference guide printed/available
 
@@ -158,7 +158,7 @@ Focus on slides: 1-7, 13-20, 29-32, 49-55, 63-68
 
 ### Follow-up Actions
 1. Share slides, quick reference, and presenter notes
-2. Set up profiling infrastructure in GEEST
+2. Set up profiling infrastructure in GEOE3
 3. Create initial benchmarks for critical paths
 4. Schedule follow-up session if interest is high
 
@@ -196,7 +196,7 @@ A: Covered in slides 57-58. Good for independent operations, but has overhead.
 
 ✅ **DO**:
 - Start with why performance matters to the team
-- Use real GEEST examples
+- Use real GEOE3 examples
 - Keep demos short and focused
 - Encourage questions throughout
 - Connect to current work
@@ -213,7 +213,7 @@ A: Covered in slides 57-58. Good for independent operations, but has overhead.
 Before presenting:
 - [ ] Test presentation in your environment
 - [ ] Install/verify profiling tools work
-- [ ] Have GEEST repository ready for demos
+- [ ] Have GEOE3 repository ready for demos
 - [ ] Print or have quick reference available
 - [ ] Test projector/screen sharing
 - [ ] Have backup PDF ready

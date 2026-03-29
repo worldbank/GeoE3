@@ -272,7 +272,7 @@ def rasterize_filtered_data(input_file, output_raster, pixel_size=0.01):
     """
     # This function rasterizes the filtered Parquet data into a GeoTIFF
     # with the specified pixel size.
-    # gdal_rasterize -l ookla_filtered -burn 1.0 -tr 0.001 0.001 -init 0.0 -a_nodata 0.0 -ot Byte -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 /home/timlinux/dev/python/GEEST/data/ookla_filtered.parquet OUTPUT.tif
+    # gdal_rasterize -l ookla_filtered -burn 1.0 -tr 0.001 0.001 -init 0.0 -a_nodata 0.0 -ot Byte -of GTiff -co COMPRESS=DEFLATE -co PREDICTOR=2 -co ZLEVEL=9 /home/timlinux/dev/python/GEOE3/data/ookla_filtered.parquet OUTPUT.tif
     # from osgeo import gdal
     start_time = timeit.default_timer()
     NoData_value = 0

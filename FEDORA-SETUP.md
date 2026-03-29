@@ -1,6 +1,6 @@
-# GEEST Development Setup for Fedora (Non-Nix)
+# GEOE3 Development Setup for Fedora (Non-Nix)
 
-This guide provides step-by-step instructions for setting up the GEEST development environment on Fedora Linux using Miniconda, without requiring Nix.
+This guide provides step-by-step instructions for setting up the GEOE3 development environment on Fedora Linux using Miniconda, without requiring Nix.
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ We provide an automated setup script that installs all dependencies:
 
 ```bash
 # Clone the repository (if not already done)
-git clone https://github.com/worldbank/GEEST.git
-cd GEEST
+git clone https://github.com/worldbank/GEOE3.git
+cd GEOE3
 
 # Run the automated setup script
 ./scripts/setup-fedora-conda.sh
@@ -26,7 +26,7 @@ The script will:
 1. Check for Fedora and Miniconda
 2. Install system dependencies via dnf
 3. Install actionlint manually
-4. Activate your `geest` conda environment
+4. Activate your `geoe3` conda environment
 5. Install Python dependencies
 6. Install npm packages (cspell)
 7. Configure pre-commit hooks
@@ -73,23 +73,23 @@ actionlint --version
 
 ### Step 3: Set Up Conda Environment
 
-Create and activate the `geest` conda environment:
+Create and activate the `geoe3` conda environment:
 
 ```bash
 # Create conda environment (if not exists)
-conda create -n geest python=3.10 -y
+conda create -n geoe3 python=3.10 -y
 
 # Activate the environment
-conda activate geest
+conda activate geoe3
 ```
 
-**Tip:** Add conda activation to your workflow or use `conda activate geest` whenever working on GEEST.
+**Tip:** Add conda activation to your workflow or use `conda activate geoe3` whenever working on GEOE3.
 
 ### Step 4: Install Python Dependencies
 
 ```bash
 # Navigate to project root
-cd /path/to/GEEST
+cd /path/to/GEOE3
 
 # Install development dependencies
 pip install -r requirements-dev.txt
@@ -209,21 +209,21 @@ The `.pre-commit-config.yaml` includes these hooks:
 
 ### Activate Environment
 
-Every time you start working on GEEST:
+Every time you start working on GEOE3:
 
 ```bash
-conda activate geest
-cd /path/to/GEEST
+conda activate geoe3
+cd /path/to/GEOE3
 ```
 
 ### Make Changes and Commit
 
 ```bash
 # Make your code changes
-vim geest/core/some_file.py
+vim geoe3/core/some_file.py
 
 # Stage changes
-git add geest/core/some_file.py
+git add geoe3/core/some_file.py
 
 # Commit (pre-commit hooks run automatically)
 git commit -m "Add new feature"
@@ -299,7 +299,7 @@ exec bash
 
 **Solution:** Ensure conda environment is activated:
 ```bash
-conda activate geest
+conda activate geoe3
 pip install -r requirements-dev.txt
 ```
 
@@ -309,7 +309,7 @@ pip install -r requirements-dev.txt
 
 ```bash
 # Activate environment
-conda activate geest
+conda activate geoe3
 
 # Run all tests
 pytest
@@ -318,7 +318,7 @@ pytest
 pytest test/test_workflow.py
 
 # With coverage
-pytest --cov=geest
+pytest --cov=geoe3
 ```
 
 ---
@@ -340,7 +340,7 @@ python admin.py install
 - [Pre-commit Documentation](https://pre-commit.com/)
 - [Black Code Formatter](https://black.readthedocs.io/)
 - [Conda User Guide](https://docs.conda.io/projects/conda/en/latest/user-guide/)
-- [GEEST Contributing Guide](CONTRIBUTING.md)
+- [GEOE3 Contributing Guide](CONTRIBUTING.md)
 - [Pre-commit Setup Guide](PRE-COMMIT-README.md)
 
 ---
@@ -351,7 +351,7 @@ python admin.py install
 - [ ] Miniconda installed
 - [ ] System packages installed (git, ShellCheck, yamllint, nodejs, npm)
 - [ ] actionlint installed manually
-- [ ] `geest` conda environment created
+- [ ] `geoe3` conda environment created
 - [ ] Python dependencies installed from requirements-dev.txt
 - [ ] cspell installed via npm
 - [ ] pre-commit installed and hooks configured
@@ -366,7 +366,7 @@ python admin.py install
 If you encounter problems not covered here:
 
 1. Check the [CONTRIBUTING.md](CONTRIBUTING.md) guide
-2. Open an issue on GitHub: https://github.com/worldbank/GEEST/issues
+2. Open an issue on GitHub: https://github.com/worldbank/GEOE3/issues
 3. Review the pre-commit logs: `.git/hooks/pre-commit`
 
 ---

@@ -1,20 +1,20 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <plugins>
-<pyqgis_plugin name="Geospatial Enabling Environments for Employment Spatial Tool (GEEST)" version="0.5.5">
+<pyqgis_plugin name="Geospatial Enabling Environments for Employment Spatial Tool (GEOE3)" version="0.5.5">
                 <description><![CDATA[Geospatial Enabling Environments for Employment Spatial Tool]]></description>
-                <about><![CDATA[GEEST was built for the practical implementation of the Geospatial Women’s Employment Analytical Framework (GeoWEAF), developed by the World Bank, which identifies the location-specific factors affecting women's access to jobs. This framework categorizes regions based on their level of support for enabling women’s access to employment. It identifies 15 critical, spatially varying factors that influence women’s job prospects, divided into three main dimensions: Contextual, Accessibility, and Place Characterization.]]></about>
+                <about><![CDATA[GEOE3 was built for the practical implementation of the Geospatial Women’s Employment Analytical Framework (GeoWEAF), developed by the World Bank, which identifies the location-specific factors affecting women's access to jobs. This framework categorizes regions based on their level of support for enabling women’s access to employment. It identifies 15 critical, spatially varying factors that influence women’s job prospects, divided into three main dimensions: Contextual, Accessibility, and Place Characterization.]]></about>
                 <version>0.5.5</version>
                 <qgis_minimum_version>3.0</qgis_minimum_version>
-                <homepage><![CDATA[https://github.com/worldbank/GEEST]]></homepage>
-                <file_name>geest.0.5.5.zip</file_name>
+                <homepage><![CDATA[https://github.com/worldbank/GEOE3]]></homepage>
+                <file_name>geoe3.0.5.5.zip</file_name>
                 <icon>icon.png</icon>
                 <author_name><![CDATA[Kartoza for and with The World Bank]]></author_name>
-                <download_url>https://github.com/kartoza/GEEST2/releases/download/v0.5.5/geest.0.5.5.zip</download_url>
+                <download_url>https://github.com/kartoza/GEEST2/releases/download/v0.5.5/geoe3.0.5.5.zip</download_url>
                 <update_date>2025-02-05 17:15:48</update_date>
                 <experimental>False</experimental>
                 <deprecated>False</deprecated>
-                <tracker><![CDATA[https://github.com/worldbank/GEEST/issues]]></tracker>
-                <repository><![CDATA[https://github.com/worldbank/GEEST]]></repository>
+                <tracker><![CDATA[https://github.com/worldbank/GEOE3/issues]]></tracker>
+                <repository><![CDATA[https://github.com/worldbank/GEOE3]]></repository>
                 <tags><![CDATA[]]></tags>
                 <server>False</server>
             </pyqgis_plugin>

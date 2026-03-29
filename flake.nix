@@ -15,7 +15,7 @@
     }:
     let
       system = "x86_64-linux";
-      profileName = "GEEST";
+      profileName = "GEOE3";
       pkgs = import nixpkgs {
         inherit system;
         config = {
@@ -230,7 +230,7 @@
             # Clear screen and show welcome banner
             clear
             echo -e "$RESET$ORANGE"
-            chafa geest/resources/geest-banner.png --size=30x80 --colors=256 | sed 's/^/                  /'
+            chafa geoe3/resources/geoe3-banner.png --size=30x80 --colors=256 | sed 's/^/                  /'
             # Quick tips with icons
             echo -e "$RESET$ORANGE \n__________________________________________________________________\n"
             echo -e "        🌈 Your Dev Environment is prepared."

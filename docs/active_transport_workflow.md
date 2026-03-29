@@ -289,7 +289,7 @@ VRT Combination (all areas merged)
 
 ## File Locations
 
-- **Workflow Class**: `geest/core/workflows/osm_transport_polyline_per_cell_workflow.py`
-- **Score Assignment**: `geest/core/algorithms/features_per_cell_processor.py`
-- **Classification Tables**: `geest/core/workflows/mappings/active_transport.py`
-- **Base Workflow**: `geest/core/workflows/workflow_base.py`
+- **Workflow Class**: `geoe3/core/workflows/osm_transport_polyline_per_cell_workflow.py`
+- **Score Assignment**: `geoe3/core/algorithms/features_per_cell_processor.py`
+- **Classification Tables**: `geoe3/core/workflows/mappings/active_transport.py`
+- **Base Workflow**: `geoe3/core/workflows/workflow_base.py`

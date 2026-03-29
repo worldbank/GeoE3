@@ -1,0 +1,236 @@
+# -*- coding: utf-8 -*-
+"""📦 Opportunities By GeoE3 Score Processor module.
+
+This module contains functionality for opportunities by GeoE3 Score processor.
+"""
+
+import os
+import shutil
+import traceback
+from typing import List, Optional
+
+from qgis import processing
+from qgis.core import (
+    QgsCoordinateReferenceSystem,
+    QgsRasterLayer,
+    QgsTask,
+    QgsVectorLayer,
+)
+
+from geoe3.core import JsonTreeItem
+from geoe3.core.algorithms import AreaIterator
+from geoe3.core.constants import GDAL_OUTPUT_DATA_TYPE
+from geoe3.utilities import log_message, resources_path
+
+
+class OpportunitiesByWeeScoreProcessingTask(QgsTask):
+    """
+    A QgsTask subclass for calculating masked GeoE3 Score using raster algebra.
+
+    It iterates over study areas, gets the GeoE3 Score and applies the Job Opportunities
+    mask to it. It then combines the resulting rasters into a VRT, and applies a QML style.
+
+    It takes as input a GeoE3 Score layer (output as the result of Analysis level aggregation
+    of GEOE3 workflow). This GeoE3 Score layer has the following classes:
+
+    | Range  | Description               | Color      |
+    |--------|---------------------------|------------|
+    | 0 - 1  | Very Low Enablement       | ![#FF0000](#) `#FF0000` |
+    | 1 - 2  | Low Enablement            | ![#FFA500](#) `#FFA500` |
+    | 2 - 3  | Moderately Enabling       | ![#FFFF00](#) `#FFFF00` |
+    | 3 - 4  | Enabling                  | ![#90EE90](#) `#90EE90` |
+    | 4 - 5  | Highly Enabling           | ![#0000FF](#) `#0000FF` |
+
+    Additionally a mask layer containing cell values of 1 for included areas is required.
+    One sub product is made per study area and then all of the study area outputs are
+    combined as a VRT and assigned a QML with the correct legend colours.
+
+    Args:
+        study_area_gpkg_path (str): Path to the GeoPackage containing study area masks.
+        working_directory (str): Directory to save the output rasters.
+        target_crs (Optional[QgsCoordinateReferenceSystem]): CRS for the output rasters.
+        force_clear (bool): Flag to force clearing of all outputs before processing.
+    """
+
+    def __init__(
+        self,
+        item: JsonTreeItem,
+        study_area_gpkg_path: str,
+        working_directory: str,
+        target_crs: Optional[QgsCoordinateReferenceSystem] = None,
+        force_clear: bool = False,
+    ):
+        super().__init__("Opportunities GeoE3 Score Processor", QgsTask.CanCancel)
+        self.item = item
+        self.study_area_gpkg_path = study_area_gpkg_path
+
+        self.output_dir = os.path.join(working_directory, "geoe3_score_ghsl_masked")
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        # These folders should already exist from the analysis and opportunities mask processor
+        self.opportunity_masks_folder = os.path.join(working_directory, "opportunity_masks")
+        self.geoe3_folder = os.path.join(working_directory, "geoe3_score")
+
+        self.force_clear = force_clear
+        if self.force_clear and os.path.exists(self.output_dir):
+            for file in os.listdir(self.output_dir):
+                os.remove(os.path.join(self.output_dir, file))
+
+        self.target_crs = target_crs
+        if not self.target_crs:
+            layer: QgsVectorLayer = QgsVectorLayer(
+                f"{self.study_area_gpkg_path}|layername=study_area_clip_polygons",
+                "study_area_clip_polygons",
+                "ogr",
+            )
+            self.target_crs = layer.crs()
+            del layer
+        self.output_rasters: List[str] = []
+        self.result_file_key = "geoe3_score_ghsl_masked_result_file"
+        self.result_key = "geoe3_score_ghsl_masked_result"
+        log_message("Initialized Opportunities Mask by GeoE3 Score Processing Task")
+
+    def run(self) -> bool:
+        """
+        Executes the Opportunities by GeoE3 Score calculation task.
+
+        Returns:
+            bool: True if the task completed successfully, False otherwise.
+        """
+        try:
+            self.calculate_score()
+            vrt_filepath = self.generate_vrt()
+            self.item.setAttribute(self.result_file_key, vrt_filepath)
+            self.item.setAttribute(self.result_key, "GeoE3 Score by Opportunities Mask Created OK")
+            return True
+        except Exception as e:
+            log_message(f"Task failed: {e}")
+            log_message(traceback.format_exc())
+            self.item.setAttribute(self.result_key, f"Task failed: {e}")
+            return False
+
+    def validate_rasters(
+        self,
+        opportunities_mask_raster: QgsRasterLayer,
+        geoe3_score_raster: QgsRasterLayer,
+        dimension_check=False,
+    ) -> None:
+        """
+        Checks if Opportunities Mask and GeoE3 Score rasters have the same origin, dimensions, and pixel sizes.
+
+        Args:
+            opportunities_mask_raster (QgsRasterLayer): The mask raster layer.
+            geoe3_score_raster (QgsRasterLayer): The GeoE3 Score raster layer.
+            dimension_check (bool): Flag to check if the rasters have the same dimensions. Defaults to False.
+
+        Raises:
+            ValueError: If one or both input rasters are invalid, or if rasters don't share the same extent or dimensions when dimension_check is True.
+        """
+        log_message("Validating input rasters")
+        log_message(f"opportunities_mask_raster: {opportunities_mask_raster.source()}")
+        log_message(f"geoe3_score_raster raster  : {geoe3_score_raster.source()}")  # noqa: E203
+
+        if not opportunities_mask_raster.isValid() or not geoe3_score_raster.isValid():
+            raise ValueError("One or both input rasters are invalid.")
+
+        if not dimension_check:
+            return
+
+        mask_provider = opportunities_mask_raster.dataProvider()
+        geoe3_score_provider = geoe3_score_raster.dataProvider()
+
+        mask_extent = mask_provider.extent()
+        geoe3_score_size = geoe3_score_provider.extent()
+        if mask_extent != geoe3_score_size:
+            raise ValueError("Input rasters do not share the same extent.")
+
+        mask_size = mask_provider.xSize(), mask_provider.ySize()
+        geoe3_score_size = geoe3_score_provider.xSize(), geoe3_score_provider.ySize()
+        if mask_size != geoe3_score_size:
+            raise ValueError("Input rasters do not share the same dimensions.")
+
+        log_message("Validation successful: rasters are aligned.")
+
+    def calculate_score(self) -> None:
+        """
+        Calculates Mask x GeoE3 Score using raster algebra and saves the result for each area.
+        """
+        area_iterator = AreaIterator(self.study_area_gpkg_path)
+        for index, (_, _, _, _) in enumerate(area_iterator):
+            if self.isCanceled():
+                return
+
+            mask_path = os.path.join(self.opportunity_masks_folder, f"opportunites_mask_{index}.tif")
+            geoe3_score_path = os.path.join(self.geoe3_folder, f"geoe3_masked_{index}.tif")
+            mask_layer = QgsRasterLayer(mask_path, "GeoE3")
+            geoe3_score_layer = QgsRasterLayer(geoe3_score_path, "POP")
+            self.validate_rasters(mask_layer, geoe3_score_layer, dimension_check=False)
+
+            output_path = os.path.join(self.output_dir, f"geoe3_score_ghsl_masked_{index}.tif")
+            if not self.force_clear and os.path.exists(output_path):
+                log_message(f"Reusing existing raster: {output_path}")
+                self.output_rasters.append(output_path)
+                continue
+
+            log_message(f"Calculating Mask by SCORE for area {index}")
+
+            params = {
+                "INPUT_A": mask_layer,
+                "BAND_A": 1,
+                "INPUT_B": geoe3_score_layer,
+                "BAND_B": 1,
+                "FORMULA": "A * B",
+                "NO_DATA": None,
+                "EXTENT_OPT": 3,
+                "PROJWIN": None,
+                "RTYPE": GDAL_OUTPUT_DATA_TYPE,
+                "OPTIONS": "",
+                "EXTRA": "",
+                "OUTPUT": output_path,
+            }
+
+            processing.run("gdal:rastercalculator", params)
+            self.output_rasters.append(output_path)
+
+            log_message(f"Masked GeoE3 Score raster saved to {output_path}")
+
+    def generate_vrt(self) -> str:
+        """
+        Combines all GeoE3 Score rasters into a single VRT and applies a QML style.
+
+        Returns:
+            str: Path to the generated VRT file.
+        """
+        vrt_path = os.path.join(self.output_dir, "geoe3_score_ghsl_masked.vrt")
+        qml_path = os.path.join(self.output_dir, "geoe3_score_ghsl_masked.qml")
+        source_qml = resources_path("resources", "qml", "analysis.qml")
+
+        params = {
+            "INPUT": self.output_rasters,
+            "RESOLUTION": 0,  # Use highest resolution
+            "SEPARATE": False,  # Combine into a single band
+            "OUTPUT": vrt_path,
+        }
+
+        processing.run("gdal:buildvirtualraster", params)
+        log_message(f"Generated VRT at {vrt_path}")
+
+        # Apply QML Style
+        if os.path.exists(source_qml):
+            shutil.copy(source_qml, qml_path)
+            log_message(f"Copied QML style from {source_qml} to {qml_path}")
+        else:
+            log_message("QML style file not found. Skipping QML copy.")
+        return vrt_path
+
+    def finished(self, result: bool) -> None:
+        """
+        Called when the task completes.
+
+        Args:
+            result (bool): The result of the task execution.
+        """
+        if result:
+            log_message("Opportunities mask by GeoE3 Score calculation completed successfully.")
+        else:
+            log_message("Opportunities mask by GeoE3 Score calculation failed.")

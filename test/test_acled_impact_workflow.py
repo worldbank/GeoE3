@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, mock_open, patch
 from qgis.core import QgsVectorLayer
 from utilities_for_testing import prepare_fixtures
 
-from geest.core import JsonTreeItem
-from geest.core.workflows import AcledImpactWorkflow
+from geoe3.core import JsonTreeItem
+from geoe3.core.workflows import AcledImpactWorkflow
 
 
 class TestAcledImpactWorkflow(unittest.TestCase):
@@ -35,7 +35,7 @@ class TestAcledImpactWorkflow(unittest.TestCase):
             os.makedirs(self.working_directory)
 
     @unittest.skip("This test is not ready")
-    @patch("geest.workflow.AcledImpactWorkflow._load_csv_as_point_layer")
+    @patch("geoe3.workflow.AcledImpactWorkflow._load_csv_as_point_layer")
     def test_workflow_initialization_valid_csv(self, mock_load_csv):
         """Test initialization with a valid CSV file."""
         mock_layer = MagicMock(spec=QgsVectorLayer)
@@ -55,7 +55,7 @@ class TestAcledImpactWorkflow(unittest.TestCase):
         mock_load_csv.assert_called_once()
 
     @unittest.skip("This test is not ready")
-    @patch("geest.workflow.AcledImpactWorkflow._load_csv_as_point_layer")
+    @patch("geoe3.workflow.AcledImpactWorkflow._load_csv_as_point_layer")
     def test_workflow_initialization_invalid_csv(self, mock_load_csv):
         """Test initialization with an invalid CSV file."""
         mock_layer = MagicMock(spec=QgsVectorLayer)
@@ -106,10 +106,10 @@ class TestAcledImpactWorkflow(unittest.TestCase):
         mock_writer.assert_called_once()
 
     @unittest.skip("This test is not ready")
-    @patch("geest.workflow.AcledImpactWorkflow._buffer_features")
-    @patch("geest.workflow.AcledImpactWorkflow._assign_scores")
-    @patch("geest.workflow.AcledImpactWorkflow._overlay_analysis")
-    @patch("geest.workflow.AcledImpactWorkflow._rasterize")
+    @patch("geoe3.workflow.AcledImpactWorkflow._buffer_features")
+    @patch("geoe3.workflow.AcledImpactWorkflow._assign_scores")
+    @patch("geoe3.workflow.AcledImpactWorkflow._overlay_analysis")
+    @patch("geoe3.workflow.AcledImpactWorkflow._rasterize")
     def test_process_features_for_area(self, mock_rasterize, mock_overlay, mock_scores, mock_buffer):
         """Test the processing of features for an area."""
         mock_geometry = MagicMock()

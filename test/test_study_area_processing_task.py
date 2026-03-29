@@ -14,7 +14,7 @@ from osgeo import ogr
 from qgis.core import QgsVectorLayer
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.tasks import StudyAreaProcessingTask
+from geoe3.core.tasks import StudyAreaProcessingTask
 
 
 class TestStudyAreaProcessor(unittest.TestCase):

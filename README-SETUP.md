@@ -1,6 +1,6 @@
-# GEEST Development Environment Setup
+# GEOE3 Development Environment Setup
 
-This guide provides comprehensive instructions for setting up your development environment for the GEEST project, including pre-commit hooks, testing, and code quality tools.
+This guide provides comprehensive instructions for setting up your development environment for the GEOE3 project, including pre-commit hooks, testing, and code quality tools.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ This guide provides comprehensive instructions for setting up your development e
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/worldbank/GEEST.git
-cd GEEST
+git clone https://github.com/worldbank/GEOE3.git
+cd GEOE3
 ```
 
 ### 2. Set Up Python Environment
@@ -69,7 +69,7 @@ direnv allow
 Flake8 checks for code style issues and potential bugs:
 
 ```bash
-flake8 geest/
+flake8 geoe3/
 ```
 
 Configuration is in `.flake8` file. Key features:
@@ -82,7 +82,7 @@ Configuration is in `.flake8` file. Key features:
 Black automatically formats Python code:
 
 ```bash
-black geest/
+black geoe3/
 ```
 
 Configuration in `pyproject.toml`:
@@ -94,7 +94,7 @@ Configuration in `pyproject.toml`:
 isort organizes imports:
 
 ```bash
-isort geest/
+isort geoe3/
 ```
 
 ### darglint - Docstring Linting
@@ -102,7 +102,7 @@ isort geest/
 darglint checks docstrings for correctness:
 
 ```bash
-darglint --docstring-style=google geest/
+darglint --docstring-style=google geoe3/
 ```
 
 ## Testing
@@ -120,7 +120,7 @@ pytest -v
 pytest test/test_utilities.py
 
 # Run tests with coverage
-pytest --cov=geest --cov-report=html
+pytest --cov=geoe3 --cov-report=html
 
 # Run only unit tests (skip slow tests)
 pytest -m "not slow"
@@ -293,9 +293,9 @@ pre-commit run flake8 --all-files
 Before submitting a pull request:
 
 1. Ensure all tests pass: `pytest`
-2. Ensure code is formatted: `black geest/`
-3. Ensure imports are sorted: `isort geest/`
-4. Ensure linting passes: `flake8 geest/`
+2. Ensure code is formatted: `black geoe3/`
+3. Ensure imports are sorted: `isort geoe3/`
+4. Ensure linting passes: `flake8 geoe3/`
 5. Run pre-commit hooks: `pre-commit run --all-files`
 6. Update documentation if needed
 

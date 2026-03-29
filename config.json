@@ -6,9 +6,9 @@
     "icon": "icon.svg",
     "experimental": false,
     "deprecated": false,
-    "homepage": "https://github.com/worldbank/GEEST",
-    "tracker": "https://github.com/worldbank/GEEST/issues",
-    "repository": "https://github.com/worldbank/GEEST",
+    "homepage": "https://github.com/worldbank/GEOE3",
+    "tracker": "https://github.com/worldbank/GEOE3/issues",
+    "repository": "https://github.com/worldbank/GEOE3",
     "tags": [],
     "category": [
       "plugins"

@@ -7,7 +7,7 @@ This tool employs a multicriteria evaluation (MCE) framework to spatially descri
 
 ## User Manual
 
-[**Gender Enabling Environments Spatial Tool (GEEST) User Manual**](#gender-enabling-environments-spatial-tool-geest-user-manual)
+[**Gender Enabling Environments Spatial Tool (GEOE3) User Manual**](#gender-enabling-environments-spatial-tool-geoe3-user-manual)
 1. [Install QGIS](#install-qgis)
 2. [Install Open Route Service (ORS) plugin](#install-open-route-service-ors-plugin)
 3. [Installing Plugin on local device](#installing-plugin-on-local-device)
@@ -58,7 +58,7 @@ This tool employs a multicriteria evaluation (MCE) framework to spatially descri
 QGIS website: [https://www.qgis.org/en/site/](https://www.qgis.org/en/site/)
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/installQGIS.jpg" alt="Install QGIS">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/installQGIS.jpg" alt="Install QGIS">
 </p>
 
 
@@ -67,7 +67,7 @@ QGIS website: [https://www.qgis.org/en/site/](https://www.qgis.org/en/site/)
 3. A pop-up window as seen in the image below should show up. Follow the prompts and leave all settings on default.
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/qgis-setup.jpg" alt="QGIS Setup">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/qgis-setup.jpg" alt="QGIS Setup">
 </p>
 
 
@@ -76,14 +76,14 @@ QGIS website: [https://www.qgis.org/en/site/](https://www.qgis.org/en/site/)
 1. Open QGIS, navigate to the "Plugins" tab and select the "Manage and Install Plugins…" option from the drop-down menu.
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/installORS.jpg" alt="install ORS">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/installORS.jpg" alt="install ORS">
 </p>
 
 2. The "Plugins" pop-up window should appear as seen in the image below.
 
 3. In the search bar type "ORS", select the "ORS Tool" from the list of plugins, and select the install button to install the plugin.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/6274c002-9b56-4374-8fd4-9278d2246afb)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/6274c002-9b56-4374-8fd4-9278d2246afb)
 
 4. You will now have to set up an account on the Open Route Service website which can be accessed by clicking the link below.
 
@@ -91,27 +91,27 @@ ORS website: [https://openrouteservice.org/](https://openrouteservice.org/)
 
 ORS Sign up: [https://openrouteservice.org/dev/#/signup](https://openrouteservice.org/dev/#/signup)
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/79728902-e5ba-49c1-a262-32cd9df628a6)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/79728902-e5ba-49c1-a262-32cd9df628a6)
 
 5. Fill in all the necessary fields to sign up and then log into your account.
 
 6. Request a standard token and provide a name for the Token.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/72eb8f24-84b5-42e9-8da7-e19bf96d410a)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/72eb8f24-84b5-42e9-8da7-e19bf96d410a)
 
 7. Once the token has been created, navigate to the Dashboard tab and click on the API key as seen in the image below. The API key should now be copied to the clipboard.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/26564e04-4520-4022-9930-4b791df8e63f)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/26564e04-4520-4022-9930-4b791df8e63f)
 
 8. In the QGIS window navigate the ORS tool and select "Provider Settings".
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/45a45354-8478-45df-b212-c477a99b2c9a)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/45a45354-8478-45df-b212-c477a99b2c9a)
 
 9. The provider settings pop-up window should now appear as seen in the image below.
 
 10. Past the API key that has been copied to the clipboard into the API Key field and press "OK".
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/b255a792-4d46-42ef-a0ff-79edb1e2fd19)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/b255a792-4d46-42ef-a0ff-79edb1e2fd19)
 
 **N.B.** Additional credits can be requested on the ORS site by applying for the collaborative plan as described [here](https://openrouteservice.org/plans/). You will have to provide a brief motivation, however, if your application is in a humanitarian, academic, governmental, or not-for-profit organization, you should be eligible for the collaborative plan.
 
@@ -123,26 +123,26 @@ support@openrouteservice.heigit.org
 
 1. Click on the green "Code" button and select the "Download ZIP" option.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/af517d0b-8b32-43b6-a664-0bb250a1d620)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/af517d0b-8b32-43b6-a664-0bb250a1d620)
 
 2. Once the download has been completed extract the contents of the ZIP file.
 
 3. Navigate to your extracted ZIP folder and copy the _requirements.txt_ file.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/6adea1a2-e63c-4067-9052-346811697828)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/6adea1a2-e63c-4067-9052-346811697828)
 
 4. Navigate to the QGIS program folder and paste the _requirements.txt_ file into it. The file path would be similar to this: _C:\Program Files\QGIS 3.32.0_ as seen in the image under **step 5**.
 
 5. Run the _OSGeo4W_ batch file.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/9a8376bb-dc50-41fa-a3fd-f3e0757a3850)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/9a8376bb-dc50-41fa-a3fd-f3e0757a3850)
 
 6. A command line pop-up window will appear as seen in the image below.
 
 7. Type the following into it and press Enter.
 ```pip install -r requirements.txt```
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/ed373467-0f80-4b75-8931-9c9e2d03d013)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/ed373467-0f80-4b75-8931-9c9e2d03d013)
 
 8. All the Python libraries that the Plugin is dependent on will now be installed. This can take a few minutes to install.
 
@@ -150,27 +150,27 @@ support@openrouteservice.heigit.org
 
 10. Open QGIS, navigate to the "Plugins" tab and select the "Manage and Install Plugins…" option from the drop-down menu.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/39e233a5-15de-4471-9560-028cd8cde839)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/39e233a5-15de-4471-9560-028cd8cde839)
 
 11. In the plugin pop-up window navigate to the "Install from ZIP" tab.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/9ed559bc-5672-4631-a33d-714710440819)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/9ed559bc-5672-4631-a33d-714710440819)
 
 12. From the "Install from ZIP" tab navigate back to your extracted ZIP folder and select the "gender\_indicator\_tool" compressed (zipped) folder as seen in the image below.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/f2e81343-1bb4-4dc1-b593-38c26726f767)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/f2e81343-1bb4-4dc1-b593-38c26726f767)
 
 13. Once the ZIP file has been selected click on "Install Plugin".
 
 14. Once the plugin has been installed navigate to the "All" tab.
 
-15. In the search bar type "GEEST" and click the check box next to the "Gender Enabling Environments Spatial Tool (GEEST)" to install the plugin.
+15. In the search bar type "GEOE3" and click the check box next to the "Gender Enabling Environments Spatial Tool (GEOE3)" to install the plugin.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/aac4db6e-3585-40dc-9e73-d0eb3a8bc247)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/aac4db6e-3585-40dc-9e73-d0eb3a8bc247)
 
 16. The plugin is now installed and you should now be able to access it in your toolbar or under the Plugin's tab as seen in the image below.
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/eceaf443-ff8b-4be0-9282-a1236a03bb86)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/eceaf443-ff8b-4be0-9282-a1236a03bb86)
 
 ## 4 Using the Plugin
 Examples of files that can be used as input at a particular step as per the Pilot Country Database will be indicated at the end of the step.
@@ -178,7 +178,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 ### 4.1 SETUP TAB
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/setupTab.jpg" alt="Setup Tab">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/setupTab.jpg" alt="Setup Tab">
 </p>
 
 1.	Create a project folder that will be used to store all tool outputs.
@@ -194,7 +194,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 5.	Copy and paste the EPSG code for your specific country and paste it in the Filter bar as seen in the image below.
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/CRS.jpg" alt="CRS">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/CRS.jpg" alt="CRS">
 </p>
 
 6.	Select the CRS from the list and click “OK”.
@@ -207,7 +207,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 #### 4.2.1 Workplace Discrimination
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/WD.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/WD.jpg" alt="picture">
 </p>
 
 1.	Navigate to the WBL (Women, Business and the Law) report and input the WBL index score representing the value from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. This indicator is composed by the Workplace Index score of the WBL. The data is already formatted on a scale from 1 to 100.
@@ -222,7 +222,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 #### 4.2.2 Regulatory Frameworks
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/RF.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/RF.jpg" alt="picture">
 </p>
 
 1.	Navigate to the WBL (Women, Business and the Law) report and input the WBL Pay and Parenthood index scores, values ranging from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. This indicator is composed by aggregating the Parenthood and Pay Index scores of the WBL. The data is already formatted on a scale from 1 to 100.
@@ -236,7 +236,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 #### 4.2.3 Financial Inclusion
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/FI.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/FI.jpg" alt="picture">
 </p>
 
 1.	Navigate to the WBL (Women, Business and the Law) report and input the WBL Entrepreneurship index score, value ranging from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. The data is already formatted on a scale from 1 to 100. It comes from the Entrepreneurship rating of the WBL Index.
@@ -250,7 +250,7 @@ Examples of files that can be used as input at a particular step as per the Pilo
 #### 4.2.4 Aggregate
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/WDAG.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/WDAG.jpg" alt="picture">
 </p>
 
 1.	Load the raster outputs generated in each of the previous factor tabs for the Contextual Dimension.
@@ -276,7 +276,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.1 Women's Travel Patterns
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/WTP.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/WTP.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile input of facilities related to women’s role as caregivers. This includes green spaces, grocery stores, pharmacies, kindergartens and schools.
@@ -303,7 +303,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.2 Access to Public Transport
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/APT.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/APT.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile input for public transport stops, including both land and maritime stops.
@@ -324,7 +324,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.3 Access to Education and Training Facilities
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/ETF.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/ETF.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile input of education and training facilities (colleges, training facilities and universities).
@@ -345,7 +345,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.4 Access to Health Facilities
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/HEF.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/HEF.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile input of health facilities (hospitals and clinics as the points of interest).
@@ -366,7 +366,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.5 Access to Financial Facilities
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/FIF.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/FIF.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile input of financial facilities (location of banks and other financial facilities except for ATMs).
@@ -388,7 +388,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.3.6 Aggregate
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/AGGACC.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/AGGACC.jpg" alt="picture">
 </p>
 
 1.	Load the raster outputs generated in each of the previous factor tabs for the Accessibility Dimension.
@@ -415,7 +415,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.1 Active Transport
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/AT.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/AT.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile for crosswalks, polyline shapefiles for cycle paths and for footpaths and polygon shapefile for block lengths.
@@ -436,7 +436,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.2 Safety
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/SAF.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/SAF.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select
@@ -464,7 +464,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.3 Digital Inclusion
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/DIG.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/DIG.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select
@@ -481,7 +481,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.4 Environmental Hazards
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/ENV.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/ENV.jpg" alt="picture">
 </p>
 
 1. Navigate to and select raster hazard event.
@@ -509,7 +509,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.5 Education
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/EDU.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/EDU.jpg" alt="picture">
 </p>
 
 1. Navigate to and select
@@ -527,7 +527,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.6 Fragility, conflict, and violence (FCV)
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/FCV.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/FCV.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select the csv data for Fragility, conflict and violence (FCV-ACLED data).
@@ -544,7 +544,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.7 Water Sanitation
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/WAS.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/WAS.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select point shapefile for water points, catch basins, water valves and fire hydrants.
@@ -560,7 +560,7 @@ If a factor was executed in the same work session, its file path will automatica
 #### 4.4.8 Aggregate
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/AGGPD.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/AGGPD.jpg" alt="picture">
 </p>
 
 1.	Load the raster outputs generated in each of the previous factor tabs for the Place Characterization Dimension.
@@ -585,7 +585,7 @@ If a factor is missing it needs to be given a weighting of 0%. All factors shoul
 ### 4.5 DIMENSION AGGREGATION TAB
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/AGGALL.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/AGGALL.jpg" alt="picture">
 </p>
 
 1.	Load each dimension’s aggregated raster outputs of previous domains (Contextual, Accessibility and Place Characterization).
@@ -609,7 +609,7 @@ If a dimension is missing it needs to be given a weighting of 0%. All domains sh
 ### 4.6 ABOUT TAB
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/abou.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/abou.jpg" alt="picture">
 </p>
 
 Information on the tool, its framework, scoring system, and how results should or can be interpreted.
@@ -618,7 +618,7 @@ Information on the tool, its framework, scoring system, and how results should o
 #### 4.7.1 Enablement
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/ENA.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/ENA.jpg" alt="picture">
 </p>
 
 ### Step 1: Classify into discrete classes
@@ -661,7 +661,7 @@ Information on the tool, its framework, scoring system, and how results should o
 #### 4.7.2 RE Zone Raster Locations
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/REzone.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/REzone.jpg" alt="picture">
 </p>
 
 1. Navigate to and select the combined classification input file produced in step 2.3 of the “Enablement” tab (WEE_pop_score.tif). This file path will be automatically populated if step 2.3 of the “Enablement” tab was executed in the same work session.
@@ -680,7 +680,7 @@ Information on the tool, its framework, scoring system, and how results should o
 #### 4.7.3 RE Point Locations
 
 <p align="center">
-  <img src="https://github.com/worldbank/GEEST/raw/main/docs/pictures/REpoint.jpg" alt="picture">
+  <img src="https://github.com/worldbank/GEOE3/raw/main/docs/pictures/REpoint.jpg" alt="picture">
 </p>
 
 1.	Navigate to and select the combined classification input file produced in step 2.3 of the “Enablement” tab (WEE_pop_score.tif). This file path will be automatically populated if step 2.3 of the “Enablement” tab was executed in the same work session.
@@ -700,7 +700,7 @@ Information on the tool, its framework, scoring system, and how results should o
 
 ### 5.1 ACCESSIBILTY TABS PERMISSIONS ERROR
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/63edfc18-8294-478c-bcc5-1a4f28c07711)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/63edfc18-8294-478c-bcc5-1a4f28c07711)
 
 This error occurs when some of the shapefiles produced in the temp folder of the working directory are trying to be overwritten or deleted but can't because it's still being stored in QGIS's memory. This can occurs even when the layer is removed from the QGIS table of contents.
 
@@ -711,11 +711,11 @@ If the file is not produced you can try the following:
 - If you cannot delete the *temp* folder you will have to close QGIS and open it again, complete the setup tab, go back to the tab where the error occurred and re-run the tab again.
 
 ### 5.2 QGIS PLUGIN/INTERFACE WIDGETS AND TEXT ARE DISTORTED AND SCALED INCORRECTLY
-![image](https://github.com/worldbank/GEEST/assets/120469484/e195416b-ee86-4998-9ca5-a4784f7c724e)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/e195416b-ee86-4998-9ca5-a4784f7c724e)
 
 This is a problem linked to display settings caused by the connection of multiple monitors and/or varying display scales and resolutions, rather than a QGIS or plugin-related issue. This is backed by a Microsoft support post, linked [here](https://support.microsoft.com/en-gb/topic/windows-scaling-issues-for-high-dpi-devices-508483cd-7c59-0d08-12b0-960b99aa347d), highlighting the issues that may be experienced when using a high-DPI device, such as a 4k monitor. Additionally, in the scaling display setting, Microsoft indicates that entering a custom scaling size between 100% - 500% is not recommended as "...it can cause text and apps to become unreadable."
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/248fde5c-dd1a-41d0-94ad-2ace20a74f95)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/248fde5c-dd1a-41d0-94ad-2ace20a74f95)
 
 Possible solutions to this are:
 - Adjust the scale for all monitors to 100%.
@@ -723,25 +723,25 @@ Possible solutions to this are:
 
 ### 5.3 RASTER OUTPUTS NOT BEING LOADED AND DISPLAYING CORRECTLY
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/10de6c72-f8f6-47b8-adb3-930f5c625f66)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/10de6c72-f8f6-47b8-adb3-930f5c625f66)
 
 Occasionally, some of the outputs automatically loaded to the QGIS table of contents do not display correctly. To correct this, try removing the layer that is displayed incorrectly and add it again to QGIS.
 
 ### 5.4 ERROR: OUTPUT DIRECTORY NOT SET
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/b2f2959e-85c4-4e89-8493-dac2b9a20f07)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/b2f2959e-85c4-4e89-8493-dac2b9a20f07)
 
 If you see the following error message, please check if your output directory has been set in the "Setup" tab.
 
 ### 5.5 ERROR: COUNTRY BOUNDARY POLYGON NOT SET
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/75882e9d-a9af-43fc-9f68-0293c75b49b3)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/75882e9d-a9af-43fc-9f68-0293c75b49b3)
 
 If you see the following error message, please check if you're country boundary polygon layer has been set in the "Setup" tab.
 
 ### 5.6 ERROR: CO-ORDINATE REFERENCE SYSTEM (CRS) NOT SET
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/120c0cf9-e526-4d8b-adff-de3a9d2f7fb8)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/120c0cf9-e526-4d8b-adff-de3a9d2f7fb8)
 
 If you see the following error message, please check if you're CRS has been set in the "Setup" tab.
 
@@ -756,7 +756,7 @@ If you see the following error message, please check if you're CRS has been set 
    1.3 Select the “Plugin Reloader” plugin and click on the install button.
 
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/801db189-92ca-4755-a79f-8898b2e43a2f)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/801db189-92ca-4755-a79f-8898b2e43a2f)
 
  1.4 Navigate to the "Plugin Reloader" configuration window under the Plugins tab.
 
@@ -764,11 +764,11 @@ If you see the following error message, please check if you're CRS has been set 
 
  1.5 From the drop-down list select the "gender\_indicator\_tool" plugin and press "OK".
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/3dc21c04-2ebe-4b33-92bc-1020746ee9e3)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/3dc21c04-2ebe-4b33-92bc-1020746ee9e3)
 
   1.6 If you encounter an unexpected error in the tool that has not been mentioned in any of the previous troubleshooting sections you can try runing the "plugin reload" tool
 
-![image](https://github.com/worldbank/GEEST/assets/120469484/80e1ae57-8608-4392-8df2-46e5b5d4789e)
+![image](https://github.com/worldbank/GEOE3/assets/120469484/80e1ae57-8608-4392-8df2-46e5b5d4789e)
 
 **OR**
 

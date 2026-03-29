@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""📦 Datasource Widget Factory module.
+
+This module contains functionality for datasource widget factory.
+"""
+
+from typing import Optional
+
+from qgis.core import Qgis
+
+from geoe3.core.settings import setting
+from geoe3.gui.widgets.datasource_widgets import (
+    AcledCsvDataSourceWidget,
+    BaseDataSourceWidget,
+    CsvDataSourceWidget,
+    EPLEXDataSourceWidget,
+    FixedValueDataSourceWidget,
+    RasterDataSourceWidget,
+    VectorAndFieldDataSourceWidget,
+    VectorDataSourceWidget,
+)
+from geoe3.utilities import log_message
+
+
+class DataSourceWidgetFactory:
+    """
+    Factory class for creating data source widgets based on key-value pairs.
+    """
+
+    @staticmethod
+    def create_widget(widget_key: str, value: int, attributes: dict) -> Optional[BaseDataSourceWidget]:
+        """
+        Factory method to create a data source widget based on key-value pairs.
+
+        Args:
+            widget_key: The key identifying which widget type to create.
+            value: The value to configure the widget with.
+            attributes: Additional attributes to configure the widget.
+
+        Returns:
+            Optional[BaseDataSourceWidget]: The created widget, or None if no match.
+        """
+        log_message(
+            f"Datasource widget factory called with key {widget_key}",
+            tag="GeoE3",
+            level=Qgis.Info,
+        )
+        verbose_mode = int(setting(key="verbose_mode", default=0))
+
+        if verbose_mode:
+            log_message(f"Key: {widget_key} Value: {value}")
+        try:
+            # remove "use_" from start of widget key for passing to the data source widget where needed
+            cleaned_key = widget_key[4:]
+            if widget_key == "indicator_required" and value == 0:
+                return None
+            if widget_key == "use_index_score" and value == 1:
+                return FixedValueDataSourceWidget(widget_key=widget_key, attributes=attributes)
+            if widget_key == "use_contextual_index_score" and value == 1:
+                return FixedValueDataSourceWidget(widget_key=widget_key, attributes=attributes)
+            if widget_key == "use_eplex_score" and value == 1:
+                return EPLEXDataSourceWidget(widget_key=widget_key, attributes=attributes)
+            if widget_key == "use_index_score_with_ookla" and value == 1:
+                # Uses the same datasource widget as index score for now ...
+                return FixedValueDataSourceWidget(widget_key=widget_key, attributes=attributes)
+            if widget_key == "use_index_score_with_ghsl" and value == 1:
+                # Uses the same datasource widget as index score for now ...
+                return FixedValueDataSourceWidget(widget_key=widget_key, attributes=attributes)
+            if widget_key == "use_multi_buffer_point" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_single_buffer_point" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_polygon_per_cell" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_polyline_per_cell" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_osm_transport_polyline_per_cell" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_point_per_cell" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_csv_point_per_cell" and value == 1:
+                return CsvDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_csv_to_point_layer" and value == 1:
+                return AcledCsvDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_classify_polygon_into_classes" and value == 1:
+                return VectorAndFieldDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_classify_safety_polygon_into_classes" and value == 1:
+                return VectorAndFieldDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_nighttime_lights" and value == 1:
+                return RasterDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_environmental_hazards" and value == 1:
+                return RasterDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            if widget_key == "use_street_lights" and value == 1:
+                return VectorDataSourceWidget(widget_key=cleaned_key, attributes=attributes)
+            else:
+                log_message(
+                    "Datasource Factory did not match any widgets",
+                    tag="GeoE3",
+                    level=Qgis.Critical,
+                )
+                return None
+        except Exception as e:
+            log_message(f"Error in datasource widget: {e}", level=Qgis.Critical)
+            import traceback
+
+            log_message(traceback.format_exc(), level=Qgis.Critical)
+            return None

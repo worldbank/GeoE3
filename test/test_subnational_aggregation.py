@@ -5,7 +5,7 @@ import unittest
 from qgis.core import QgsFeedback, QgsProcessingContext
 from utilities_for_testing import prepare_fixtures
 
-from geest.core.algorithms import SubnationalAggregationProcessingTask
+from geoe3.core.algorithms import SubnationalAggregationProcessingTask
 
 
 @unittest.skip("Skip this test for now")
@@ -27,7 +27,7 @@ class TestSubnationalAggregationProcessingTask(unittest.TestCase):
 
     def setUp(self):
         self.task = SubnationalAggregationProcessingTask(
-            # geest_raster_path=f"{self.working_directory}/wee_masked_0.tif",
+            # geoe3_raster_path=f"{self.working_directory}/wee_masked_0.tif",
             # pop_raster_path=f"{self.working_directory}/population/reclassified_0.tif",
             study_area_gpkg_path=self.study_area_gpkg_path,
             aggregation_areas_path=self.aggregation_areas_path,

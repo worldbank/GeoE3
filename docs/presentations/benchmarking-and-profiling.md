@@ -3,7 +3,7 @@ marp: true
 theme: default
 paginate: true
 header: 'Benchmarking and Profiling in Python'
-footer: 'GEEST Development Team | 2025'
+footer: 'GEOE3 Development Team | 2025'
 style: |
   section {
     font-size: 28px;
@@ -22,7 +22,7 @@ style: |
 # Benchmarking and Profiling
 ## Optimizing Performance in Python Applications
 
-**A Practical Guide for the GEEST Development Team**
+**A Practical Guide for the GEOE3 Development Team**
 
 ---
 
@@ -49,7 +49,7 @@ style: |
 - **Resource Optimization**: Reduce memory and CPU usage
 - **Cost Efficiency**: Lower infrastructure costs
 
-**For GEEST**: Processing spatial data for gender analysis requires efficient algorithms
+**For GEOE3**: Processing spatial data for gender analysis requires efficient algorithms
 
 ---
 
@@ -144,9 +144,9 @@ python -m pstats output.prof
 % stats 20
 ```
 
-**For GEEST**:
+**For GEOE3**:
 ```bash
-python -m cProfile -o geest_profile.prof admin.py build
+python -m cProfile -o geoe3_profile.prof admin.py build
 ```
 
 ---
@@ -250,7 +250,7 @@ def profile_function(func):
 
         QgsMessageLog.logMessage(
             f"{func.__name__} took {duration:.4f}s",
-            tag="Geest-Profile",
+            tag="GeoE3-Profile",
             level=Qgis.Info
         )
         return result
@@ -259,7 +259,7 @@ def profile_function(func):
 
 ---
 
-## Profiling Example: GEEST
+## Profiling Example: GEOE3
 
 ```python
 class WorkflowJob:
@@ -276,7 +276,7 @@ class WorkflowJob:
         pass
 ```
 
-View results in QGIS Log Panel → Filter by "Geest-Profile"
+View results in QGIS Log Panel → Filter by "GeoE3-Profile"
 
 ---
 
@@ -436,7 +436,7 @@ jobs:
 - Inefficient data structures
 - Unnecessary copies
 
-**For GEEST**: Processing multiple layers and features simultaneously
+**For GEOE3**: Processing multiple layers and features simultaneously
 
 ---
 
@@ -688,7 +688,7 @@ def benchmark_algorithm(algorithm, parameters):
 
     QgsMessageLog.logMessage(
         f"Algorithm '{algorithm}' took {duration:.2f}s",
-        tag="Geest-Benchmark",
+        tag="GeoE3-Benchmark",
         level=Qgis.Info
     )
 
@@ -720,7 +720,7 @@ class ProfiledTask(QgsTask):
         duration = time.perf_counter() - self.start_time
         QgsMessageLog.logMessage(
             f"Task completed in {duration:.2f}s",
-            tag="Geest", level=Qgis.Info
+            tag="GeoE3", level=Qgis.Info
         )
 ```
 
@@ -732,7 +732,7 @@ class ProfiledTask(QgsTask):
 
 ## Example 1: Optimizing Grid Processing
 
-**Scenario**: GEEST processes analysis grids - which approach is faster?
+**Scenario**: GEOE3 processes analysis grids - which approach is faster?
 
 ```python
 # Approach A: Process all cells at once
@@ -809,7 +809,7 @@ for result in process_layer_v2(layer):
 
 ## Example 3: Parallel Processing
 
-**GEEST can benefit from parallel processing for independent cells**
+**GEOE3 can benefit from parallel processing for independent cells**
 
 ```python
 from concurrent.futures import ProcessPoolExecutor
@@ -912,9 +912,9 @@ assert optimized_result == original_result
 ## Best Practices: Code Organization
 
 ```python
-# geest/core/profiling.py
+# geoe3/core/profiling.py
 class PerformanceMonitor:
-    """Centralized performance monitoring for GEEST."""
+    """Centralized performance monitoring for GEOE3."""
 
     def __init__(self):
         self.metrics = {}
@@ -928,7 +928,7 @@ class PerformanceMonitor:
         for name, duration in self.metrics.items():
             QgsMessageLog.logMessage(
                 f"{name}: {duration:.4f}s",
-                tag="Geest-Performance",
+                tag="GeoE3-Performance",
                 level=Qgis.Info
             )
 ```
@@ -956,7 +956,7 @@ performance.log_metrics()
 
 ---
 
-## Recommended Tools for GEEST
+## Recommended Tools for GEOE3
 
 ### Essential Tools
 1. **cProfile**: First-line profiler
@@ -975,7 +975,7 @@ performance.log_metrics()
 
 ---
 
-## Setting Up Profiling in GEEST
+## Setting Up Profiling in GEOE3
 
 ```bash
 # Install profiling dependencies
@@ -991,8 +991,8 @@ echo "snakeviz>=2.2.0" >> requirements-dev.txt
 mkdir -p test/benchmarks
 
 # Run initial profiling
-python -m cProfile -o geest_baseline.prof admin.py build
-snakeviz geest_baseline.prof
+python -m cProfile -o geoe3_baseline.prof admin.py build
+snakeviz geoe3_baseline.prof
 ```
 
 ---
@@ -1070,7 +1070,7 @@ python -m pstats output.prof
 
 ---
 
-## Next Steps for GEEST
+## Next Steps for GEOE3
 
 1. **Establish Baseline**
    - Profile current critical paths (grid processing, layer loading)
@@ -1097,7 +1097,7 @@ python -m pstats output.prof
 
 **Your Turn!**
 
-1. Choose a function in GEEST that you think might be slow
+1. Choose a function in GEOE3 that you think might be slow
 2. Profile it with cProfile
 3. Identify the bottleneck
 4. Try an optimization
@@ -1111,7 +1111,7 @@ python -m pstats output.prof
 ## Discussion & Q&A
 
 **Topics for Discussion**:
-- What are the current performance pain points in GEEST?
+- What are the current performance pain points in GEOE3?
 - Which profiling tools should we adopt first?
 - How do we integrate benchmarking into our workflow?
 - What performance goals should we set?
@@ -1140,7 +1140,7 @@ python -m pstats output.prof
 
 **Resources**:
 - This presentation: `docs/presentations/benchmarking-and-profiling.md`
-- GEEST Repository: https://github.com/worldbank/GEEST
+- GEOE3 Repository: https://github.com/worldbank/GEOE3
 - Developer Guide: `README-dev.md`
 
 **Contact**: Development Team
@@ -1183,7 +1183,7 @@ python -m pstats worker_*.prof
 
 ## Bonus: GPU Profiling (for future)
 
-**If GEEST uses GPU acceleration**
+**If GEOE3 uses GPU acceleration**
 
 ```python
 # For PyTorch/TensorFlow
@@ -1221,7 +1221,7 @@ def profile_slow_functions(threshold_seconds: float = 1.0):
             if duration > threshold_seconds:
                 QgsMessageLog.logMessage(
                     f"SLOW: {func.__name__} took {duration:.2f}s",
-                    tag="Geest-Performance",
+                    tag="GeoE3-Performance",
                     level=Qgis.Warning
                 )
 

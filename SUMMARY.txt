@@ -1,8 +1,8 @@
 ================================================================================
-GEEST CODE QUALITY IMPROVEMENTS - IMPLEMENTATION SUMMARY
+GEOE3 CODE QUALITY IMPROVEMENTS - IMPLEMENTATION SUMMARY
 ================================================================================
 
-Project: worldbank/GEEST
+Project: worldbank/GEOE3
 Branch: copilot/add-unit-tests-and-hooks
 Date: 2025-11-06
 
@@ -92,22 +92,22 @@ Configuration Files:
 Python Files with UTF-8 Pragma and License Headers:
   - test_suite.py
   - docs/rename_icons.py
-  - geest/core/__init__.py
-  - geest/core/i18n.py
-  - geest/core/json_validator.py
-  - geest/core/generate_schema.py
-  - geest/core/osm_downloaders/nominatim.py
-  - geest/core/osm_downloaders/downloader.py
-  - geest/core/osm_downloaders/overpass.py
-  - geest/core/osm_downloaders/osm.py
-  - geest/gui/widgets/configuration_widgets/raster_reclassification_configuration_widget.py
-  - geest/gui/widgets/configuration_widgets/safety_raster_configuration_widget.py
-  - geest/gui/widgets/configuration_widgets/street_lights_configuration_widget.py
-  - geest/gui/widgets/configuration_widgets/dont_use_configuration_widget.py
-  - geest/gui/widgets/datasource_widgets/fixed_value_datasource_widget.py
-  - geest/gui/widgets/datasource_widgets/base_datasource_widget.py
-  - geest/gui/widgets/custom_banner_label.py
-  - geest/gui/widgets/solid_menu.py
+  - geoe3/core/__init__.py
+  - geoe3/core/i18n.py
+  - geoe3/core/json_validator.py
+  - geoe3/core/generate_schema.py
+  - geoe3/core/osm_downloaders/nominatim.py
+  - geoe3/core/osm_downloaders/downloader.py
+  - geoe3/core/osm_downloaders/overpass.py
+  - geoe3/core/osm_downloaders/osm.py
+  - geoe3/gui/widgets/configuration_widgets/raster_reclassification_configuration_widget.py
+  - geoe3/gui/widgets/configuration_widgets/safety_raster_configuration_widget.py
+  - geoe3/gui/widgets/configuration_widgets/street_lights_configuration_widget.py
+  - geoe3/gui/widgets/configuration_widgets/dont_use_configuration_widget.py
+  - geoe3/gui/widgets/datasource_widgets/fixed_value_datasource_widget.py
+  - geoe3/gui/widgets/datasource_widgets/base_datasource_widget.py
+  - geoe3/gui/widgets/custom_banner_label.py
+  - geoe3/gui/widgets/solid_menu.py
 
 ================================================================================
 QUALITY CHECKS

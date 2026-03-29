@@ -311,7 +311,7 @@ cat <<EOF >.vscode/launch.json
 
             "program": "${env:QGIS_EXECUTABLE}", // Set the QGIS executable path from an environment variable
             //"program": "/usr/bin/qgis", // Replace with the actual QGIS executable path
-            "args": ["--project", "${workspaceFolder}/GEEST.qgs"], // Optional QGIS project
+            "args": ["--project", "${workspaceFolder}/GEOE3.qgs"], // Optional QGIS project
             "console": "integratedTerminal",
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/planet_explorer"

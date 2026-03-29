@@ -121,10 +121,10 @@ direnv allow
 pip install -r requirements-dev.txt
 
 # Run flake8
-flake8 geest/
+flake8 geoe3/
 
 # Check specific file
-flake8 geest/core/constants.py
+flake8 geoe3/core/constants.py
 ```
 
 ### ✅ 5. Google Docstring Format
@@ -140,10 +140,10 @@ flake8 geest/core/constants.py
 **Verification:**
 ```bash
 # Check docstrings with darglint
-darglint --docstring-style=google geest/
+darglint --docstring-style=google geoe3/
 
 # Check with flake8
-flake8 --select=D geest/
+flake8 --select=D geoe3/
 
 # Run pre-commit hook
 pre-commit run ensure-google-docstrings --all-files
@@ -159,15 +159,15 @@ See `CODING.md` for Google docstring format examples and `README-SETUP.md` for s
 **Files Updated (18+ files):**
 - `test_suite.py`
 - `docs/rename_icons.py`
-- `geest/core/__init__.py`
-- `geest/core/i18n.py`
-- `geest/core/json_validator.py`
-- `geest/core/generate_schema.py`
-- `geest/core/osm_downloaders/nominatim.py`
-- `geest/core/osm_downloaders/downloader.py`
-- `geest/core/osm_downloaders/overpass.py`
-- `geest/core/osm_downloaders/osm.py`
-- 8 GUI widget files in `geest/gui/widgets/`
+- `geoe3/core/__init__.py`
+- `geoe3/core/i18n.py`
+- `geoe3/core/json_validator.py`
+- `geoe3/core/generate_schema.py`
+- `geoe3/core/osm_downloaders/nominatim.py`
+- `geoe3/core/osm_downloaders/downloader.py`
+- `geoe3/core/osm_downloaders/overpass.py`
+- `geoe3/core/osm_downloaders/osm.py`
+- 8 GUI widget files in `geoe3/gui/widgets/`
 - All new test files
 
 **Format Used:**
@@ -182,7 +182,7 @@ See `CODING.md` for Google docstring format examples and `README-SETUP.md` for s
 **Verification:**
 ```bash
 # Check for files without UTF-8 pragma
-for f in $(find geest -name "*.py"); do
+for f in $(find geoe3 -name "*.py"); do
   if ! head -3 "$f" | grep -q "coding[:=]"; then
     echo "Missing: $f";
   fi;
@@ -226,7 +226,7 @@ All files that received UTF-8 pragmas also received license headers (18+ files)
 **Verification:**
 ```bash
 # Check for files without license headers
-for f in $(find geest -name "*.py" | head -20); do
+for f in $(find geoe3 -name "*.py" | head -20); do
   if ! head -20 "$f" | grep -qi "copyright\|license"; then
     echo "Missing license: $f";
   fi;
@@ -291,13 +291,13 @@ pre-commit install
 pre-commit run --all-files
 
 # 4. Run flake8
-flake8 geest/
+flake8 geoe3/
 
 # 5. Format code
-black geest/
+black geoe3/
 
 # 6. Sort imports
-isort geest/
+isort geoe3/
 ```
 
 All checks should pass with minimal warnings. Any remaining issues are pre-existing and not related to these changes.

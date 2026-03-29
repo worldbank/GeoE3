@@ -1,12 +1,12 @@
 ## Accessibility
 
 <p align="justify">
-The Accessibility Dimension evaluates women’s daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where women live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
+The Accessibility Dimension evaluates people's daily mobility by examining their access to essential services. Levels of enablement for work access in this dimension are determined by service areas, which represent the geographic zones that facilities like childcare, supermarkets, universities, banks, and clinics can serve based on proximity. The nearer these facilities are to where people live, the more supportive and enabling the environment becomes for their participation in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEOE3/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
 </p>
 
 ### General Overview
 ---
-This tool evaluates how easily women can access essential services and amenities, considering their caregiving roles and daily travel needs. It uses geospatial area analysis with OpenStreetMap (OSM) data to measure accessibility for several factors, including:
+This tool evaluates how easily people can access essential services and amenities, considering their potential caregiving roles and daily travel needs. It uses geospatial area analysis with OpenStreetMap (OSM) data to measure accessibility for several factors, including:
 
 - **Women’s Travel Patterns:** Access to everyday services like pharmacies, markets, supermarkets, childcare centers, schools and parks.
 - **Access to Public Transport:** Proximity to bus stops, train stations and other transport facilities.
@@ -26,7 +26,7 @@ This tool evaluates how easily women can access essential services and amenities
 
 ---
 
-**Output**: The process generates zones around these amenities, showing how far women can travel on foot or by car within increasing distances or times. Each zone is assigned a score from 5 (high accessibility) to 0 (no accessibility), reflecting decreasing accessibility as distance or travel time increases.
+**Output**: The process generates zones around these amenities, showing how far people can travel on foot or by car within increasing distances or times. Each zone is assigned a score from 5 (high accessibility) to 0 (no accessibility), reflecting decreasing accessibility as distance or travel time increases.
 
 ### Input Accessibility factors
 ---
@@ -37,7 +37,7 @@ This tool evaluates how easily women can access essential services and amenities
 **Locate Women's Travel Patterns Section**
 
 > - 🖱️🖱️ **Double-click** on the **Women's Travel Patterns section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point features**) corresponding to the indicators by clicking the three-dot button.
+> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point features**) corresponding to the indicators by clicking the three-dot button. You can also use the **Download from OSM** function to extract the latest data from OpenStreetMap.
 > - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
 > - ⚖️ **Assign Weights**: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.
 > - 🚫 **Exclude Unused Factors (optional)**: If a specific factor is not intended to be included in the process, uncheck the **Use** button associated with it.
@@ -46,7 +46,7 @@ This tool evaluates how easily women can access essential services and amenities
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20input.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/WTP_2.0.jpg"
     alt="WTP input"
     style="width:75%;"
     title="Click to enlarge"
@@ -112,7 +112,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WTP%20run.jpg"
     alt="WTP run"
     style="width:75%;"
     title="Click to enlarge"
@@ -123,7 +123,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/WTP%20success.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/WTP%20success.jpg"
     alt="WTP success"
     style="width:75%;"
     title="Click to enlarge"
@@ -134,7 +134,7 @@ The successful completion of the process is indicated by the green checkmark wid
 #### Access to Public Transport
 
 <p align="justify">
-<strong>Access to Public Transport</strong> focuses on the availability and proximity of public transportation stops, which is crucial for women, especially those who rely on buses, trains, or trams to access jobs, education, and essential services.
+<strong>Access to Public Transport</strong> focuses on the availability and proximity of public transportation stops, which is crucial for people that rely on buses, trains, or trams to access jobs, education, and essential services.
 </p>
 
 **Locate Access to Public Transport Section**
@@ -147,7 +147,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/APT.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/PT_2.0.jpg"
     alt="APT input"
     style="width:75%;"
     title="Click to enlarge"
@@ -212,7 +212,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/APT%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/APT%20run.jpg"
     alt="APT run"
     style="width:75%;"
     title="Click to enlarge"
@@ -226,7 +226,7 @@ The process should be successfully completed and indicated by a green checkmark 
 #### Access to Health Facilities
 
 <p align="justify">
-<strong>Access to Health Facilities</strong> evaluates how easily women can reach healthcare services in terms of distance, impacting their well-being and ability to participate in the workforce.
+<strong>Access to Health Facilities</strong> evaluates how easily people can reach healthcare services in terms of distance, impacting their well-being and ability to participate in the workforce.
 </p>
 
 **Locate Access to Health Facilities Section**
@@ -240,7 +240,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AHF.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/HF_2.0.jpg"
     alt="AHF input"
     style="width:75%;"
     title="Click to enlarge"
@@ -309,7 +309,7 @@ The process should be successfully completed and indicated by a green checkmark 
 #### Access to Education and Training Facilities
 
 <p align="justify">
-<strong>Access to Education and Training Facilities</strong> assesses the proximity to higher education institutions and training centers, influencing women’s ability to gain necessary qualifications.
+<strong>Access to Education and Training Facilities</strong> assesses the proximity to higher education institutions and training centers, influencing people’s ability to gain necessary qualifications.
 </p>
 
 **Locate Access to Education and Training Facilities Section**
@@ -322,7 +322,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AET.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/EF_2.0.jpg"
     alt="AET input"
     style="width:75%;"
     title="Click to enlarge"
@@ -391,7 +391,7 @@ The process should be successfully completed and indicated by a green checkmark 
 #### Access to Financial Facilities
 
 <p align="justify">
-<strong>Access to Financial Facilities</strong> focuses on the proximity of banks and financial institutions, which is essential for women’s economic empowerment and ability to access credit.
+<strong>Access to Financial Facilities</strong> focuses on the proximity of banks and financial institutions, which is essential for people’s economic empowerment and ability to access credit.
 </p>
 
 **Locate Access to Financial Facilities Section**
@@ -404,7 +404,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/AFF.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FF_2.0.jpg"
     alt="AFF input"
     style="width:75%;"
     title="Click to enlarge"
@@ -479,7 +479,7 @@ The process should be successfully completed and indicated by a green checkmark 
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20weights.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GeoE3/main/docs/images/new%20images/ACC_2.0.jpg"
     alt="Accessibility Weights"
     style="width:75%;"
     title="Click to enlarge"
@@ -496,7 +496,7 @@ After configuring the factors and adjusting their weights to achieve balance, yo
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20run.jpg"
     alt="Accessibility Run"
     style="width:75%;"
     title="Click to enlarge"
@@ -526,7 +526,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20add.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20add.jpg"
     alt="Accessibility Add to map"
     style="width:75%;"
     title="Click to enlarge"
@@ -541,7 +541,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ACC%20rerun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ACC%20rerun.jpg"
     alt="Accessibility Clear and rerun"
     style="width:75%;"
     title="Click to enlarge"

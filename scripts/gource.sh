@@ -4,7 +4,7 @@
 echo "🎬️ Making a video of your history."
 gource --seconds-per-day 0.1 --time-scale 4 --auto-skip-seconds 1 \
     --key --file-idle-time 0 --max-files 0 --max-file-lag 0.1 \
-    --title "Geest Project History" --bloom-multiplier 0.5 --bloom-intensity 0.5 \
+    --title "GeoE3 Project History" --bloom-multiplier 0.5 --bloom-intensity 0.5 \
     --background 000000 --hide filenames,mouse,progress \
     --output-ppm-stream - |
     ffmpeg -probesize 50M -analyzeduration 100M -y -r 60 -f image2pipe -vcodec ppm -i - \

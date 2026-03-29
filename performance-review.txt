@@ -1,4 +1,4 @@
-# GEEST Study Area Creation - Performance Review
+# GEOE3 Study Area Creation - Performance Review
 # Generated: 2026-01-23
 # Focus: Study Area Processing Workflows
 
@@ -16,7 +16,7 @@ CRITICAL PERFORMANCE ISSUES (High Impact)
 ================================================================================
 
 1. REDUNDANT GEOMETRY INTERSECTION CHECKS
-   File: geest/core/tasks/grid_from_bbox_task.py:99-104
+   File: geoe3/core/tasks/grid_from_bbox_task.py:99-104
    Severity: CRITICAL
 
    Problem:
@@ -47,7 +47,7 @@ CRITICAL PERFORMANCE ISSUES (High Impact)
 --------------------------------------------------------------------------------
 
 2. EXCESSIVE GPKG OPEN/CLOSE CYCLES
-   File: geest/core/tasks/study_area_processing_task.py:642-728
+   File: geoe3/core/tasks/study_area_processing_task.py:642-728
    Severity: CRITICAL
 
    Problem:
@@ -88,7 +88,7 @@ CRITICAL PERFORMANCE ISSUES (High Impact)
 --------------------------------------------------------------------------------
 
 3. CHUNKER WRITES CHUNKS TO GPKG SYNCHRONOUSLY
-   File: geest/core/tasks/grid_chunker_task.py:159-188
+   File: geoe3/core/tasks/grid_chunker_task.py:159-188
    Severity: HIGH
 
    Problem:
@@ -108,7 +108,7 @@ CRITICAL PERFORMANCE ISSUES (High Impact)
 --------------------------------------------------------------------------------
 
 4. GRID CELLS CREATED ONE-BY-ONE IN MEMORY
-   File: geest/core/tasks/grid_from_bbox_task.py:78-107
+   File: geoe3/core/tasks/grid_from_bbox_task.py:78-107
    Severity: HIGH
 
    Problem:
@@ -144,7 +144,7 @@ HIGH PERFORMANCE ISSUES (Medium-High Impact)
 ================================================================================
 
 5. GHSL FEATURE-BY-FEATURE REPROJECTION
-   File: geest/core/tasks/study_area_processing_task.py:365-383
+   File: geoe3/core/tasks/study_area_processing_task.py:365-383
    Severity: HIGH
 
    Problem:
@@ -181,7 +181,7 @@ HIGH PERFORMANCE ISSUES (Medium-High Impact)
 --------------------------------------------------------------------------------
 
 6. CLIP POLYGON BOUNDARY INTERSECTION CHECK
-   File: geest/core/tasks/study_area_processing_task.py:1620-1627
+   File: geoe3/core/tasks/study_area_processing_task.py:1620-1627
    Severity: MEDIUM-HIGH
 
    Problem:
@@ -215,7 +215,7 @@ HIGH PERFORMANCE ISSUES (Medium-High Impact)
 --------------------------------------------------------------------------------
 
 7. DUPLICATE GEOMETRY OPERATIONS IN AREA ITERATOR
-   File: geest/core/algorithms/area_iterator.py:131-135
+   File: geoe3/core/algorithms/area_iterator.py:131-135
    Severity: MEDIUM
 
    Problem:
@@ -249,7 +249,7 @@ MEDIUM PERFORMANCE ISSUES (Moderate Impact)
 ================================================================================
 
 8. EXCESSIVE LOGGING IN HOT LOOPS
-   File: geest/core/tasks/grid_chunker_task.py:202-235
+   File: geoe3/core/tasks/grid_chunker_task.py:202-235
    Severity: MEDIUM
 
    Problem:
@@ -276,7 +276,7 @@ MEDIUM PERFORMANCE ISSUES (Moderate Impact)
 --------------------------------------------------------------------------------
 
 9. THREAD POOL SIZE NOT OPTIMIZED
-   File: geest/core/tasks/study_area_processing_task.py:1378-1379
+   File: geoe3/core/tasks/study_area_processing_task.py:1378-1379
    Severity: MEDIUM
 
    Problem:
@@ -308,7 +308,7 @@ MEDIUM PERFORMANCE ISSUES (Moderate Impact)
 --------------------------------------------------------------------------------
 
 10. RASTER MASK CREATED ONE-BY-ONE
-    File: geest/core/tasks/study_area_processing_task.py:1759-1830
+    File: geoe3/core/tasks/study_area_processing_task.py:1759-1830
     Severity: MEDIUM
 
     Problem:

@@ -10,8 +10,8 @@ import tempfile
 
 from qgis.core import QgsFeedback, QgsRectangle
 
-from geest.core.algorithms.ghsl_downloader import GHSLDownloader
-from geest.core.algorithms.ghsl_processor import GHSLProcessor
+from geoe3.core.algorithms.ghsl_downloader import GHSLDownloader
+from geoe3.core.algorithms.ghsl_processor import GHSLProcessor
 
 
 def test_ghsl_download():

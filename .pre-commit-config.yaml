@@ -6,9 +6,9 @@ repos:
     rev: v4.3.0
     hooks:
       - id: end-of-file-fixer
-        exclude: ^(geest/tests/data/)
+        exclude: ^(geoe3/tests/data/)
       - id: trailing-whitespace
-        exclude: ^(geest/tests/data/)
+        exclude: ^(geoe3/tests/data/)
       - id: check-yaml
       - id: check-json
         exclude: ^(.vscode)
@@ -123,7 +123,7 @@ repos:
 #    hooks:
 #      - id: bearer-plugin
 #        name: "🛡️ Bearer - Security & privacy scanner - planet_explorer"
-#        entry: bearer scan --exit-code 1 geest
+#        entry: bearer scan --exit-code 1 geoe3
 #        language: system
 #        pass_filenames: false
 
@@ -134,7 +134,7 @@ repos:
 #       entry: codeql database analyze \
 #               --format=sarifv2.1.0 \
 #               --output=codeql-results.sarif \
-#               codeql-db codeql-db/db-python-queries geest
+#               codeql-db codeql-db/db-python-queries geoe3
 #       language: system
 #       pass_filenames: false
 #       stages: [pre-commit]

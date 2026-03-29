@@ -1,6 +1,6 @@
-# Contributing to GEEST
+# Contributing to GEOE3
 
-Thank you for your interest in contributing to GEEST! We appreciate your efforts to improve our project. This document outlines the guidelines and best practices for contributing to the project.
+Thank you for your interest in contributing to GEOE3! We appreciate your efforts to improve our project. This document outlines the guidelines and best practices for contributing to the project.
 
 ## How to Contribute
 
@@ -30,7 +30,7 @@ You are going to need these prerequisites:
 2. **Clone your fork**: Clone the forked repository to your local machine.
 
 ```bash
-git clone https://github.com/your-username/GEEST.git
+git clone https://github.com/your-username/GEOE3.git
 ```
 
 Create a branch: Create a new branch for your changes.
@@ -104,22 +104,22 @@ Please adhere to our Code of Conduct in all interactions.
 Questions
 If you have any questions or need help, feel free to open an issue or contact us at [project-email@example.com].
 
-Thank you for contributing to GEEST!
+Thank you for contributing to GEOE3!
 
 ## Setting Up the Project
 
 ### Cloning the Repository
 
-1. **Fork the repository**: If you haven't already, fork the GEEST repository on GitHub.
+1. **Fork the repository**: If you haven't already, fork the GEOE3 repository on GitHub.
 
 2. **Clone your fork**: Clone the forked repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/GEEST.git
-   Add the plugin path: In QGIS, go to Plugins > Manage and Install Plugins > Settings > Plugin Paths and add the path to your GEEST folder.
+   git clone https://github.com/your-username/GEOE3.git
+   Add the plugin path: In QGIS, go to Plugins > Manage and Install Plugins > Settings > Plugin Paths and add the path to your GEOE3 folder.
    ```
 
-Load the plugin: Enable the GEEST plugin from the Installed tab.
+Load the plugin: Enable the GEOE3 plugin from the Installed tab.
 
 Debugging: Use VS Code to set breakpoints and start debugging as configured in the launch configuration.
 
@@ -132,7 +132,7 @@ Create a zip package:
 
 bash
 Copy code
-zip -r GEEST.zip GEEST -x ".*" -x "**pycache**" -x "*.pyc"
+zip -r GEOE3.zip GEOE3 -x ".*" -x "**pycache**" -x "*.pyc"
 Distribute: Share the zip file or upload it to a QGIS plugin repository.
 
 Write Clear Commits: Use descriptive commit messages.
@@ -143,4 +143,4 @@ Code Reviews: Participate in code reviews and seek feedback on your contribution
 Questions
 For any questions or additional help, please contact the project maintainers or open an issue on GitHub.
 
-Thank you for contributing to GEEST!
+Thank you for contributing to GEOE3!

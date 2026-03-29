@@ -1,7 +1,7 @@
 ## Place Characterization
 
 <p align="justify">
-The Place Characterization Dimension refers to the social, environmental, and infrastructural attributes of geographical locations, such as walkability, safety, and vulnerability to natural hazards. Unlike the Accessibility Dimension, these factors do not involve mobility but focus on the inherent characteristics of a place that influence women’s ability to participate in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEEST/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
+The Place Characterization Dimension refers to the social, environmental, and infrastructural attributes of geographical locations, such as walkability, safety, and vulnerability to natural hazards. Unlike the Accessibility Dimension, these factors do not involve mobility but focus on the inherent characteristics of a place that influence women’s ability to participate in the workforce. For more information on data input used from open sources, please refer to the <a href="https://worldbank.github.io/GEOE3/docs/userguide/datacollection.html" target="_blank">Data Collection section</a>.
 </p>
 
 ### General Overview
@@ -40,7 +40,7 @@ As with the Accessibility dimension, **Active transport, Safety and Water sanita
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ActiveTr.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ActiveTr.jpg"
     alt="Active Transport input"
     style="width:75%;"
     title="Click to enlarge"
@@ -65,7 +65,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ActiveRun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ActiveRun.jpg"
     alt="Active transport run"
     style="width:55%;"
     title="Click to enlarge"
@@ -90,7 +90,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Safety_index.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Safety_index.jpg"
     alt="Safety index score"
     style="width:55%;"
     title="Click to enlarge"
@@ -101,7 +101,7 @@ The successful completion of the process is indicated by the green checkmark wid
 >
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Safety_classes.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Safety_classes.jpg"
     alt="Safety classes"
     style="width:55%;"
     title="Click to enlarge"
@@ -112,7 +112,7 @@ The successful completion of the process is indicated by the green checkmark wid
 >
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Safety_NTL.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Safety_NTL.jpg"
     alt="Safety NTL"
     style="width:55%;"
     title="Click to enlarge"
@@ -123,7 +123,7 @@ The successful completion of the process is indicated by the green checkmark wid
 >
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Safety_street.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Safety_street.jpg"
     alt="Safety street lights"
     style="width:55%;"
     title="Click to enlarge"
@@ -150,7 +150,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Safety_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Safety_run.jpg"
     alt="Safety run"
     style="width:55%;"
     title="Click to enlarge"
@@ -175,7 +175,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FCV1.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FCV1.jpg"
     alt="FCV points"
     style="width:55%;"
     title="Click to enlarge"
@@ -186,7 +186,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FCV2.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FCV2.jpg"
     alt="FCV csv data"
     style="width:55%;"
     title="Click to enlarge"
@@ -211,7 +211,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/FCVrun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/FCVrun.jpg"
     alt="FCV run"
     style="width:55%;"
     title="Click to enlarge"
@@ -236,7 +236,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Edu_index.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Edu_index.jpg"
     alt="Education index score"
     style="width:55%;"
     title="Click to enlarge"
@@ -247,7 +247,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Edu_class.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Edu_class.jpg"
     alt="Education classified polygons data"
     style="width:55%;"
     title="Click to enlarge"
@@ -268,7 +268,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Edu_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Edu_run.jpg"
     alt="Education run"
     style="width:55%;"
     title="Click to enlarge"
@@ -293,7 +293,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/DIG_index.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/DIG_index.jpg"
     alt="Digital Inclusion index score"
     style="width:55%;"
     title="Click to enlarge"
@@ -304,7 +304,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/DIG_class.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/DIG_class.jpg"
     alt="Digital Inclusion classified polygons data"
     style="width:55%;"
     title="Click to enlarge"
@@ -325,7 +325,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/DIG_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/DIG_run.jpg"
     alt="Digital Inclusion run"
     style="width:55%;"
     title="Click to enlarge"
@@ -361,7 +361,7 @@ The thresholds for defining hazard levels are based on a predefined scoring list
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ENV_select.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ENV_select.jpg"
     alt="Environmental Hazards data input"
     style="width:55%;"
     title="Click to enlarge"
@@ -387,7 +387,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/ENV_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/ENV_run.jpg"
     alt="Environmental Hazards run"
     style="width:55%;"
     title="Click to enlarge"
@@ -413,7 +413,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Water_select.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Water_select.jpg"
     alt="Water sanitation input"
     style="width:55%;"
     title="Click to enlarge"
@@ -435,7 +435,7 @@ Back in the Data Processing Interface:
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/Water_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/Water_run.jpg"
     alt="Water run"
     style="width:55%;"
     title="Click to enlarge"
@@ -454,7 +454,7 @@ The successful completion of the process is indicated by the green checkmark wid
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/PC_weights.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/PC_weights.jpg"
     alt="Place Characterization Weights"
     style="width:75%;"
     title="Click to enlarge"
@@ -471,7 +471,7 @@ After configuring the factors and adjusting their weights to achieve balance, yo
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/PC_run.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/PC_run.jpg"
     alt="Place Characterization Run"
     style="width:75%;"
     title="Click to enlarge"
@@ -493,7 +493,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/PC_add.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/PC_add.jpg"
     alt="Place Characterization Add to map"
     style="width:75%;"
     title="Click to enlarge"
@@ -508,7 +508,7 @@ If the results do not immediately appear in the Layer Panel after processing the
 
 <p align="center">
 <img
-    src="https://raw.githubusercontent.com/worldbank/GEEST/main/docs/images/new%20images/PC_rerun.jpg"
+    src="https://raw.githubusercontent.com/worldbank/GEOE3/main/docs/images/new%20images/PC_rerun.jpg"
     alt="Place Characterization Clear and rerun"
     style="width:75%;"
     title="Click to enlarge"

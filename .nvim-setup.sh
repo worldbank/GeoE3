@@ -4,7 +4,7 @@
 
 set -e
 
-echo "Setting up nvim environment for GEEST project..."
+echo "Setting up nvim environment for GEOE3 project..."
 
 # Ensure we're in a nix develop shell
 if [ -z "$NIX_SHELL" ] && [ -z "$IN_NIX_SHELL" ]; then
@@ -71,7 +71,7 @@ alias vim=nvim
 
 # Function to start nvim with proper settings
 nvim_geest() {
-    echo "Starting nvim with GEEST configuration..."
+    echo "Starting nvim with GEOE3 configuration..."
     nvim "$@"
 }
 

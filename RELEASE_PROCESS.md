@@ -1,4 +1,4 @@
-# GEEST Plugin Release Process
+# GEOE3 Plugin Release Process
 
 ## Quick Release Steps
 
@@ -44,6 +44,6 @@ Pushing the tag automatically triggers `.github/workflows/release.yml` which:
 
 ### 6. Verify
 
-Check release at: https://github.com/worldbank/GEEST/releases
+Check release at: https://github.com/worldbank/GEOE3/releases
 
 ---

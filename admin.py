@@ -18,7 +18,7 @@ import httpx
 import typer
 
 LOCAL_ROOT_DIR = Path(__file__).parent.resolve()
-SRC_NAME = "geest"
+SRC_NAME = "geoe3"
 PACKAGE_NAME = SRC_NAME.replace("_", "")
 TEST_FILES = ["test", "test_suite.py", "docker-compose.yml", "scripts"]
 # Vendored dependencies to bundle with the plugin
@@ -459,7 +459,7 @@ def _get_existing_releases(
     Returns:
         List of github releases.
     """
-    base_url = "https://api.github.com/repos/" "worldbank/GEEST/releases"
+    base_url = "https://api.github.com/repos/" "worldbank/GEOE3/releases"
     response = httpx.get(base_url)
     result = []
     if response.status_code == 200:
@@ -527,7 +527,7 @@ def bundle_deps(
 
     Args:
         context: Application context.
-        output_directory: Output directory for extlibs (default: geest/extlibs).
+        output_directory: Output directory for extlibs (default: geoe3/extlibs).
         packages: Comma-separated list of packages to bundle (overrides VENDORED_PACKAGES).
     """
     if output_directory is None:
