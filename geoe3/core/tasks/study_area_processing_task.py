@@ -31,13 +31,14 @@ from qgis.PyQt.QtCore import (
 )
 
 from geoe3.core.algorithms import GHSLDownloader, GHSLProcessor
-from geoe3.core.settings import setting
+from geoe3.core.grid_column_utils import add_model_columns_to_grid
 from geoe3.core.h3_utils import get_h3_resolution_for_scale
+from geoe3.core.settings import setting
 from geoe3.utilities import calculate_utm_zone, log_message
 
 from .grid_chunker_task import GridChunkerTask
-from .grid_from_bbox_task import GridFromBboxTask
 from .grid_from_bbox_h3_task import GridFromBboxH3Task
+from .grid_from_bbox_task import GridFromBboxTask
 
 
 class QtQueue:
@@ -1360,7 +1361,18 @@ class StudyAreaProcessingTask(QgsTask):
             log_message(f"Areas that could not be processed due to errors: {self.error_count}")
             log_message(f"Total cells generated: {self.total_cells}")
 
-            # 4) Create a VRT of all generated raster masks
+            # 4) Add model columns to the grid layer
+            model_path = os.path.join(self.working_dir, "model.json")
+            if os.path.exists(model_path):
+                log_message("Adding model columns to study_area_grid layer...")
+                if add_model_columns_to_grid(self.gpkg_path, model_path):
+                    log_message("Model columns added successfully")
+                else:
+                    log_message("Failed to add model columns to grid", level="WARNING")
+            else:
+                log_message(f"Model file not found at {model_path}, skipping column addition", level="WARNING")
+
+            # 5) Create a VRT of all generated raster masks
             self.create_raster_vrt()
 
         except Exception as e:

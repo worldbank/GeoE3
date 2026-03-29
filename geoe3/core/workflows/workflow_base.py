@@ -37,6 +37,7 @@ from geoe3.core.algorithms import (
     subset_vector_layer,
 )
 from geoe3.core.constants import GDAL_OUTPUT_DATA_TYPE
+from geoe3.core.grid_column_utils import write_raster_values_to_grid
 from geoe3.utilities import log_layer_count, log_message, resources_path
 
 
@@ -482,7 +483,7 @@ class WorkflowBase(QObject):
 
             try:
                 total_areas = area_iterator.area_count()
-                for index, (current_area, clip_area, current_bbox, progress) in enumerate(area_iterator):
+                for index, (current_area, clip_area, current_bbox, progress, area_name) in enumerate(area_iterator):
                     areas_processed += 1
                     message = f"{self.workflow_name} Processing area {index} with progress {progress:.2f}%"  # noqa E231
                     self.updateStatus(f"Processing area {index + 1}/{total_areas}")
@@ -548,6 +549,29 @@ class WorkflowBase(QObject):
                         index=index,
                     )
                     output_rasters.append(masked_layer)
+
+                    # Write raster values to grid for this area
+                    if masked_layer and os.path.exists(masked_layer):
+                        self.updateStatus(f"Writing grid values for area {index + 1}...")
+                        updated_cells = write_raster_values_to_grid(
+                            gpkg_path=self.gpkg_path,
+                            raster_path=masked_layer,
+                            column_name=self.layer_id,
+                            area_name=area_name,
+                        )
+                        if updated_cells >= 0:
+                            log_message(
+                                f"Updated {updated_cells} grid cells for {self.layer_id} in area {area_name}",
+                                tag="GeoE3",
+                                level=Qgis.Info,
+                            )
+                        else:
+                            log_message(
+                                f"Failed to update grid cells for {self.layer_id} in area {area_name}",
+                                tag="GeoE3",
+                                level=Qgis.Warning,
+                            )
+
                     # Note: We don't emit area iterator progress here because it would
                     # override the sub-task progress in the Task Progress bar.
                     # The sub-task progress (0-100%) is more useful to the user.
