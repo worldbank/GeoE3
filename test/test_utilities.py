@@ -158,7 +158,7 @@ class TestUtilities(unittest.TestCase):
         """Test calculate_utm_zone function."""
         # Mock osr.SpatialReference and osr.CoordinateTransformation
         with patch("geest.utilities.osr.SpatialReference"), patch(
-            "geoe3.utilities.osr.CoordinateTransformation"
+            "geest.utilities.osr.CoordinateTransformation"
         ), patch("geest.utilities.ogr.Geometry") as mock_geometry:
 
             # Mock the point transformation
