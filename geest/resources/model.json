@@ -133,8 +133,8 @@
                     "dimension_weighting": 0.333333,
                     "indicators": [
                         {
-                            "indicator": "WBL 2024 Entrepeneurship Index Score",
-                            "id": "Entrepeneurship_Index",
+                            "indicator": "WBL 2024 Entrepreneurship Index Score",
+                            "id": "Entrepreneurship_Index",
                             "output_filename": "FIN_output",
                             "description": "",
                             "default_factor_weighting": 1.0,
@@ -333,7 +333,7 @@
                     "indicators": [
                         {
                             "indicator": "Location of public transportation stops, including maritime",
-                            "id": "Pulic_Transport_location",
+                            "id": "Public_Transport_location",
                             "output_filename": "PBT_output",
                             "description": "",
                             "default_factor_weighting": 1.0,
