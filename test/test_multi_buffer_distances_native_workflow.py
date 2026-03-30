@@ -8,8 +8,8 @@ from qgis.core import (
 )
 from utilities_for_testing import prepare_fixtures
 
-from geoe3.core import JsonTreeItem
-from geoe3.core.workflows import MultiBufferDistancesNativeWorkflow
+from geest.core import JsonTreeItem
+from geest.core.workflows import MultiBufferDistancesNativeWorkflow
 
 
 class TestMultiBufferDistancesNativeWorkflow(unittest.TestCase):

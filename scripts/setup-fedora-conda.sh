@@ -5,7 +5,7 @@
 # Setup script for GEOE3 development environment on Fedora with Miniconda
 # This script installs all dependencies needed for pre-commit hooks
 #
-# Prerequisites: Miniconda installed with 'geoe3' conda environment
+# Prerequisites: Miniconda installed with 'geest' conda environment
 # Usage: ./scripts/setup-fedora-conda.sh
 
 set -e  # Exit on error
@@ -18,7 +18,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-CONDA_ENV_NAME="geoe3"
+CONDA_ENV_NAME="geest"
 
 # Print functions
 print_header() {
@@ -66,7 +66,7 @@ check_conda() {
     print_success "Conda is installed: $(conda --version)"
 }
 
-# Check if geoe3 conda environment exists
+# Check if geest conda environment exists
 check_conda_env() {
     print_header "Checking Conda Environment"
 
@@ -309,7 +309,7 @@ main() {
     print_header "GEOE3 Fedora Development Environment Setup"
     echo ""
     print_info "This script sets up the GEOE3 development environment on Fedora"
-    print_info "using Miniconda with the 'geoe3' conda environment"
+    print_info "using Miniconda with the 'geest' conda environment"
     echo ""
 
     # Store the script directory and change to project root

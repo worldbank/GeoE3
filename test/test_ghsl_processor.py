@@ -13,7 +13,7 @@ import unittest
 
 from qgis.core import QgsRectangle
 
-from geoe3.core.algorithms.ghsl_processor import GHSLProcessor
+from geest.core.algorithms.ghsl_processor import GHSLProcessor
 
 
 class TestGHSLProcessor(unittest.TestCase):

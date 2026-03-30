@@ -10,7 +10,7 @@ Version Changed: 2025-01-24
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsRectangle
 
-from geoe3.core.tasks import GridFromBboxTask
+from geest.core.tasks import GridFromBboxTask
 
 
 def example_bbox():

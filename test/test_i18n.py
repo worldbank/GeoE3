@@ -21,15 +21,15 @@ __revision__ = "$Format:%H$"
 import unittest
 from unittest.mock import MagicMock, patch
 
-from geoe3.core.i18n import setup_translation, tr
+from geest.core.i18n import setup_translation, tr
 
 
 class TestI18n(unittest.TestCase):
     """Test suite for i18n module."""
 
-    @patch("geoe3.core.i18n.QgsSettings")
-    @patch("geoe3.core.i18n.QLocale")
-    @patch("geoe3.core.i18n.QFileInfo")
+    @patch("geest.core.i18n.QgsSettings")
+    @patch("geest.core.i18n.QLocale")
+    @patch("geest.core.i18n.QFileInfo")
     def test_setup_translation_with_valid_locale(self, mock_file_info, mock_qlocale, mock_qsettings):
         """Test setup_translation with valid locale."""
         # Mock settings to return a locale
@@ -53,9 +53,9 @@ class TestI18n(unittest.TestCase):
         self.assertEqual(locale, "en_US")
         self.assertEqual(path, "/path/to/translation.qm")
 
-    @patch("geoe3.core.i18n.QgsSettings")
-    @patch("geoe3.core.i18n.QLocale")
-    @patch("geoe3.core.i18n.QFileInfo")
+    @patch("geest.core.i18n.QgsSettings")
+    @patch("geest.core.i18n.QLocale")
+    @patch("geest.core.i18n.QFileInfo")
     def test_setup_translation_file_not_exists(self, mock_file_info, mock_qlocale, mock_qsettings):
         """Test setup_translation when translation file doesn't exist."""
         # Mock settings to return a locale
@@ -78,7 +78,7 @@ class TestI18n(unittest.TestCase):
         self.assertEqual(locale, "xx_XX")
         self.assertIsNone(path)
 
-    @patch("geoe3.core.i18n.QApplication")
+    @patch("geest.core.i18n.QApplication")
     def test_tr_function(self, mock_qapp):
         """Test tr function for translation."""
         mock_qapp.translate.return_value = "Translated text"
@@ -88,7 +88,7 @@ class TestI18n(unittest.TestCase):
         mock_qapp.translate.assert_called_once_with("TestContext", "Test text")
         self.assertEqual(result, "Translated text")
 
-    @patch("geoe3.core.i18n.QApplication")
+    @patch("geest.core.i18n.QApplication")
     def test_tr_function_default_context(self, mock_qapp):
         """Test tr function with default context."""
         mock_qapp.translate.return_value = "Translated text"
