@@ -538,7 +538,7 @@ def bundle_deps(
 
     Args:
         context: Application context.
-        output_directory: Output directory for extlibs (default: geoe3/extlibs).
+        output_directory: Output directory for extlibs (default: geest/extlibs).
         packages: Comma-separated list of packages to bundle (overrides VENDORED_PACKAGES).
     """
     if output_directory is None:
