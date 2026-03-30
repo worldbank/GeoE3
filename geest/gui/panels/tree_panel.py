@@ -59,7 +59,7 @@ from geest.core.algorithms import (
 from geest.core.reports import StudyAreaReport
 from geest.core.settings import set_setting, setting
 from geest.core.tasks import AnalysisReportTask
-from geest.core.utilities import add_to_map, validate_network_layer
+from geest.core.utilities import add_grid_layer_to_map, add_to_map, validate_network_layer
 from geest.gui.dialogs import (
     AnalysisAggregationDialog,
     DimensionAggregationDialog,
@@ -930,6 +930,13 @@ class TreePanel(QWidget):
             add_factor_action = QAction("Add Factor", self)
             remove_dimension_action = QAction("Remove Dimension", self)
 
+            # Add grid layer action
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            add_grid_to_map_action.triggered.connect(
+                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
+
             # Connect actions
             add_factor_action.triggered.connect(lambda: self.model.add_factor(item))
             remove_dimension_action.triggered.connect(lambda: self.model.remove_item(item))
@@ -939,6 +946,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -948,6 +956,13 @@ class TreePanel(QWidget):
             edit_aggregation_action = QAction("🔘 Edit Weights", self)  # New action for contextediting aggregation
             add_indicator_action = QAction("Add Indicator", self)
             remove_factor_action = QAction("Remove Factor", self)
+
+            # Add grid layer action
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = f"fac_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            add_grid_to_map_action.triggered.connect(
+                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
 
             # Connect actions
             edit_aggregation_action.triggered.connect(lambda: self.edit_factor_aggregation(item))  # Connect to method
@@ -960,6 +975,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -970,6 +986,13 @@ class TreePanel(QWidget):
             # of its parent factor...
             show_properties_action = QAction("🔘 Edit Weights", self)
 
+            # Add grid layer action (indicators use raw ID without prefix)
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
+            add_grid_to_map_action.triggered.connect(
+                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
+
             # Connect actions
             show_properties_action.triggered.connect(lambda: self.edit_factor_aggregation(item.parent()))
             # Add actions to menu
@@ -978,6 +1001,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
