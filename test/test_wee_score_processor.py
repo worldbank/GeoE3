@@ -5,7 +5,7 @@ import unittest
 from qgis.core import QgsFeedback, QgsProcessingContext
 from utilities_for_testing import prepare_fixtures
 
-from geoe3.core.algorithms import WEEByPopulationScoreProcessingTask
+from geest.core.algorithms import WEEByPopulationScoreProcessingTask
 
 
 class TestWEEScoreProcessingTask(unittest.TestCase):

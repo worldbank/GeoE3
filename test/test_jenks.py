@@ -7,7 +7,7 @@ import unittest
 
 import numpy as np
 
-from geoe3.core.jenks import (
+from geest.core.jenks import (
     calculate_goodness_of_variance_fit,
     jenks_natural_breaks,
 )

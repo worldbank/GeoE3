@@ -22,7 +22,7 @@ import unittest
 from collections import OrderedDict
 from unittest.mock import MagicMock, patch
 
-from geoe3.core.settings import deep_convert_dict, set_setting, setting
+from geest.core.settings import deep_convert_dict, set_setting, setting
 
 
 class TestSettings(unittest.TestCase):
@@ -63,7 +63,7 @@ class TestSettings(unittest.TestCase):
         result = deep_convert_dict(input_value)
         self.assertEqual(result, input_value)
 
-    @patch("geoe3.core.settings.QSettings")
+    @patch("geest.core.settings.QSettings")
     def test_setting_with_default(self, mock_qsettings):
         """Test setting function with default value."""
         mock_settings_instance = MagicMock()
@@ -74,8 +74,8 @@ class TestSettings(unittest.TestCase):
 
         self.assertEqual(result, "default_value")
 
-    @patch("geoe3.core.settings.QSettings")
-    @patch("geoe3.core.settings.QgsProject")
+    @patch("geest.core.settings.QSettings")
+    @patch("geest.core.settings.QgsProject")
     def test_set_setting(self, mock_project, mock_qsettings):
         """Test set_setting function."""
         mock_settings_instance = MagicMock()
