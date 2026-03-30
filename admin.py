@@ -59,8 +59,33 @@ class GithubRelease:
     published_at: dt.datetime
 
 
+def _get_qgis_profile_dir(profile_name: str) -> Path:
+    """Get the QGIS profile directory path, creating it if needed.
+
+    Args:
+        profile_name: Name of the QGIS profile.
+
+    Returns:
+        Path to the QGIS profile directory.
+    """
+    if os.name == "nt":
+        profile_path = (
+            Path(os.environ["USERPROFILE"]) / "AppData" / "Roaming" / "QGIS" / "QGIS3" / "profiles" / profile_name
+        )
+    else:
+        profile_path = Path.home() / ".local" / "share" / "QGIS" / "QGIS3" / "profiles" / profile_name
+
+    # Create the profile directory structure if it doesn't exist
+    if not profile_path.exists():
+        profile_path.mkdir(parents=True, exist_ok=True)
+        # Create the python/plugins directory as well
+        (profile_path / "python" / "plugins").mkdir(parents=True, exist_ok=True)
+
+    return profile_path
+
+
 @app.callback()
-def main(context: typer.Context, verbose: bool = False, qgis_profile: str = "default"):
+def main(context: typer.Context, verbose: bool = False, qgis_profile: str = "GEOE3"):
     """Perform various development-oriented tasks for this plugin.
 
     Args:
@@ -88,23 +113,8 @@ def install(context: typer.Context, build_src: bool = True):
 
     built_directory = build(context, clean=True) if build_src else LOCAL_ROOT_DIR / "build" / SRC_NAME
 
-    # For windows root dir in in AppData
-    if os.name == "nt":
-        print("User profile:")
-        print(os.environ["USERPROFILE"])
-        plugin_path = os.path.join(
-            "AppData",
-            "Roaming",
-            "QGIS",
-            "QGIS3",
-            "profiles",
-            "default",
-        )
-        root_directory = os.environ["USERPROFILE"] + "\\" + plugin_path
-    else:
-        root_directory = Path.home() / f".local/share/QGIS/QGIS3/profiles/" f"{context.obj['qgis_profile']}"
-
-    base_target_directory = os.path.join(root_directory, "python/plugins", SRC_NAME)
+    root_directory = _get_qgis_profile_dir(context.obj["qgis_profile"])
+    base_target_directory = root_directory / "python" / "plugins" / SRC_NAME
     _log(f"Copying built plugin to {base_target_directory}...", context=context)
     shutil.copytree(built_directory, base_target_directory)
     _log(
@@ -121,16 +131,17 @@ def symlink(context: typer.Context):
         context: Application context.
     """
 
-    build_path = LOCAL_ROOT_DIR / "build" / SRC_NAME
+    source_path = LOCAL_ROOT_DIR / SRC_NAME
 
-    root_directory = Path.home() / f".local/share/QGIS/QGIS3/profiles/" f"{context.obj['qgis_profile']}"
-
-    destination_path = root_directory / "python/plugins" / SRC_NAME
+    root_directory = _get_qgis_profile_dir(context.obj["qgis_profile"])
+    destination_path = root_directory / "python" / "plugins" / SRC_NAME
 
     if not os.path.islink(destination_path):
-        os.symlink(build_path, destination_path)
+        os.symlink(source_path, destination_path)
+        _log(f"Symlink created at {destination_path} to {source_path}", context=context)
     else:
         _log("Symlink already exists, skipping creation.", context=context)
+        _log(f"Symlink is at {destination_path}", context=context)
 
 
 @app.command()
@@ -140,8 +151,8 @@ def uninstall(context: typer.Context):
     Args:
         context: Application context.
     """
-    root_directory = Path.home() / f".local/share/QGIS/QGIS3/profiles/" f"{context.obj['qgis_profile']}"
-    base_target_directory = root_directory / "python/plugins" / SRC_NAME
+    root_directory = _get_qgis_profile_dir(context.obj["qgis_profile"])
+    base_target_directory = root_directory / "python" / "plugins" / SRC_NAME
     shutil.rmtree(str(base_target_directory), ignore_errors=True)
     _log(f"Removed {str(base_target_directory)!r}", context=context)
 
