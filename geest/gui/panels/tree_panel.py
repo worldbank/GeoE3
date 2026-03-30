@@ -934,7 +934,7 @@ class TreePanel(QWidget):
             add_grid_to_map_action = QAction("Add to map (Grid)", self)
             column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
             add_grid_to_map_action.triggered.connect(
-                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
 
             # Connect actions
@@ -961,7 +961,7 @@ class TreePanel(QWidget):
             add_grid_to_map_action = QAction("Add to map (Grid)", self)
             column_name = f"fac_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
             add_grid_to_map_action.triggered.connect(
-                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
 
             # Connect actions
@@ -990,7 +990,7 @@ class TreePanel(QWidget):
             add_grid_to_map_action = QAction("Add to map (Grid)", self)
             column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
             add_grid_to_map_action.triggered.connect(
-                lambda col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
 
             # Connect actions
