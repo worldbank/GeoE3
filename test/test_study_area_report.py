@@ -6,8 +6,8 @@ import unittest
 from osgeo import ogr, osr
 from qgis.core import QgsFeature, QgsVectorLayerExporter
 
-from geoe3.core.reports.study_area_report import StudyAreaReport
-from geoe3.utilities import log_message
+from geest.core.reports.study_area_report import StudyAreaReport
+from geest.utilities import log_message
 
 # ================================
 # Test Suite for StudyAreaReport

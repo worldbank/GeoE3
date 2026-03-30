@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# This script recursively removes all __pycache__ directories in the 'geoe3' folder.
+# This script recursively removes all __pycache__ directories in the 'geest' folder.
 
-TARGET_DIR="geoe3"
+TARGET_DIR="geest"
 
 # Check if the target directory exists
 if [ ! -d "$TARGET_DIR" ]; then

@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from qgis.core import QgsRectangle
 
-from geoe3.core.osm_downloaders.osm_roads_downloader import OSMRoadsDownloader
+from geest.core.osm_downloaders.osm_roads_downloader import OSMRoadsDownloader
 
 
 class TestOSMRoadsDownloader(unittest.TestCase):

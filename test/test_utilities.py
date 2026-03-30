@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 from qgis.core import Qgis
 
 # Import the utilities module
-from geoe3.utilities import (
+from geest.utilities import (
     calculate_utm_zone,
     calculate_utm_zone_from_layer,
     geoe3_layer_ids,

@@ -22,7 +22,7 @@ import unittest
 from collections import OrderedDict
 from unittest.mock import MagicMock, patch
 
-from geoe3.core.settings import deep_convert_dict, set_setting, setting
+from geest.core.settings import deep_convert_dict, set_setting, setting
 
 
 class TestSettings(unittest.TestCase):

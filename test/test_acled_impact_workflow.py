@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, mock_open, patch
 from qgis.core import QgsVectorLayer
 from utilities_for_testing import prepare_fixtures
 
-from geoe3.core import JsonTreeItem
-from geoe3.core.workflows import AcledImpactWorkflow
+from geest.core import JsonTreeItem
+from geest.core.workflows import AcledImpactWorkflow
 
 
 class TestAcledImpactWorkflow(unittest.TestCase):

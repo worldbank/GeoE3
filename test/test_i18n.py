@@ -21,7 +21,7 @@ __revision__ = "$Format:%H$"
 import unittest
 from unittest.mock import MagicMock, patch
 
-from geoe3.core.i18n import setup_translation, tr
+from geest.core.i18n import setup_translation, tr
 
 
 class TestI18n(unittest.TestCase):
