@@ -200,6 +200,17 @@ def add_grid_layer_to_map(
 
     from geest.utilities import resources_path
 
+    log_message(f"add_grid_layer_to_map called with column: {column_name}")
+    log_message(f"Working directory: {working_directory}")
+
+    if not working_directory:
+        log_message(
+            "Working directory is not set. Cannot add grid layer.",
+            tag="GeoE3",
+            level=Qgis.Warning,
+        )
+        return
+
     # Construct the GeoPackage path
     gpkg_path = os.path.join(working_directory, "study_area", "study_area.gpkg")
     if not os.path.exists(gpkg_path):
@@ -214,9 +225,11 @@ def add_grid_layer_to_map(
     layer_uri = f"{gpkg_path}|layername=study_area_grid"
 
     if not layer_name:
-        layer_name = item.data(0)
+        layer_name = f"{item.data(0)} (Grid)"
 
     log_message(f"Adding grid layer for column: {column_name}")
+    log_message(f"Layer URI: {layer_uri}")
+    log_message(f"Layer name: {layer_name}")
 
     # Load the layer
     layer = QgsVectorLayer(layer_uri, layer_name, "ogr")
@@ -228,8 +241,20 @@ def add_grid_layer_to_map(
         )
         return
 
+    # Verify the column exists in the layer
+    field_names = [field.name() for field in layer.fields()]
+    log_message(f"Available columns: {field_names[:10]}...")  # Log first 10
+    if column_name not in field_names:
+        log_message(
+            f"Column '{column_name}' not found in study_area_grid. Available columns: {field_names}",
+            tag="GeoE3",
+            level=Qgis.Warning,
+        )
+        return
+
     # Load the QML template and substitute the column name
     template_path = resources_path("resources", "qml", "indicator-vector-template.qml")
+    log_message(f"Template path: {template_path}")
     if not os.path.exists(template_path):
         log_message(
             f"QML template not found: {template_path}",
@@ -243,6 +268,7 @@ def add_grid_layer_to_map(
 
     # Replace the [attribute] placeholder with the actual column name
     qml_content = qml_content.replace("[attribute]", column_name)
+    log_message(f"Substituted column '{column_name}' in QML template")
 
     # Write to a temporary file and apply the style
     with tempfile.NamedTemporaryFile(mode="w", suffix=".qml", delete=False) as tmp:
