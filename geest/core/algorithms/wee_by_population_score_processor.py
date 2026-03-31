@@ -189,7 +189,7 @@ class WEEByPopulationScoreProcessingTask(QgsTask):
     def calculate_score(self) -> None:
         """
         Calculates GeoE3 by POP SCORE using raster algebra and saves the result for each area.
-        Also writes the population-masked values to the study_area_grid column 'geoe3_by_population_masked'.
+        Also writes the bivariate values to the study_area_grid column 'geoe3_by_population'.
         """
         area_iterator = AreaIterator(self.study_area_gpkg_path)
         for index, (_, _, _, _, area_name) in enumerate(area_iterator):
@@ -236,22 +236,22 @@ class WEEByPopulationScoreProcessingTask(QgsTask):
             self._write_to_grid(output_path, area_name)
 
     def _write_to_grid(self, raster_path: str, area_name: str) -> None:
-        """Write population-masked raster values to the geoe3_by_population_masked column in the grid.
+        """Write bivariate score values to the geoe3_by_population column in the grid.
 
         Args:
-            raster_path: Path to the masked raster file.
+            raster_path: Path to the bivariate score raster file.
             area_name: Name of the area being processed.
         """
         updated = write_raster_values_to_grid(
             gpkg_path=self.study_area_gpkg_path,
             raster_path=raster_path,
-            column_name="geoe3_by_population_masked",
+            column_name="geoe3_by_population",
             area_name=area_name,
         )
         if updated >= 0:
-            log_message(f"Updated {updated} grid cells with geoe3_by_population_masked values for area {area_name}")
+            log_message(f"Updated {updated} grid cells with geoe3_by_population values for area {area_name}")
         else:
-            log_message(f"Failed to write geoe3_by_population_masked values to grid for area {area_name}")
+            log_message(f"Failed to write geoe3_by_population values to grid for area {area_name}")
 
     def generate_vrt(self) -> None:
         """

@@ -77,9 +77,10 @@ def get_aggregate_column_names() -> List[str]:
     """
     return [
         "geoe3",
-        "geoe3_by_population",
+        "geoe3_by_population",  # GeoE3 × Population bivariate score (1-15)
         "geoe3_masked",  # GeoE3 score masked by opportunities/GHSL
-        "geoe3_by_population_masked",  # GeoE3 by population masked
+        "geoe3_by_population_masked",  # GeoE3 by population masked by opportunities
+        "opportunities_mask",  # Binary mask for job opportunities
         "contextual_score",
         "accessibility_score",
         "place_characterization_score",

@@ -894,10 +894,11 @@ class TreePanel(QWidget):
 
             add_geoe3_by_population = QAction("Add GeoE3 by Pop to Map")
             add_geoe3_by_population.triggered.connect(
-                lambda: add_to_map(
+                lambda: add_grid_layer_to_map(
                     item,
-                    key="geoe3_by_population",
-                    layer_name="GeoE3 by Population",
+                    column_name="geoe3_by_population",
+                    working_directory=self.working_directory,
+                    layer_name="GeoE3 by Population (Grid)",
                     group="GeoE3",
                 )
             )
@@ -1127,44 +1128,16 @@ class TreePanel(QWidget):
         )
 
     def add_opportunities_mask_to_map(self, item):
-        """Add the opportunities mask to the map with diagnostic feedback.
+        """Add the opportunities mask to the map as a grid layer.
 
         Args:
             item: The analysis item containing opportunities mask configuration.
         """
-        mask_file = item.attribute("opportunities_mask_result_file")
-
-        if not mask_file:
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                "Not configured. Run the opportunities mask processing first.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        if not os.path.exists(mask_file):
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                f"File not found: {os.path.basename(mask_file)}. Run the mask processing.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        if os.path.getsize(mask_file) == 0:
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                "File is empty (0 bytes). Run the mask processing again.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        add_to_map(
+        add_grid_layer_to_map(
             item,
-            key="opportunities_mask_result_file",
-            layer_name="Opportunities Mask",
+            column_name="opportunities_mask",
+            working_directory=self.working_directory,
+            layer_name="Opportunities Mask (Grid)",
             group="GeoE3",
         )
 
