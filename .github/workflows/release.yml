@@ -10,6 +10,12 @@ jobs:
     container:
       image: qgis/qgis:release-3_34
     steps:
+      - name: Setup git config
+        run: |
+          git config --global --add safe.directory /__w/GeoE3/GEOE3
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -21,6 +27,9 @@ jobs:
 
       - name: Install plugin dependencies
         run: pip install -r requirements-dev.txt
+
+      - name: Bundle dependencies
+        run: python admin.py bundle_deps
 
       - name: Get experimental info
         id: get-experimental
@@ -66,9 +75,6 @@ jobs:
         run: |
           python admin.py --verbose generate-plugin-repo-xml
           echo " " >> docs/repository/plugins.xml
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global --add safe.directory /__w/GEOE3/GEOE3
 
           git add -A
           git commit -m "Update on plugins.xml"
