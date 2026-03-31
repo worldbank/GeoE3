@@ -662,10 +662,15 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
                 ds = None
             except RuntimeError as e:
                 error_str = str(e).lower()
-                # Skip if database is busy or temporarily corrupted during writes
-                if "database is locked" in error_str or "malformed" in error_str:
+                # Skip if database is busy, temporarily corrupted, or still initializing
+                if (
+                    "database is locked" in error_str
+                    or "malformed" in error_str
+                    or "gpkg_spatial_ref_sys" in error_str
+                    or "gpkg_contents" in error_str
+                ):
                     log_message(
-                        f"Database busy or being written, skipping map refresh for {layer_name}",
+                        f"Database busy or still initializing, skipping map refresh for {layer_name}",
                         tag="GeoE3",
                         level=Qgis.Info,
                     )
