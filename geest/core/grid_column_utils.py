@@ -78,6 +78,8 @@ def get_aggregate_column_names() -> List[str]:
     return [
         "geoe3",
         "geoe3_by_population",
+        "geoe3_masked",  # GeoE3 score masked by opportunities/GHSL
+        "geoe3_by_population_masked",  # GeoE3 by population masked
         "contextual_score",
         "accessibility_score",
         "place_characterization_score",

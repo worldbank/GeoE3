@@ -1104,21 +1104,25 @@ class TreePanel(QWidget):
         self.overall_progress_bar.setVisible(False)
 
     def add_masked_scores_to_map(self, item):
-        """Add the masked scores to the map.
+        """Add the masked scores to the map as grid layers.
 
         Args:
             item: The analysis item containing masked score data.
         """
-        add_to_map(
+        # Add GeoE3 masked score as grid layer
+        add_grid_layer_to_map(
             item,
-            key="geoe3_score_ghsl_masked_result_file",
-            layer_name="Masked GeoE3 Score",
+            column_name="geoe3_masked",
+            working_directory=self.working_directory,
+            layer_name="Masked GeoE3 Score (Grid)",
             group="GeoE3",
         )
-        add_to_map(
+        # Add GeoE3 by population masked score as grid layer
+        add_grid_layer_to_map(
             item,
-            key="geoe3_by_population_by_opportunities_mask_result_file",
-            layer_name="Masked GeoE3 by Population Score",
+            column_name="geoe3_by_population_masked",
+            working_directory=self.working_directory,
+            layer_name="Masked GeoE3 by Population Score (Grid)",
             group="GeoE3",
         )
 
