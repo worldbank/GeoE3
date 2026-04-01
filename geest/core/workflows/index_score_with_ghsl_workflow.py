@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """📦 Index Score With Ghsl Workflow module.
-
 This module contains functionality for index score with ghsl workflow.
 """
-
 import os
 from typing import Optional
 
@@ -36,7 +34,6 @@ class IndexScoreWithGHSLException(Exception):
 class IndexScoreWithGHSLWorkflow(WorkflowBase):
     """
     Concrete implementation of a 'use_index_score_with_ghsl' workflow.
-
     This workflow scores areas using an index value, masked to GHSL settlement boundaries.
     Study area clip polygons are pre-filtered during study area creation to only include
     areas that intersect GHSL, so this workflow intersects with GHSL to get the precise
@@ -54,7 +51,6 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
     ):
         """
         Initialize the workflow with attributes and feedback.
-
         Args:
             item: JsonTreeItem representing the analysis, dimension, or factor to process.
             cell_size_m: Cell size in meters for rasterization.
@@ -80,9 +76,7 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         self.workflow_name = "index_score"
         # Get the analysis extents
         self.study_area_bbox = self._study_area_bbox_4326()
-
         self.ghsl_layer_path = f"{self.gpkg_path}|layername=ghsl_settlements"
-
         # Check if GHSL layer exists, try to download if not
         if not self.ensure_ghsl_data():
             log_message(
@@ -105,25 +99,23 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_features: QgsVectorLayer,
         index: int,
+        area_name: str = None,
     ) -> str:
         """
         Executes the actual workflow logic for a single area
         Must be implemented by sub classes.
-
         Args:
             current_area: Current polygon from our study area.
             clip_area: Current area but expanded to coincide with grid cell boundaries.
             current_bbox: Bounding box of the above area.
             area_features: A vector layer of features to analyse that includes only features in the study area.
             index: Iteration / number of area being processed.
-
         Returns:
             Raster file path of the output.
         """
         _ = area_features  # unused
         log_message(f"Processing area {index} with index score {self.index_score}")
         self.progressChanged.emit(10.0)
-
         # Load GHSL layer and get features intersecting this area
         # Clip polygons are pre-filtered during study area creation, so we just need
         # to intersect with GHSL to get precise settlement boundaries for scoring
@@ -138,7 +130,6 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
             for feat in ghsl_layer.getFeatures(request):
                 if feat.geometry().intersects(current_area):
                     ghsl_geometries.append(feat.geometry())
-
             if ghsl_geometries:
                 ghsl_union = QgsGeometry.unaryUnion(ghsl_geometries)
                 masked_geom = clip_area.intersection(ghsl_union)
@@ -148,13 +139,10 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
             else:
                 log_message(f"No GHSL features found for area {index}, using full clip area")
                 masked_geom = clip_area
-
         self.progressChanged.emit(40.0)
-
         # Create scored layer with GHSL-masked geometry
         scored_layer = self.create_scored_boundary_layer(clip_area=masked_geom, index=index)
         self.progressChanged.emit(60.0)
-
         # Rasterize
         raster_output = self._rasterize(
             scored_layer,
@@ -164,23 +152,19 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
             default_value=0,
         )
         self.progressChanged.emit(100.0)
-
         log_message(f"Raster output: {raster_output}")
         return raster_output
 
     def create_scored_boundary_layer(self, clip_area: QgsGeometry, index: int) -> QgsVectorLayer:
         """
         Create a scored boundary layer, filtering features by the current_area.
-
         Args:
             clip_area: The clipping area geometry.
             index: The index of the current processing area.
-
         Returns:
             A vector layer with a 'score' attribute.
         """
         output_prefix = f"{self.layer_id}_area_{index}"
-
         self.progressChanged.emit(20.0)  # We just use nominal intervals for progress updates
         # Create a new memory layer with the target CRS (EPSG:4326)
         subset_layer = QgsVectorLayer("Polygon", "subset", "memory")
@@ -192,7 +176,6 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         subset_layer_data.addAttributes(fields)
         subset_layer.updateFields()
         self.progressChanged.emit(40.0)  # We just use nominal intervals for progress updates
-
         feature = QgsFeature(subset_layer.fields())
         feature.setGeometry(clip_area)
         score_field_index = subset_layer.fields().indexFromName("score")
@@ -202,7 +185,6 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         subset_layer_data.addFeatures(features)
         subset_layer.commitChanges()
         self.progressChanged.emit(60.0)  # We just use nominal intervals for progress updates
-
         shapefile_path = os.path.join(self.workflow_directory, f"{output_prefix}.shp")
         # Use QgsVectorFileWriter to save the layer to a shapefile
         QgsVectorFileWriter.writeAsVectorFormat(
@@ -214,7 +196,6 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         )
         layer = QgsVectorLayer(shapefile_path, "area_layer", "ogr")
         self.progressChanged.emit(80.0)  # We just use nominal intervals for progress updates
-
         return layer
 
     # Default implementation of the abstract method - not used in this workflow
@@ -225,17 +206,16 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_raster: str,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using a raster.
-
         Args:
             current_area: Current polygon from our study area.
             clip_area: Polygon to clip the raster to which is aligned to cell edges.
             current_bbox: Bounding box of the above area.
             area_raster: A raster layer of features to analyse that includes only bbox pixels in the study area.
             index: Index of the current area.
-
         Returns:
             Path to the reclassified raster.
         """
@@ -247,16 +227,15 @@ class IndexScoreWithGHSLWorkflow(WorkflowBase):
         clip_area: QgsGeometry,
         current_bbox: QgsGeometry,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using an aggregate.
-
         Args:
             current_area: Current polygon from our study area.
             clip_area: Polygon to clip the raster to which is aligned to cell edges.
             current_bbox: Bounding box of the above area.
             index: Index of the current area.
-
         Returns:
             Path to the reclassified raster.
         """

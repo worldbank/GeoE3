@@ -2,9 +2,13 @@
 """📦 Polygon Per Cell Workflow module.
 
 This module contains functionality for polygon per cell workflow.
+
+Supports grid-first mode where feature counts are written directly to
+the study_area_grid column, then rasterized.
 """
 
 import os
+from typing import Optional
 from urllib.parse import unquote
 
 from qgis.core import (
@@ -16,8 +20,10 @@ from qgis.core import (
 )
 
 from geest.core import JsonTreeItem
-from geest.core.algorithms.polygon_per_cell_processor import (
-    assign_reclassification_to_polygons,
+from geest.core.grid_column_utils import (
+    clear_grid_column,
+    count_features_per_grid_cell,
+    rasterize_grid_column,
 )
 from geest.utilities import log_message
 
@@ -50,13 +56,10 @@ class PolygonPerCellWorkflow(WorkflowBase):
         super().__init__(
             item, cell_size_m, analysis_scale, feedback, context, working_directory
         )  # ⭐️ Item is a reference - whatever you change in this item will directly update the tree
-        # TODO fix inconsistent abbreviation below for Poly
         self.workflow_name = "use_polygon_per_cell"
-
         layer_path = self.attributes.get("polygon_per_cell_shapefile", None)
         if layer_path:
             layer_path = unquote(layer_path)
-
         if not layer_path:
             log_message(
                 "Invalid raster found in polygon_per_cell_shapefile, trying polygon_per_cell_layer_source.",
@@ -71,8 +74,12 @@ class PolygonPerCellWorkflow(WorkflowBase):
                     level=Qgis.Warning,
                 )
                 return False
-
         self.features_layer = QgsVectorLayer(layer_path, "polygon_per_cell_layer", "ogr")
+        self.workflow_name = "polygon_per_cell"
+        # Grid-first mode: write results to grid columns first, then rasterize
+        self.use_grid_first = True
+        # Track if we've cleared the column (only do once, not per area)
+        self._column_cleared = False
 
     def _process_features_for_area(
         self,
@@ -81,17 +88,20 @@ class PolygonPerCellWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_features: QgsVectorLayer,
         index: int,
+        area_name: Optional[str] = None,
     ) -> str:
         """
-        Executes the actual workflow logic for a single area
-        Must be implemented by subclasses.
+        Executes the actual workflow logic for a single area.
+
+        Supports grid-first mode where counts are written directly to study_area_grid.
 
         :current_area: Current polygon from our study area.
         :current_bbox: Bounding box of the above area.
         :area_features: A vector layer of features to analyse that includes only features in the study area.
         :index: Iteration / number of area being processed.
+        :area_name: Name of the area being processed.
 
-        :return: A raster layer file path if processing completes successfully, False if canceled or failed.
+        :return: A raster layer file path if processing completes successfully.
         """
         area_features_count = area_features.featureCount()
         log_message(
@@ -99,10 +109,32 @@ class PolygonPerCellWorkflow(WorkflowBase):
             tag="GeoE3",
             level=Qgis.Info,
         )
-        # Step 1: Select grid cells that intersect with features
-        output_path = os.path.join(self.workflow_directory, f"{self.layer_id}_grid_cells.gpkg")
-        del output_path
-        # Step 2: Assign reclassification values to polygons based on their perimeter
+
+        if self.use_grid_first:
+            return self._process_grid_first(
+                current_bbox=current_bbox,
+                area_features=area_features,
+                index=index,
+                area_name=area_name,
+            )
+        else:
+            return self._process_raster_first(
+                current_bbox=current_bbox,
+                area_features=area_features,
+                index=index,
+            )
+
+    def _process_raster_first(
+        self,
+        current_bbox: QgsGeometry,
+        area_features: QgsVectorLayer,
+        index: int,
+    ) -> str:
+        """Legacy raster-first processing using polygon perimeter classification."""
+        from geest.core.algorithms.polygon_per_cell_processor import (
+            assign_reclassification_to_polygons,
+        )
+
         polygon_areas = assign_reclassification_to_polygons(area_features)
         raster_output = self._rasterize(
             polygon_areas,
@@ -113,6 +145,56 @@ class PolygonPerCellWorkflow(WorkflowBase):
         )
         return raster_output
 
+    def _process_grid_first(
+        self,
+        current_bbox: QgsGeometry,
+        area_features: QgsVectorLayer,
+        index: int,
+        area_name: str,
+    ) -> str:
+        """Grid-first processing - writes directly to study_area_grid."""
+        # Clear column once at the start (not per area)
+        if not self._column_cleared:
+            log_message(f"Clearing column {self.layer_id} before processing")
+            clear_grid_column(self.gpkg_path, self.layer_id)
+            self._column_cleared = True
+
+        self.progressChanged.emit(10.0)
+
+        # Count features and write to grid
+        log_message(f"Counting features for column {self.layer_id}")
+        count_features_per_grid_cell(
+            gpkg_path=self.gpkg_path,
+            column_name=self.layer_id,
+            features_layer=area_features,
+            feedback=self.feedback,
+        )
+
+        self.progressChanged.emit(50.0)
+
+        # Rasterize from grid column
+        output_path = os.path.join(
+            self.workflow_directory,
+            f"{self.layer_id}_{index}.tif",
+        )
+
+        rect = current_bbox.boundingBox()
+        extent = (rect.xMinimum(), rect.yMinimum(), rect.xMaximum(), rect.yMaximum())
+
+        rasterize_grid_column(
+            gpkg_path=self.gpkg_path,
+            column_name=self.layer_id,
+            output_raster_path=output_path,
+            cell_size=self.cell_size_m,
+            extent=extent,
+            nodata=-9999.0,
+            area_name=area_name,
+        )
+
+        self.progressChanged.emit(100.0)
+        log_message(f"Rasterized grid column to {output_path}")
+        return output_path
+
     # Default implementation of the abstract method - not used in this workflow
     def _process_raster_for_area(
         self,
@@ -121,6 +203,7 @@ class PolygonPerCellWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_raster: str,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using a raster.
@@ -141,6 +224,7 @@ class PolygonPerCellWorkflow(WorkflowBase):
         clip_area: QgsGeometry,
         current_bbox: QgsGeometry,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the workflow, reporting progress through the feedback object and checking for cancellation.

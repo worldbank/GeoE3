@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """📦 Raster Reclassification Workflow module.
-
 This module contains functionality for raster reclassification workflow.
 """
-
 import os
 from urllib.parse import unquote
 
@@ -52,16 +50,13 @@ class RasterReclassificationWorkflow(WorkflowBase):
             item, cell_size_m, analysis_scale, feedback, context, working_directory
         )  # ⭐️ Item is a reference - whatever you change in this item will directly update the tree
         self.workflow_name = "use_environmental_hazards"
-
         if self.layer_id == "landslide":
             self.range_boundaries = 2  # min and max values are included
         else:
             self.range_boundaries = 0  # default value for range boundaries
-
         layer_name = self.attributes.get("environmental_hazards_raster", None)
         if layer_name:
             layer_name = unquote(layer_name)
-
         if not layer_name:
             log_message(
                 "Invalid layer found in environmental_hazards_raster, trying environmental_hazards_layer_source.",
@@ -76,9 +71,7 @@ class RasterReclassificationWorkflow(WorkflowBase):
                     level=Qgis.Warning,
                 )
                 return
-
         self.raster_layer = QgsRasterLayer(layer_name, "Environmental Hazards Raster", "gdal")
-
         if self.layer_id == "fire":
             self.reclassification_rules = [
                 "-inf",
@@ -184,7 +177,6 @@ class RasterReclassificationWorkflow(WorkflowBase):
                 5,
                 0,  # new value = 0
             ]
-
         log_message(
             f"Reclassification Rules for {self.layer_id}: {self.reclassification_rules}",
             tag="GeoE3",
@@ -198,28 +190,25 @@ class RasterReclassificationWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_raster: str,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using a raster.
-
         :current_area: Current polygon from our study area.
         :clip_area: Polygon to clip the raster to which is aligned to cell edges.
         :current_bbox: Bounding box of the above area.
         :area_raster: A raster layer of features to analyse that includes only bbox pixels in the study area.
         :index: Index of the current area.
-
         :return: Path to the reclassified raster.
         """
         del current_area  # Unused in this analysis noqa F841
         del clip_area  # Unused in this analysis noqa F841
-
         # Apply the reclassification rules
         reclassified_raster = self._apply_reclassification(
             area_raster,
             index,
             bbox=current_bbox,
         )
-
         return reclassified_raster
 
     def _apply_reclassification(
@@ -232,9 +221,7 @@ class RasterReclassificationWorkflow(WorkflowBase):
         Apply the reclassification using the raster calculator and save the output.
         """
         bbox = bbox.boundingBox()
-
         reclassified_raster_path = os.path.join(self.workflow_directory, f"{self.layer_id}_reclassified_{index}.tif")
-
         # Set up the reclassification using reclassifybytable
         params = {
             "INPUT_RASTER": input_raster,
@@ -244,10 +231,8 @@ class RasterReclassificationWorkflow(WorkflowBase):
             "OUTPUT": "TEMPORARY_OUTPUT",
             "PROGRESS": self.feedback,
         }
-
         # Perform the reclassification using the raster calculator
         reclass = processing.run("native:reclassifybytable", params, feedback=QgsProcessingFeedback())["OUTPUT"]
-
         clip_params = {
             "INPUT": reclass,
             "MASK": self.clip_areas_layer,
@@ -258,14 +243,12 @@ class RasterReclassificationWorkflow(WorkflowBase):
             "OUTPUT": reclassified_raster_path,
             "PROGRESS": self.feedback,
         }
-
         processing.run("gdal:cliprasterbymasklayer", clip_params, feedback=QgsProcessingFeedback())
         log_message(
             f"Reclassification for area {index} complete. Saved to {reclassified_raster_path}",
             tag="GeoE3",
             level=Qgis.Info,
         )
-
         return reclassified_raster_path
 
     # Not used in this workflow since we work with rasters
@@ -276,17 +259,16 @@ class RasterReclassificationWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_features: QgsVectorLayer,
         index: int,
+        area_name: str = None,
     ) -> str:
         """
         Executes the actual workflow logic for a single area
         Must be implemented by subclasses.
-
         :current_area: Current polygon from our study area.
         :clip_area: Extended grid matched polygon for the study area.
         :current_bbox: Bounding box of the above area.
         :area_features: A vector layer of features to analyse that includes only features in the study area.
         :index: Iteration / number of area being processed.
-
         :return: A raster layer file path if processing completes successfully, False if canceled or failed.
         """
         pass
@@ -297,15 +279,14 @@ class RasterReclassificationWorkflow(WorkflowBase):
         clip_area: QgsGeometry,
         current_bbox: QgsGeometry,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using an aggregate.
-
         :current_area: Current polygon from our study area.
         :clip_area: Extended grid matched polygon for the study area.
         :current_bbox: Bounding box of the above area.
         :index: Index of the current area.
-
         :return: Path to the reclassified raster.
         """
         pass

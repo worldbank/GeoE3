@@ -23,6 +23,7 @@ from qgis.core import (
     QgsProject,
     QgsVectorLayer,
 )
+from qgis.gui import QgsMessageBar
 from qgis.PyQt.QtCore import QModelIndex, QPoint, QSettings, Qt, pyqtSignal, pyqtSlot
 from qgis.PyQt.QtGui import QMovie
 from qgis.PyQt.QtWidgets import (
@@ -45,7 +46,6 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 from qgis.utils import iface
-from qgis.gui import QgsMessageBar
 
 from geest.core import JsonTreeItem, WorkflowQueueManager
 from geest.core.algorithms import (
@@ -57,9 +57,9 @@ from geest.core.algorithms import (
     WEEByPopulationScoreProcessingTask,
 )
 from geest.core.reports import StudyAreaReport
-from geest.core.tasks import AnalysisReportTask
 from geest.core.settings import set_setting, setting
-from geest.core.utilities import add_to_map, validate_network_layer
+from geest.core.tasks import AnalysisReportTask
+from geest.core.utilities import add_grid_layer_to_map, add_to_map, validate_network_layer
 from geest.gui.dialogs import (
     AnalysisAggregationDialog,
     DimensionAggregationDialog,
@@ -136,19 +136,19 @@ class TreePanel(QWidget):
             """
             QPushButton {
                 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #b8dce3, stop:1 #8ec8d0);
-                color: #000;
-                border: 1px solid #6fa8b0;
+                    stop:0 #3E799B, stop:1 #2d5a75);
+                color: #ffffff;
+                border: 1px solid #2d5a75;
                 border-radius: 3px;
                 padding: 4px 12px;
             }
             QPushButton:hover {
                 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #c8e8ef, stop:1 #9ed8e0);
+                    stop:0 #4a8bb0, stop:1 #3E799B);
             }
             QPushButton:pressed {
                 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #8ec8d0, stop:1 #b8dce3);
+                    stop:0 #2d5a75, stop:1 #3E799B);
             }
         """
         )
@@ -348,7 +348,21 @@ class TreePanel(QWidget):
 
         show_layer_on_click = setting(key="show_layer_on_click", default=True)
         if show_layer_on_click:
-            add_to_map(item)
+            # Determine the column name based on item role
+            if item.role == "dimension":
+                column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            elif item.role == "factor":
+                column_name = f"fac_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            elif item.role == "indicator":
+                column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
+            elif item.role == "analysis":
+                column_name = "geoe3"  # Analysis aggregation uses geoe3 column
+            else:
+                # For unknown roles, fall back to raster
+                add_to_map(item)
+                return
+            # Add grid layer instead of raster
+            add_grid_layer_to_map(item, column_name, self.working_directory)
         show_overlay = setting(key="show_overlay", default=False)
         if show_overlay:
             QSettings().setValue("geoe3/overlay_label", item.data(0))
@@ -470,6 +484,8 @@ class TreePanel(QWidget):
                 self.load_json()  # sets the class member json_data
                 self.model.loadJsonData(self.json_data)
                 self.apply_women_considerations_logic()  # Hide factors based on women considerations
+                # Hide factors that have only a single indicator (indicator shown in their place)
+                self.model.toggle_single_child_factors_visibility(hide_single_child=True)
                 self.treeView.expandAll()
                 log_message(f"Loaded model.json from {model_path}")
 
@@ -521,6 +537,8 @@ class TreePanel(QWidget):
             self.load_json()
             self.model.loadJsonData(self.json_data)
             self.apply_women_considerations_logic()  # Hide factors based on women considerations
+            # Hide factors that have only a single indicator (indicator shown in their place)
+            self.model.toggle_single_child_factors_visibility(hide_single_child=True)
             self.treeView.expandAll()
         # Collapse any factors that have only a single indicator
         self.treeView.collapse_single_nodes()
@@ -607,6 +625,7 @@ class TreePanel(QWidget):
                 tag="GeoE3",
                 level=Qgis.Warning,
             )
+            return
         try:
             json_data = self.model.to_json()
 
@@ -764,6 +783,8 @@ class TreePanel(QWidget):
             self.load_json()
             self.model.loadJsonData(self.json_data)
             self.apply_women_considerations_logic()  # Hide factors based on women considerations
+            # Hide factors that have only a single indicator (indicator shown in their place)
+            self.model.toggle_single_child_factors_visibility(hide_single_child=True)
             self.treeView.expandAll()
 
     def export_json_to_file(self):
@@ -861,18 +882,23 @@ class TreePanel(QWidget):
             animate_results_action.triggered.connect(self.animate_results)
             menu.addAction(animate_results_action)
 
-            add_geoe3_score = QAction("Add GeoE3 Score to Map")
+            add_geoe3_score = QAction("Add GeoE3 Score to Map (Raster)")
             add_geoe3_score.triggered.connect(
                 lambda: add_to_map(item, key="result_file", layer_name="GeoE3 Score", group="GeoE3")
             )
             menu.addAction(add_geoe3_score)
 
+            add_geoe3_score_grid = QAction("Add GeoE3 Score to Map (Grid)")
+            add_geoe3_score_grid.triggered.connect(lambda: add_grid_layer_to_map(item, "geoe3", self.working_directory))
+            menu.addAction(add_geoe3_score_grid)
+
             add_geoe3_by_population = QAction("Add GeoE3 by Pop to Map")
             add_geoe3_by_population.triggered.connect(
-                lambda: add_to_map(
+                lambda: add_grid_layer_to_map(
                     item,
-                    key="geoe3_by_population",
-                    layer_name="GeoE3 by Population",
+                    column_name="geoe3_by_population",
+                    working_directory=self.working_directory,
+                    layer_name="GeoE3 by Population (Grid)",
                     group="GeoE3",
                 )
             )
@@ -923,6 +949,13 @@ class TreePanel(QWidget):
             add_factor_action = QAction("Add Factor", self)
             remove_dimension_action = QAction("Remove Dimension", self)
 
+            # Add grid layer action
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            add_grid_to_map_action.triggered.connect(
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
+
             # Connect actions
             add_factor_action.triggered.connect(lambda: self.model.add_factor(item))
             remove_dimension_action.triggered.connect(lambda: self.model.remove_item(item))
@@ -932,6 +965,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -941,6 +975,13 @@ class TreePanel(QWidget):
             edit_aggregation_action = QAction("🔘 Edit Weights", self)  # New action for contextediting aggregation
             add_indicator_action = QAction("Add Indicator", self)
             remove_factor_action = QAction("Remove Factor", self)
+
+            # Add grid layer action
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = f"fac_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+            add_grid_to_map_action.triggered.connect(
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
 
             # Connect actions
             edit_aggregation_action.triggered.connect(lambda: self.edit_factor_aggregation(item))  # Connect to method
@@ -953,6 +994,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -963,6 +1005,13 @@ class TreePanel(QWidget):
             # of its parent factor...
             show_properties_action = QAction("🔘 Edit Weights", self)
 
+            # Add grid layer action (indicators use raw ID without prefix)
+            add_grid_to_map_action = QAction("Add to map (Grid)", self)
+            column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
+            add_grid_to_map_action.triggered.connect(
+                lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
+            )
+
             # Connect actions
             show_properties_action.triggered.connect(lambda: self.edit_factor_aggregation(item.parent()))
             # Add actions to menu
@@ -971,6 +1020,7 @@ class TreePanel(QWidget):
             menu.addAction(show_json_attributes_action)
             menu.addAction(clear_item_action)
             menu.addAction(add_to_map_action)
+            menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -1055,63 +1105,39 @@ class TreePanel(QWidget):
         self.overall_progress_bar.setVisible(False)
 
     def add_masked_scores_to_map(self, item):
-        """Add the masked scores to the map.
+        """Add the masked scores to the map as grid layers.
 
         Args:
             item: The analysis item containing masked score data.
         """
-        add_to_map(
+        # Add GeoE3 masked score as grid layer
+        add_grid_layer_to_map(
             item,
-            key="geoe3_score_ghsl_masked_result_file",
-            layer_name="Masked GeoE3 Score",
+            column_name="geoe3_masked",
+            working_directory=self.working_directory,
+            layer_name="Masked GeoE3 Score (Grid)",
             group="GeoE3",
         )
-        add_to_map(
+        # Add GeoE3 by population masked score as grid layer
+        add_grid_layer_to_map(
             item,
-            key="geoe3_by_population_by_opportunities_mask_result_file",
-            layer_name="Masked GeoE3 by Population Score",
+            column_name="geoe3_by_population_masked",
+            working_directory=self.working_directory,
+            layer_name="Masked GeoE3 by Population Score (Grid)",
             group="GeoE3",
         )
 
     def add_opportunities_mask_to_map(self, item):
-        """Add the opportunities mask to the map with diagnostic feedback.
+        """Add the opportunities mask to the map as a grid layer.
 
         Args:
             item: The analysis item containing opportunities mask configuration.
         """
-        mask_file = item.attribute("opportunities_mask_result_file")
-
-        if not mask_file:
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                "Not configured. Run the opportunities mask processing first.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        if not os.path.exists(mask_file):
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                f"File not found: {os.path.basename(mask_file)}. Run the mask processing.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        if os.path.getsize(mask_file) == 0:
-            iface.messageBar().pushMessage(
-                "Opportunities Mask",
-                "File is empty (0 bytes). Run the mask processing again.",
-                level=Qgis.Warning,
-                duration=8,
-            )
-            return
-
-        add_to_map(
+        add_grid_layer_to_map(
             item,
-            key="opportunities_mask_result_file",
-            layer_name="Opportunities Mask",
+            column_name="opportunities_mask",
+            working_directory=self.working_directory,
+            layer_name="Opportunities Mask (Grid)",
             group="GeoE3",
         )
 
@@ -2040,7 +2066,20 @@ class TreePanel(QWidget):
         self.overall_progress_bar.setMaximum(self.items_to_run - 1)
         self.workflow_progress_bar.setValue(0)
         self.save_json_to_working_directory()
-        add_to_map(item)
+        # Add the grid layer to the map after workflow completes
+        if item.role == "dimension":
+            column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+        elif item.role == "factor":
+            column_name = f"fac_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
+        elif item.role == "indicator":
+            column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
+        elif item.role == "analysis":
+            column_name = "geoe3"  # Analysis aggregation uses geoe3 column
+        else:
+            # For unknown roles, fall back to raster
+            add_to_map(item)
+            return
+        add_grid_layer_to_map(item, column_name, self.working_directory)
 
         # Now cancel the animated icon
         node_index = self.model.itemIndex(item)

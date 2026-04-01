@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 """📦 Index Score With Ookla Workflow module.
-
 This module contains functionality for index score with ookla workflow.
 """
-
 import os
 from typing import Optional
 
@@ -58,7 +56,6 @@ class ProgressBridgeFeedback(QgsFeedback):
 class IndexScoreWithOoklaWorkflow(WorkflowBase):
     """
     Concrete implementation of a 'use_index_score_with_ookla' workflow.
-
     This follows the same logic as the index score workflow but additionally
     masks the result using the Ookla coverage layer to ensure that only areas
     that have Ookla data are included in the final output.
@@ -99,7 +96,6 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         self.workflow_name = "index_score"
         # Get the analysis extents
         self.study_area_bbox = self._study_area_bbox_4326()
-
         # Lazy load OOKLA data during execute to avoid blocking __init__
         self.ookla_layer_path = None
         self.ookla_downloaded = False
@@ -111,14 +107,11 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         """
         if self.ookla_downloaded:
             return
-
         log_message("Downloading Ookla data (this may take several minutes)...")
         self.updateStatus("Downloading Ookla data — this may take several minutes...")
         self.progressChanged.emit(1.0)
-
         # Bridge feedback to workflow progress signals
         bridge_feedback = ProgressBridgeFeedback(self, self.feedback)
-
         # Prepare Ookla coverage layer - adds a minute or two to the workflow
         # and requires internet access
         ookla_layer_path = os.path.join(self.working_directory, "study_area")
@@ -151,27 +144,23 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_features: QgsVectorLayer,
         index: int,
+        area_name: str = None,
     ) -> str:
         """
         Executes the actual workflow logic for a single area
         Must be implemented by sub classes.
-
         :current_area: Current polygon from our study area.
         :current_bbox: Bounding box of the above area.
         :area_features: A vector layer of features to analyse that includes only features in the study area.
         :index: Iteration / number of area being processed.
-
         :return: Raster file path of the output.
         """
         _ = area_features  # unused
-
         # Download OOKLA data on first area
         if index == 0:
             self._download_ookla_data()
-
         log_message(f"Index score: {self.index_score}")
         self.progressChanged.emit(10.0)  # We just use nominal intervals for progress updates
-
         # Mask with OOKLA coverage
         ookla_layer = QgsVectorLayer(self.ookla_layer_path, "ookla_layer", "ogr")
         expr = f"intersects($geometry, geom_from_wkt('{current_area.asWkt()}'))"
@@ -183,7 +172,6 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
             final_geom = clip_area.intersection(ookla_union_geom)
         else:
             log_message(f"No Ookla coverage in area {index}, skipping ookla masking.")
-
         if not final_geom or final_geom.isEmpty():
             log_message(f"No Ookla coverage in area {index}, using full clip area with score 0.")
             final_geom = clip_area
@@ -194,7 +182,6 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
             index=index,
         )
         self.progressChanged.emit(60.0)  # We just use nominal intervals for progress
-
         # Rasterize
         raster_output = self._rasterize(
             scored_layer,
@@ -204,7 +191,6 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
             default_value=0,
         )
         self.progressChanged.emit(100.0)  # We just use nominal intervals for progress updates
-
         log_message(f"Raster output: {raster_output}")
         log_message(f"Workflow completed for area {index}")
         return raster_output
@@ -212,12 +198,10 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
     def create_scored_boundary_layer(self, clip_area: QgsGeometry, index: int) -> QgsVectorLayer:
         """
         Create a scored boundary layer, filtering features by the current_area.
-
         :param index: The index of the current processing area.
         :return: A vector layer with a 'score' attribute.
         """
         output_prefix = f"{self.layer_id}_area_{index}"
-
         self.progressChanged.emit(20.0)  # We just use nominal intervals for progress updates
         # Create memory layer
         subset_layer = QgsVectorLayer("Polygon", "subset", "memory")
@@ -228,7 +212,6 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         subset_layer_data.addAttributes(fields)
         subset_layer.updateFields()
         self.progressChanged.emit(40.0)  # We just use nominal intervals for progress updates
-
         feature = QgsFeature(subset_layer.fields())
         feature.setGeometry(clip_area)
         score_field_index = subset_layer.fields().indexFromName("score")
@@ -237,10 +220,8 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         subset_layer_data.addFeatures(features)
         subset_layer.commitChanges()
         self.progressChanged.emit(60.0)  # We just use nominal intervals for progress updates
-
         shapefile_path = os.path.join(self.workflow_directory, f"{output_prefix}.shp")
         os.makedirs(self.workflow_directory, exist_ok=True)
-
         # Write to shapefile
         error, error_string = QgsVectorFileWriter.writeAsVectorFormat(
             subset_layer,
@@ -249,22 +230,17 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
             subset_layer.crs(),
             "ESRI Shapefile",
         )
-
         if error != QgsVectorFileWriter.NoError:
             log_message(f"Error writing shapefile: {error_string} (code: {error})")
             return None
-
         if not os.path.exists(shapefile_path):
             log_message(f"Error: Shapefile not created at {shapefile_path}")
             return None
-
         layer = QgsVectorLayer(shapefile_path, "area_layer", "ogr")
-
         if not layer.isValid():
             log_message(f"Error loading layer: {layer.error().message()}")
             return None
         self.progressChanged.emit(80.0)  # We just use nominal intervals for progress updates
-
         return layer
 
     # Default implementation of the abstract method - not used in this workflow
@@ -275,16 +251,15 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         current_bbox: QgsGeometry,
         area_raster: str,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the actual workflow logic for a single area using a raster.
-
         :current_area: Current polygon from our study area.
         :clip_area: Polygon to clip the raster to which is aligned to cell edges.
         :current_bbox: Bounding box of the above area.
         :area_raster: A raster layer of features to analyse that includes only bbox pixels in the study area.
         :index: Index of the current area.
-
         :return: Path to the reclassified raster.
         """
         pass
@@ -295,6 +270,7 @@ class IndexScoreWithOoklaWorkflow(WorkflowBase):
         clip_area: QgsGeometry,
         current_bbox: QgsGeometry,
         index: int,
+        area_name: str = None,
     ):
         """
         Executes the workflow, reporting progress through the feedback object and checking for cancellation.

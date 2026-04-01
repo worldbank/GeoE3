@@ -20,6 +20,7 @@ from qgis.core import (
 from geest.core import JsonTreeItem
 from geest.core.algorithms import AreaIterator
 from geest.core.constants import GDAL_OUTPUT_DATA_TYPE
+from geest.core.grid_column_utils import write_raster_values_to_grid
 from geest.utilities import log_message, resources_path
 
 
@@ -154,9 +155,10 @@ class OpportunitiesByWeeScoreProcessingTask(QgsTask):
     def calculate_score(self) -> None:
         """
         Calculates Mask x GeoE3 Score using raster algebra and saves the result for each area.
+        Also writes the masked values to the study_area_grid column 'geoe3_masked'.
         """
         area_iterator = AreaIterator(self.study_area_gpkg_path)
-        for index, (_, _, _, _) in enumerate(area_iterator):
+        for index, (_, _, _, _, area_name) in enumerate(area_iterator):
             if self.isCanceled():
                 return
 
@@ -170,6 +172,8 @@ class OpportunitiesByWeeScoreProcessingTask(QgsTask):
             if not self.force_clear and os.path.exists(output_path):
                 log_message(f"Reusing existing raster: {output_path}")
                 self.output_rasters.append(output_path)
+                # Still write to grid even when reusing raster
+                self._write_to_grid(output_path, area_name)
                 continue
 
             log_message(f"Calculating Mask by SCORE for area {index}")
@@ -193,6 +197,27 @@ class OpportunitiesByWeeScoreProcessingTask(QgsTask):
             self.output_rasters.append(output_path)
 
             log_message(f"Masked GeoE3 Score raster saved to {output_path}")
+
+            # Write results to grid column
+            self._write_to_grid(output_path, area_name)
+
+    def _write_to_grid(self, raster_path: str, area_name: str) -> None:
+        """Write masked raster values to the geoe3_masked column in the grid.
+
+        Args:
+            raster_path: Path to the masked raster file.
+            area_name: Name of the area being processed.
+        """
+        updated = write_raster_values_to_grid(
+            gpkg_path=self.study_area_gpkg_path,
+            raster_path=raster_path,
+            column_name="geoe3_masked",
+            area_name=area_name,
+        )
+        if updated >= 0:
+            log_message(f"Updated {updated} grid cells with geoe3_masked values for area {area_name}")
+        else:
+            log_message(f"Failed to write geoe3_masked values to grid for area {area_name}")
 
     def generate_vrt(self) -> str:
         """
