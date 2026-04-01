@@ -18,7 +18,7 @@
     "author": "Kartoza for and with The World Bank",
     "email": "info@kartoza.com, gost@worldbank.org",
     "description": "Geospatial Enabling Environments for Employment Spatial Tool",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "changelog": "Version 2.0.1 - Minor Bug Fixes and Improvements\\n\\n## Bug Fixes\\n* Fixed road network CRS issues\\n* Fixed AttributeError in RoadNetworkPanel by reordering attribute initialization\\n\\n## Improvements\\n* Improved banner text rendering and refined button styling\\n* Updated font sizing for women's considerations section\\n* Open existing project no longer shows women's options incorrectly\\n* Move EPLEX Score to contextual only\\n* Auto-balance weights under dimension",
     "server": false
   }

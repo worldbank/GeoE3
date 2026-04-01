@@ -354,6 +354,7 @@ def select_grid_cells_and_assign_transport_score(
     lookup_table = {}
     for road_type, score in HIGHWAY_CLASSIFICATION.items():
         lookup_table[f"highway_{road_type}"] = score
+        lookup_table[f"fclass_{road_type}"] = score
     for cycle_type, score in cycleway_config.items():
         lookup_table[f"cycleway_{cycle_type}"] = score
 
@@ -361,6 +362,7 @@ def select_grid_cells_and_assign_transport_score(
     field_names = features_layer.fields().names()
     has_highway_field = "highway" in field_names
     has_cycleway_field = "cycleway" in field_names
+    has_fclass_field = "fclass" in field_names
 
     # Iterate over each feature and use the spatial index to find the intersecting grid cells
     for feature in features_layer.getFeatures():
@@ -387,6 +389,22 @@ def select_grid_cells_and_assign_transport_score(
                     )
                 if highway_score > road_score:
                     road_score = highway_score
+                    road_type = lookup_key
+
+        # Check fclass attribute if it exists (Geofabrik shapefiles use fclass instead of highway)
+        if has_fclass_field:
+            fclass_type = feature.attribute("fclass")
+            if fclass_type:  # Not None and not empty string
+                lookup_key = f"fclass_{fclass_type}"
+                fclass_score = lookup_table.get(lookup_key, 0)
+                if verbose_mode:
+                    log_message(
+                        f"fclass_type='{fclass_type}' → lookup_key='{lookup_key}' → score={fclass_score}",
+                        tag="GeoE3",
+                        level=Qgis.Info,
+                    )
+                if fclass_score > road_score:
+                    road_score = fclass_score
                     road_type = lookup_key
 
         # Check cycleway attribute if it exists
