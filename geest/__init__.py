@@ -76,6 +76,8 @@ if log_path_env:
     log_file_path = log_path_env
 else:
     log_file_path = os.path.join(temp_dir, f"geoe3_logfile_{datestamp}.log")
+# truncate the log
+
 logging.basicConfig(
     filename=log_file_path,
     filemode="a",  # Append mode

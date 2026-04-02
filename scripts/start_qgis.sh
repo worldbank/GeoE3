@@ -10,16 +10,14 @@ esac
 echo "Do you want to enable experimental features?"
 choice=$(gum choose "🪲 Yes" "🐞 No")
 case $choice in
-"🪲 Yes") GEOE3_EXPERIMENTAL=1 GEEST_EXPERIMENTAL=1 ;;
-"🐞 No") GEOE3_EXPERIMENTAL=0 GEEST_EXPERIMENTAL=0 ;;
+"🪲 Yes") GEOE3_EXPERIMENTAL=1 ;;
+"🐞 No") GEOE3_EXPERIMENTAL=0 ;;
 esac
 
 # Running on local used to skip tests that will not work in a local dev env
 GEOE3_LOG=$HOME/GEOE3.log
-GEEST_LOG=$HOME/GEEST2.log
 GEOE3_TEST_DIR="$(pwd)/test"
-GEEST_TEST_DIR="$(pwd)/test" # Set test directory relative to project root
-rm -f "$GEOE3_LOG" "$GEEST_LOG"
+rm -f "$GEOE3_LOG"
 #nix-shell -p \
 #  This is the old way using default nix packages with overrides
 #  'qgis.override { extraPythonPackages = (ps: [ ps.pyqtwebengine ps.jsonschema ps.debugpy ps.future ps.psutil ]);}' \
@@ -30,13 +28,9 @@ rm -f "$GEOE3_LOG" "$GEEST_LOG"
 # Both GEOE3_* and GEEST_* env vars are set for backward compatibility
 # QT_QPA_PLATFORM flag forces it to run under x11 protocol
 GEOE3_LOG=${GEOE3_LOG} \
-  GEEST_LOG=${GEEST_LOG} \
   GEOE3_DEBUG=${developer_mode} \
-  GEEST_DEBUG=${developer_mode} \
   GEOE3_EXPERIMENTAL=${GEOE3_EXPERIMENTAL} \
-  GEEST_EXPERIMENTAL=${GEEST_EXPERIMENTAL} \
   GEOE3_TEST_DIR=${GEOE3_TEST_DIR} \
-  GEEST_TEST_DIR=${GEEST_TEST_DIR} \
   RUNNING_ON_LOCAL=1 \
   QT_QPA_PLATFORM=xcb \
-nix run .#default -- --profile GEOE3
+  nix run .#default -- --profile GEOE3
