@@ -18,6 +18,7 @@ from qgis.core import (
     QgsPointXY,
     QgsProcessingContext,
     QgsProcessingException,
+    QgsProcessingFeedback,
     QgsVectorFileWriter,
     QgsVectorLayer,
 )
@@ -192,6 +193,10 @@ class AcledImpactWorkflow(WorkflowBase):
         log_message(f"Buffering features in {layer.name()}")
         output_layer = None
         for distance in buffer_distances:
+            # Skip features with 0 or negative buffer distance
+            if distance is None or distance <= 0:
+                log_message(f"Skipping features with buffer_m = {distance}")
+                continue
             log_message(f"Buffering features with buffer_m = {distance}")
             subset_expression = f'"buffer_m" = {distance}'
             subset_layer = processing.run(  # type: ignore[index]
@@ -201,6 +206,8 @@ class AcledImpactWorkflow(WorkflowBase):
                     "EXPRESSION": subset_expression,
                     "OUTPUT": "memory:",
                 },
+                context=self.context,
+                feedback=QgsProcessingFeedback(),
             )["OUTPUT"]
             buffered_subset = processing.run(  # type: ignore[index]
                 "native:buffer",
@@ -211,6 +218,8 @@ class AcledImpactWorkflow(WorkflowBase):
                     "DISSOLVE": False,
                     "OUTPUT": "memory:",
                 },
+                context=self.context,
+                feedback=QgsProcessingFeedback(),
             )["OUTPUT"]
             if output_layer is None:
                 output_layer = buffered_subset
@@ -222,8 +231,21 @@ class AcledImpactWorkflow(WorkflowBase):
                     "LAYERS": [output_layer, buffered_subset],
                     "OUTPUT": "memory:",
                 },
+                context=self.context,
+                feedback=QgsProcessingFeedback(),
             )["OUTPUT"]
             del subset_layer
+
+        # Handle case where no features had valid buffer distances
+        if output_layer is None:
+            log_message("No features with valid buffer distances found, returning empty layer")
+            # Create an empty polygon layer with the same fields
+            empty_layer = QgsVectorLayer(f"Polygon?crs={layer.crs().authid()}", "empty_buffered", "memory")
+            provider = empty_layer.dataProvider()
+            provider.addAttributes(layer.fields())
+            empty_layer.updateFields()
+            output_layer = empty_layer
+
         output_name = f"{self.layer_id}_buffered"
         output_path = os.path.join(self.workflow_directory, f"{output_name}.shp")
         log_message(f"Writing buffered layer to {output_path}")
@@ -293,6 +315,8 @@ class AcledImpactWorkflow(WorkflowBase):
                 "SEPARATE_DISJOINT": True,
                 "OUTPUT": dissolve_output_path,
             },
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
         )["OUTPUT"]
         log_message(
             f"Dissolved areas have {len(dissolve)} features",
@@ -307,6 +331,8 @@ class AcledImpactWorkflow(WorkflowBase):
                 "INPUT": dissolve_output_path,
                 "OUTPUT": union_output_path,
             },
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
         )["OUTPUT"]
         log_message(f"Processing returned an object of type: {type(union)}")
         if type(union) is str:

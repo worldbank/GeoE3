@@ -192,7 +192,7 @@ class AggregationWorkflowBase(WorkflowBase):
             mode = item.attributes().get("analysis_mode", "Do Not Use") == "Do Not Use"
             excluded = item.getStatus() == "Excluded from analysis"
             disabled = not item.is_enabled()
-            id = item.attribute("id").lower()
+            id = item.attribute("id").lower().replace(" ", "_")
             if not status and not mode and not excluded and not disabled:
                 raise ValueError(
                     f"{id} is not completed successfully and is not set to 'Do Not Use' or 'Excluded from analysis'"
@@ -229,6 +229,11 @@ class AggregationWorkflowBase(WorkflowBase):
 
             layer_folder = os.path.dirname(item.attribute(self.result_file_key, ""))
             path = os.path.join(self.workflow_directory, layer_folder, f"{id}_masked_{index}.tif")
+            log_message(
+                f"Checking for masked raster: {path}",
+                tag="GeoE3",
+                level=Qgis.Info,
+            )
             if os.path.exists(path):
 
                 weight = item.attribute(self.weight_key, "")
@@ -240,6 +245,12 @@ class AggregationWorkflowBase(WorkflowBase):
                 raster_files[path] = weight
 
                 log_message(f"Adding raster: {path} with weight: {weight}")
+            else:
+                log_message(
+                    f"Masked raster not found at: {path}",
+                    tag="GeoE3",
+                    level=Qgis.Warning,
+                )
 
         log_message(
             f"Total raster files found: {len(raster_files)}",

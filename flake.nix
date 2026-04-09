@@ -127,6 +127,7 @@
           pkgs.shellcheck
           pkgs.shfmt
           pkgs.stylua
+          pkgs.tailspin
           pkgs.vscode
           pkgs.yamlfmt
           pkgs.yamllint

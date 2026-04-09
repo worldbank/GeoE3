@@ -748,7 +748,12 @@ class WorkflowBase(QObject):
             "TARGET_EXTENT": f"{bbox.xMinimum()},{bbox.xMaximum()},{bbox.yMinimum()},{bbox.yMaximum()} [{self.target_crs.authid()}]",  # noqa E231
         }
 
-        aoi = processing.run("gdal:warpreproject", params, feedback=QgsProcessingFeedback())["OUTPUT"]
+        aoi = processing.run(
+            "gdal:warpreproject",
+            params,
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
+        )["OUTPUT"]
 
         params = {
             "INPUT": aoi,
@@ -756,7 +761,12 @@ class WorkflowBase(QObject):
             "FILL_VALUE": 0,
             "OUTPUT": reprojected_raster_path,
         }
-        processing.run("native:fillnodata", params)
+        processing.run(
+            "native:fillnodata",
+            params,
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
+        )
         return reprojected_raster_path
 
     def _rasterize(
@@ -836,7 +846,12 @@ class WorkflowBase(QObject):
         log_message(f"Rasterize parameters: {params}")
         # 'OUTPUT':'TEMPORARY_OUTPUT'})
 
-        processing.run("gdal:rasterize", params)
+        processing.run(
+            "gdal:rasterize",
+            params,
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
+        )
         log_message(f"Rasterize Parameter: {params}")
         log_message(f"Rasterize complete for: {output_path}")
         log_message(f"Created raster: {output_path}")
@@ -898,7 +913,12 @@ class WorkflowBase(QObject):
             "DATA_TYPE": GDAL_OUTPUT_DATA_TYPE,
             "EXTRA": "",
         }
-        processing.run("gdal:cliprasterbymasklayer", params)
+        processing.run(
+            "gdal:cliprasterbymasklayer",
+            params,
+            context=self.context,
+            feedback=QgsProcessingFeedback(),
+        )
         log_message(f"Masked raster created: {output_path}")
         return output_path
 
