@@ -87,7 +87,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         # National and Local scales use square grids
         # Local mode enabled for National vs Local analysis implementation
         # self.local_scale.setEnabled(False)
-        self.regional_scale.setEnabled(False)
+        # self.regional_scale.setEnabled(False)
         self.regional_scale.setStyleSheet("QRadioButton:disabled { color: grey; }")
 
         # Women Considerations toggle
