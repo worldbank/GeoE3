@@ -8,6 +8,7 @@ This module contains functionality for ookla downloader.
 import os
 import timeit
 import urllib.request
+from urllib.parse import urlparse
 from typing import Optional
 
 from osgeo import gdal, ogr, osr
@@ -50,6 +51,7 @@ class OoklaDownloader:
     # Construct VSI S3 path
     FIXED_INTERNET_URL = "/vsis3/ookla-open-data/parquet/performance/type=fixed/year=2025/quarter=3/2025-07-01_performance_fixed_tiles.parquet"
     MOBILE_INTERNET_URL = "/vsis3/ookla-open-data/parquet/performance/type=mobile/year=2025/quarter=3/2025-07-01_performance_mobile_tiles.parquet"
+    ALLOWED_DOWNLOAD_SCHEMES = {"https"}
 
     def __init__(
         self,
@@ -154,6 +156,13 @@ class OoklaDownloader:
             return f"https://{bucket}.s3.amazonaws.com/{key}"
         return input_uri
 
+    @classmethod
+    def _validate_download_url(cls, url: str) -> None:
+        """Validate URL scheme for remote parquet downloads."""
+        parsed = urlparse(url)
+        if parsed.scheme.lower() not in cls.ALLOWED_DOWNLOAD_SCHEMES:
+            raise OoklaException(f"Unsupported download URL scheme: {parsed.scheme}")
+
     def _ensure_local_parquet(self, input_uri: str, progress_offset: int = 0, progress_scale: int = 100) -> str:
         """
         Download a remote Parquet to local cache if needed and return local path.
@@ -173,11 +182,12 @@ class OoklaDownloader:
             return local_path
 
         url = self._s3_to_https(input_uri)
+        self._validate_download_url(url)
         tmp_path = f"{local_path}.tmp"
         log_message(f"Downloading Ookla parquet to local cache: {url}")
         log_message(f"Ookla cache location: {local_path}")
         try:
-            with urllib.request.urlopen(url) as response, open(tmp_path, "wb") as handle:
+            with urllib.request.urlopen(url, timeout=120) as response, open(tmp_path, "wb") as handle:  # nosec B310
                 total_size = int(response.headers.get("Content-Length", 0))
                 downloaded = 0
                 if total_size > 0:

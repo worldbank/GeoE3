@@ -237,7 +237,8 @@ class S2SClient(QObject):
         """Sleep with exponential backoff before retrying."""
         delay = self.backoff_base_seconds * (2 ** max(0, attempt - 1))
         if self.backoff_jitter_seconds > 0:
-            delay += random.uniform(0.0, self.backoff_jitter_seconds)
+            # Backoff jitter is for request spreading, not cryptographic use.
+            delay += random.uniform(0.0, self.backoff_jitter_seconds)  # nosec B311
         if delay > 0:
             time.sleep(delay)
 

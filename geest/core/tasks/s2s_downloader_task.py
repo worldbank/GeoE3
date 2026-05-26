@@ -232,8 +232,8 @@ class S2SDownloaderTask(QgsTask):
                 handle.write(f"{datetime.datetime.now()}\n")
                 handle.write(f"Output Path: {self.output_path}\n")
                 handle.write(stack_trace)
-        except Exception:
-            pass
+        except Exception as e:
+            log_message(f"Could not write S2S error file: {e}")
 
     def _write_rows_to_gpkg(self, rows: List[Dict[str, Any]]) -> None:
         """Persist S2S rows to a GeoPackage layer."""

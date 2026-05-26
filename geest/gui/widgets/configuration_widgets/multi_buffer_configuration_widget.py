@@ -93,7 +93,7 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
                                 if factor.get("id") == factor_id:
                                     factor_name = factor.get("name", factor_name)
                                     break
-                except Exception:
+                except Exception:  # nosec B110
                     pass
 
             # Get the selected analysis scale for determining which thresholds to use in the input field
@@ -103,7 +103,7 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
                     with open(model_path, "r") as f:
                         model = json.load(f)
                         analysis_scale = model.get("analysis_scale", analysis_scale)
-                except Exception:
+                except Exception:  # nosec B110
                     pass
 
             # Get configs for both national and local scales to display

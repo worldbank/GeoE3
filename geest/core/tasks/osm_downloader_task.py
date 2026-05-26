@@ -222,8 +222,12 @@ class OSMDownloaderTask(QgsTask):
                     f.write(f"Download Type: {self.osm_download_type.value}\n")
                     f.write(f"Output Path: {self.gpkg_path}\n")
                     f.write(traceback.format_exc())
-            except Exception:
-                pass  # Don't fail on error logging
+            except Exception as e:
+                log_message(
+                    f"Could not write OSM error file: {e}",
+                    tag="GeoE3",
+                    level=Qgis.Warning,
+                )
 
             # Emit user-friendly error message
             if "probably too busy" in str(e).lower():

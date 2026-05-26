@@ -275,7 +275,7 @@ class FactorAggregationDialog(CustomBaseDialog):
                     settings.remove("FactorAggregationDialog/geometry_v2")
                 else:
                     return
-            except Exception:
+            except Exception:  # nosec B110
                 pass
         # Sensible default: cap at 900px wide, 80% screen height
         screen = QApplication.desktop().screenGeometry()

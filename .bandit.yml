@@ -4,6 +4,8 @@
 exclude_dirs:
   - ./test
   - ./test/**
+  - ./geest/extlibs
+  - ./geest/extlibs/**
 
 # Skip B101 (assert statements) as they are legitimate in test files
 skips:
