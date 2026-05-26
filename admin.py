@@ -205,7 +205,12 @@ def generate_zip(
     plugin_version = metadata["version"] if version is None else version
     output_directory.mkdir(parents=True, exist_ok=True)
     zip_path = output_directory / f"{SRC_NAME}.{plugin_version}.zip"
-    with zipfile.ZipFile(zip_path, "w") as fh:
+    with zipfile.ZipFile(
+        zip_path,
+        "w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
+    ) as fh:
         _add_to_zip(build_dir, fh, arc_path_base=build_dir.parent)
     typer.echo(f"zip generated at {str(zip_path)!r} " f"on {dt.datetime.now().strftime('%Y-%m-%d %H:%M')}")
     return zip_path
