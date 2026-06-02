@@ -1292,6 +1292,11 @@ class StudyAreaProcessingTask(QgsTask):
                 log_message("User chose to continue without GHSL data")
                 self.ghsl_layer_name = None
 
+            # 2.6) Pre-create all study area layers before worker threads start.
+            # This avoids Windows-specific GeoPackage trigger/schema races when
+            # layer creation happens while UnifiedWriter holds a persistent connection.
+            self._prepare_study_area_layers()
+
             # 3) Process geometries one at a time (memory efficient)
             self.setProgress(5)  # Reserve 0-5% for GHSL, 5-95% for features
             invalid_feature_count = 0
@@ -1405,6 +1410,17 @@ class StudyAreaProcessingTask(QgsTask):
             self._cleanup_gdal_resources()
 
         return True
+
+    def _writer_is_active(self) -> bool:
+        """Return True when unified writer thread is currently running."""
+        return self.writer_thread is not None and self.writer_thread.isRunning()
+
+    def _prepare_study_area_layers(self) -> None:
+        """Create required study area layers before background writes begin."""
+        self.create_layer_if_not_exists("study_area_bboxes")
+        self.create_layer_if_not_exists("study_area_polygons")
+        self.create_layer_if_not_exists("study_area_clip_polygons")
+        self.create_grid_layer_if_not_exists("study_area_grid")
 
     def _set_sqlite_write_safety_options(self) -> None:
         """Configure safer SQLite options for GeoPackage writes.
@@ -1948,8 +1964,11 @@ class StudyAreaProcessingTask(QgsTask):
             area_name: Name of the area
             intersects_ghsl: Whether geometry intersects GHSL
         """
-        # Ensure layer exists (synchronous, before queuing/writing)
-        self.create_layer_if_not_exists(layer_name)
+        # Ensure layer exists only when writer is not active.
+        # When UnifiedWriter is active, creating layers from a second connection
+        # can trigger Windows-specific GeoPackage schema races.
+        if not self._writer_is_active():
+            self.create_layer_if_not_exists(layer_name)
 
         # Prepare extra fields
         extra_fields = {}
@@ -2273,7 +2292,8 @@ class StudyAreaProcessingTask(QgsTask):
             bbox: Tuple of (xmin, xmax, ymin, ymax) for grid extent
         """
         grid_layer_name = "study_area_grid"
-        self.create_grid_layer_if_not_exists(grid_layer_name)
+        if not self._writer_is_active():
+            self.create_grid_layer_if_not_exists(grid_layer_name)
 
         # Start unified writer thread for this geometry
         self._start_unified_writer(normalized_name)
