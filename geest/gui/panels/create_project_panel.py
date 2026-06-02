@@ -75,6 +75,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.working_dir = ""
         self.settings = QSettings()  # Initialize QSettings to store and retrieve settings
         self._last_map_refresh_ts = 0.0
+        self._incomplete_setup_warned = False
         # Dynamically load the .ui file
         self.setupUi(self)
         log_message("Loading setup panel")
@@ -102,6 +103,27 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
                 return "gpkg_spatial_ref_sys" in names and "gpkg_contents" in names
             finally:
                 conn.close()
+        except Exception:
+            return False
+
+    def _study_area_outputs_ready(self, working_dir: str) -> bool:
+        """Return True when step-1 study area outputs are complete and usable."""
+        if not working_dir:
+            return False
+
+        gpkg_path = os.path.join(working_dir, "study_area", "study_area.gpkg")
+        if not os.path.exists(gpkg_path):
+            return False
+
+        if not self._gpkg_metadata_ready(gpkg_path):
+            return False
+
+        layer = QgsVectorLayer(f"{gpkg_path}|layername=study_area_polygons", "study_area", "ogr")
+        if not layer.isValid():
+            return False
+
+        try:
+            return layer.featureCount() > 0
         except Exception:
             return False
 
@@ -316,36 +338,50 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
             crs = None  # will be calculated from UTM zone
 
         model_path = os.path.join(self.working_dir, "model.json")
-        if os.path.exists(model_path):
+        model_exists = os.path.exists(model_path)
+        study_area_ready = self._study_area_outputs_ready(self.working_dir)
+
+        if model_exists and study_area_ready:
             self.settings.setValue("last_working_directory", self.working_dir)  # Update last used project
             self.enable_widgets()
             # Switch to the next tab if an existing project is found
             self.switch_to_next_tab.emit()
-        else:
-            # Process the study area if no model.json exists
-            layer = self.layer_combo.currentLayer()
-            if not layer:
-                QMessageBox.critical(self, "Error", "Please select a study area layer.")
+            return
+
+        if model_exists and not study_area_ready and not self._incomplete_setup_warned:
+            QMessageBox.information(
+                self,
+                "Project Setup Incomplete",
+                "This project has a model configuration but no valid study area outputs yet. "
+                "Area generation will run again now.",
+            )
+            self._incomplete_setup_warned = True
+
+        # Process the study area when model.json is missing or outputs are incomplete
+        layer = self.layer_combo.currentLayer()
+        if not layer:
+            QMessageBox.critical(self, "Error", "Please select a study area layer.")
+            self.enable_widgets()
+            return
+
+        if not self.working_dir:
+            QMessageBox.critical(self, "Error", "Please select a working directory.")
+            self.enable_widgets()
+            return
+
+        field_name = self.field_combo.currentField()
+        if not field_name or field_name not in layer.fields().names():
+            QMessageBox.critical(self, "Error", f"Invalid area name field '{field_name}'.")
+            self.enable_widgets()
+            return
+
+        if self.regional_scale.isChecked():
+            if not self._validate_h3_preflight(layer, self.selected_h3_resolution()):
                 self.enable_widgets()
                 return
 
-            if not self.working_dir:
-                QMessageBox.critical(self, "Error", "Please select a working directory.")
-                self.enable_widgets()
-                return
-
-            field_name = self.field_combo.currentField()
-            if not field_name or field_name not in layer.fields().names():
-                QMessageBox.critical(self, "Error", f"Invalid area name field '{field_name}'.")
-                self.enable_widgets()
-                return
-
-            if self.regional_scale.isChecked():
-                if not self._validate_h3_preflight(layer, self.selected_h3_resolution()):
-                    self.enable_widgets()
-                    return
-
-            # Copy default model.json if not present
+        # Copy default model.json only if not present
+        if not model_exists:
             default_model_path = resources_path("resources", "model.json")
             try:
                 shutil.copy(default_model_path, model_path)
@@ -353,89 +389,90 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
                 QMessageBox.critical(self, "Error", f"Failed to copy model.json: {e}")
                 self.enable_widgets()
                 return
-            # open the model.json to set the analysis cell size and the network layer path, then close it again
-            with open(model_path, "r") as f:
-                model = json.load(f)
-                model["analysis_cell_size_m"] = self.cell_size_spinbox.value()
-                if self.regional_scale.isChecked():
-                    model["analysis_scale"] = "regional"
-                    model["analysis_h3_resolution"] = self.selected_h3_resolution()
-                elif self.local_scale.isChecked():
-                    model["analysis_scale"] = "local"
-                else:
-                    model["analysis_scale"] = "national"
-                # Save women considerations settings
-                model["women_considerations_enabled"] = self.women_considerations_checkbox.isChecked()
-                # Save reference layer source path
-                ref_layer = self.reference_layer()
-                if ref_layer and ref_layer.source():
-                    model["admin_boundary_layer_source"] = ref_layer.source()
-            with open(model_path, "w") as f:
-                json.dump(model, f, indent=2)
 
-            # Create the processor instance and process the features
-            debug_env = int(os.getenv("GEOE3_DEBUG") or os.getenv("GEEST_DEBUG", 0))
-            feedback = QgsFeedback()  # Used to cancel tasks and measure subtask progress
-            try:
+        # open the model.json to set the analysis cell size and the network layer path, then close it again
+        with open(model_path, "r") as f:
+            model = json.load(f)
+            model["analysis_cell_size_m"] = self.cell_size_spinbox.value()
+            if self.regional_scale.isChecked():
+                model["analysis_scale"] = "regional"
+                model["analysis_h3_resolution"] = self.selected_h3_resolution()
+            elif self.local_scale.isChecked():
+                model["analysis_scale"] = "local"
+            else:
+                model["analysis_scale"] = "national"
+            # Save women considerations settings
+            model["women_considerations_enabled"] = self.women_considerations_checkbox.isChecked()
+            # Save reference layer source path
+            ref_layer = self.reference_layer()
+            if ref_layer and ref_layer.source():
+                model["admin_boundary_layer_source"] = ref_layer.source()
+        with open(model_path, "w") as f:
+            json.dump(model, f, indent=2)
 
-                # Determine analysis scale
-                if self.regional_scale.isChecked():
-                    analysis_scale = "regional"
-                elif self.local_scale.isChecked():
-                    analysis_scale = "local"
-                else:
-                    analysis_scale = "national"
+        # Create the processor instance and process the features
+        debug_env = int(os.getenv("GEOE3_DEBUG") or os.getenv("GEEST_DEBUG", 0))
+        feedback = QgsFeedback()  # Used to cancel tasks and measure subtask progress
+        try:
 
-                h3_resolution = self.selected_h3_resolution() if analysis_scale == "regional" else None
+            # Determine analysis scale
+            if self.regional_scale.isChecked():
+                analysis_scale = "regional"
+            elif self.local_scale.isChecked():
+                analysis_scale = "local"
+            else:
+                analysis_scale = "national"
 
-                if analysis_scale == "regional" and h3_resolution is not None and h3_resolution >= 9:
-                    reply = QMessageBox.question(
-                        self,
-                        "High H3 Resolution",
-                        (
-                            f"H3 resolution {h3_resolution} can be very computationally expensive and may take "
-                            "a long time to process.\n\nDo you want to continue?"
-                        ),
-                        QMessageBox.Yes | QMessageBox.No,
-                        QMessageBox.No,
-                    )
-                    if reply != QMessageBox.Yes:
-                        self.enable_widgets()
-                        return
+            h3_resolution = self.selected_h3_resolution() if analysis_scale == "regional" else None
 
-                processor = StudyAreaProcessingTask(
-                    layer=layer,
-                    field_name=field_name,
-                    cell_size_m=self.cell_size_spinbox.value(),
-                    crs=crs,
-                    working_dir=self.working_dir,
-                    feedback=feedback,
-                    analysis_scale=analysis_scale,
-                    h3_resolution=h3_resolution,
+            if analysis_scale == "regional" and h3_resolution is not None and h3_resolution >= 9:
+                reply = QMessageBox.question(
+                    self,
+                    "High H3 Resolution",
+                    (
+                        f"H3 resolution {h3_resolution} can be very computationally expensive and may take "
+                        "a long time to process.\n\nDo you want to continue?"
+                    ),
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No,
                 )
-                # Hook up the QTask feedback signal to the progress bar
-                # Measure overall task progress from the task object itself
-                processor.progressChanged.connect(self.progress_updated)
-                processor.taskCompleted.connect(self.on_task_completed)
-                processor.taskTerminated.connect(self.on_task_terminated)
-                # Connect GHSL download failure signal to prompt user
-                processor.ghsl_download_failed.connect(lambda msg, p=processor: self.on_ghsl_download_failed(msg, p))
-                # Measure subtask progress from the feedback object
-                feedback.progressChanged.connect(self.subtask_progress_updated)
-                self.disable_widgets()
-                if debug_env:
-                    processor.run()
-                else:
-                    self.queue_manager.add_task(processor)
-                    self.queue_manager.start_processing()
-            except Exception as e:
-                trace = traceback.format_exc()
-                QMessageBox.critical(self, "Error", f"Error processing study area: {e}\n{trace}")
-                self.enable_widgets()
-                return
-            self.settings.setValue("last_working_directory", self.working_dir)
-            self.working_directory_changed.emit(self.working_dir)
+                if reply != QMessageBox.Yes:
+                    self.enable_widgets()
+                    return
+
+            processor = StudyAreaProcessingTask(
+                layer=layer,
+                field_name=field_name,
+                cell_size_m=self.cell_size_spinbox.value(),
+                crs=crs,
+                working_dir=self.working_dir,
+                feedback=feedback,
+                analysis_scale=analysis_scale,
+                h3_resolution=h3_resolution,
+            )
+            # Hook up the QTask feedback signal to the progress bar
+            # Measure overall task progress from the task object itself
+            processor.progressChanged.connect(self.progress_updated)
+            processor.taskCompleted.connect(self.on_task_completed)
+            processor.taskTerminated.connect(self.on_task_terminated)
+            # Connect GHSL download failure signal to prompt user
+            processor.ghsl_download_failed.connect(lambda msg, p=processor: self.on_ghsl_download_failed(msg, p))
+            # Measure subtask progress from the feedback object
+            feedback.progressChanged.connect(self.subtask_progress_updated)
+            self.disable_widgets()
+            if debug_env:
+                processor.run()
+            else:
+                self.queue_manager.add_task(processor)
+                self.queue_manager.start_processing()
+        except Exception as e:
+            trace = traceback.format_exc()
+            QMessageBox.critical(self, "Error", f"Error processing study area: {e}\n{trace}")
             self.enable_widgets()
+            return
+        self.settings.setValue("last_working_directory", self.working_dir)
+        self.working_directory_changed.emit(self.working_dir)
+        self.enable_widgets()
 
     def disable_widgets(self):
         """Disable all widgets in the panel."""
@@ -569,7 +606,7 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.progress_bar.setFormat("Aborted — check settings and retry")
+        self.progress_bar.setFormat("Aborted — fix settings, then click > to retry")
         self.child_progress_bar.setVisible(False)
         self.enable_widgets()
 
