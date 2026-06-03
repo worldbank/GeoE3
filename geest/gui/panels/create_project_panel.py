@@ -257,6 +257,13 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         """
         log_message(f"Spatial scale changed: {value}")
         if value == "regional":
+            self.description2.setText(
+                "Regional scale uses H3 hexagonal grids and global datasets to provide broad strategic coverage "
+                "across large areas with manageable processing times.\n\n"
+                "Choose an H3 resolution for analysis detail. Lower resolutions run faster and summarize patterns "
+                "over larger hexagons, while higher resolutions are finer but can be much more computationally expensive."
+            )
+            self.description2.show()
             # Regional scale uses H3 hexagonal grids (resolution L6) - fixed size
             self.cell_size_spinbox.hide()
             if hasattr(self, "h3_resolution_label"):
@@ -264,6 +271,12 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
             if hasattr(self, "h3_resolution_combo"):
                 self.h3_resolution_combo.show()
         elif value == "national":
+            self.description2.setText(
+                "National scale uses square grid cells and is designed for country-wide analysis with a balance "
+                "between spatial detail and runtime.\n\n"
+                "Set the analysis grid size (m). Smaller sizes require longer processing times but produce more "
+                "detailed analysis results. Recommended grid sizes are available by default."
+            )
             self.cell_size_spinbox.show()
             self.description2.show()
             self.cell_size_spinbox.setValue(1000)
@@ -274,6 +287,11 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
             if hasattr(self, "h3_resolution_combo"):
                 self.h3_resolution_combo.hide()
         elif value == "local":
+            self.description2.setText(
+                "Local scale uses square grid cells for subnational or city-level analysis where fine detail is most important.\n\n"
+                "Set a small analysis grid size (m) for higher spatial precision. Smaller sizes significantly increase "
+                "processing time, so start with recommended values and refine as needed."
+            )
             self.cell_size_spinbox.show()
             self.description2.show()
             self.cell_size_spinbox.setValue(100)
@@ -722,29 +740,41 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
 
     def set_font_size(self):
         """⚙️ Set font size."""
-        # Scale the font size to fit the text in the available space
-        # log_message(f"Description Label Width: {self.description.rect().width()}")
-        # scale the font size linearly from 16 pt to 8 ps as the width of the panel decreases
-        font_size = int(linear_interpolation(self.description.rect().width(), 12, 16, 400, 600))
+        panel_width = self.description.rect().width()
 
-        # log_message(f"Description Label Font Size: {font_size}")
-        self.description.setFont(QFont("Arial", font_size))
-        self.description2.setFont(QFont("Arial", font_size))
-        self.description3.setFont(QFont("Arial", font_size))
-        self.create_project_directory_button.setFont(QFont("Arial", font_size))
-        self.load_boundary_button.setFont(QFont("Arial", font_size))
-        self.cell_size_spinbox.setFont(QFont("Arial", font_size))
-        self.h3_resolution_label.setFont(QFont("Arial", font_size))
-        self.h3_resolution_combo.setFont(QFont("Arial", font_size))
-        self.layer_combo.setFont(QFont("Arial", font_size))
-        self.field_combo.setFont(QFont("Arial", font_size))
+        title_size = int(linear_interpolation(panel_width, 16, 20, 400, 800))
+        subtitle_size = int(linear_interpolation(panel_width, 12, 16, 400, 800))
+        content_size = int(linear_interpolation(panel_width, 10, 14, 400, 800))
+        control_size = int(linear_interpolation(panel_width, 11, 15, 400, 800))
 
-        # Women's considerations section
-        self.women_considerations_checkbox.setFont(QFont("Arial", font_size))
-        self.women_considerations_description.setFont(QFont("Arial", font_size))
+        self.label_2.setFont(QFont("Arial", title_size))
 
-        # Processing info label
-        self.processing_info_label.setFont(QFont("Arial", font_size))
+        self.groupBox.setFont(QFont("Arial", subtitle_size))
+        self.groupBox_2.setFont(QFont("Arial", subtitle_size))
+        self.groupBox_3.setFont(QFont("Arial", subtitle_size))
+        self.regional_scale.setFont(QFont("Arial", subtitle_size))
+        self.national_scale.setFont(QFont("Arial", subtitle_size))
+        self.local_scale.setFont(QFont("Arial", subtitle_size))
+        self.women_considerations_checkbox.setFont(QFont("Arial", subtitle_size))
+
+        self.description.setFont(QFont("Arial", content_size))
+        self.description2.setFont(QFont("Arial", content_size))
+        self.description3.setFont(QFont("Arial", content_size))
+        self.women_considerations_description.setFont(QFont("Arial", content_size))
+        self.processing_info_label.setFont(QFont("Arial", content_size))
+        self.project_path_label.setFont(QFont("Arial", content_size))
+
+        self.create_project_directory_button.setFont(QFont("Arial", control_size))
+        self.load_boundary_button.setFont(QFont("Arial", control_size))
+        self.cell_size_spinbox.setFont(QFont("Arial", control_size))
+        self.h3_resolution_label.setFont(QFont("Arial", control_size))
+        self.h3_resolution_combo.setFont(QFont("Arial", control_size))
+        self.layer_combo.setFont(QFont("Arial", control_size))
+        self.field_combo.setFont(QFont("Arial", control_size))
+        self.use_boundary_crs.setFont(QFont("Arial", content_size))
+        self.crs_label.setFont(QFont("Arial", content_size))
+        self.previous_button.setFont(QFont("Arial", control_size))
+        self.next_button.setFont(QFont("Arial", control_size))
 
         # Progress bars use a fixed small font so text never wraps inside the bar
         self.progress_bar.setFont(QFont("Arial", 9))
