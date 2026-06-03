@@ -1112,7 +1112,9 @@ class StudyAreaProcessingTask(QgsTask):
         if not dissolved_geometries:
             raise RuntimeError("No valid geometries found to dissolve")
 
-        dissolved_path = os.path.join(output_dir, "study_area", "boundaries_dissolved.gpkg")
+        dissolved_dir = os.path.join(output_dir, "study_area")
+        os.makedirs(dissolved_dir, exist_ok=True)
+        dissolved_path = os.path.join(dissolved_dir, "boundaries_dissolved.gpkg")
         if os.path.exists(dissolved_path):
             try:
                 os.remove(dissolved_path)

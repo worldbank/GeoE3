@@ -95,7 +95,7 @@ class TestGridChunker(unittest.TestCase):
         self.assertIsNotNone(self.grid_chunker.geometry)
         self.assertTrue(self.grid_chunker.geometry.Intersects(polygon))
 
-    def test_set_geometry_invalid_multipolygon(self):
+    def test_set_geometry_valid_multipolygon(self):
         # Create a multipolygon in WKB format
         ring1 = ogr.Geometry(ogr.wkbLinearRing)
         ring1.AddPoint(0, 0)
@@ -120,8 +120,33 @@ class TestGridChunker(unittest.TestCase):
         multipolygon.AddGeometry(polygon2)
         wkb_geometry = multipolygon.ExportToWkb()
 
-        with self.assertRaises(ValueError):
-            self.grid_chunker.set_geometry(wkb_geometry)
+        self.grid_chunker.set_geometry(wkb_geometry)
+        self.assertIsNotNone(self.grid_chunker.geometry)
+        self.assertEqual(ogr.GT_Flatten(self.grid_chunker.geometry.GetGeometryType()), ogr.wkbMultiPolygon)
+
+    def test_set_geometry_valid_polygon_with_hole(self):
+        # Create a polygon with an interior ring (hole)
+        outer_ring = ogr.Geometry(ogr.wkbLinearRing)
+        outer_ring.AddPoint(0, 0)
+        outer_ring.AddPoint(100, 0)
+        outer_ring.AddPoint(100, 100)
+        outer_ring.AddPoint(0, 100)
+        outer_ring.AddPoint(0, 0)
+
+        inner_ring = ogr.Geometry(ogr.wkbLinearRing)
+        inner_ring.AddPoint(25, 25)
+        inner_ring.AddPoint(75, 25)
+        inner_ring.AddPoint(75, 75)
+        inner_ring.AddPoint(25, 75)
+        inner_ring.AddPoint(25, 25)
+
+        polygon = ogr.Geometry(ogr.wkbPolygon)
+        polygon.AddGeometry(outer_ring)
+        polygon.AddGeometry(inner_ring)
+
+        self.grid_chunker.set_geometry(polygon.ExportToWkb())
+        self.assertIsNotNone(self.grid_chunker.geometry)
+        self.assertEqual(ogr.GT_Flatten(self.grid_chunker.geometry.GetGeometryType()), ogr.wkbPolygon)
 
     def test_set_geometry_invalid_non_polygon(self):
         # Create a point in WKB format
