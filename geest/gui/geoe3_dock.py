@@ -146,10 +146,7 @@ class GeoE3Dock(QDockWidget):
                 lambda: self.stacked_widget.setCurrentIndex(OPEN_PROJECT_PANEL)
             )
 
-            self.setup_widget.switch_to_create_project_tab.connect(
-                # Switch to the next tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(CREATE_PROJECT_PANEL)
-            )
+            self.setup_widget.switch_to_create_project_tab.connect(self._open_create_project_from_setup)
 
             self.setup_widget.switch_to_previous_tab.connect(
                 # Switch to the previous tab when the button is clicked
@@ -492,6 +489,11 @@ class GeoE3Dock(QDockWidget):
             self.stacked_widget.setCurrentIndex(S2S_PANEL)
         else:
             self.stacked_widget.setCurrentIndex(ORS_PANEL)
+
+    def _open_create_project_from_setup(self) -> None:
+        """Open create-project panel with a clean new-project UI state."""
+        self.create_project_widget.reset_for_new_project_flow()
+        self.stacked_widget.setCurrentIndex(CREATE_PROJECT_PANEL)
 
     def _open_previous_panel_before_ors(self) -> None:
         """Open the previous panel before ORS based on analysis scale."""

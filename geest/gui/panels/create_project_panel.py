@@ -150,6 +150,8 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
         else:
             self.spatial_scale_changed("national")
         self.layer_combo.setFilters(QgsMapLayerProxyModel.PolygonLayer)
+        if hasattr(self.layer_combo, "setAllowEmptyLayer"):
+            self.layer_combo.setAllowEmptyLayer(True)
         # Regional scale uses H3 hexagonal grids (L6 resolution)
         # National and Local scales use square grids
         # Local mode enabled for National vs Local analysis implementation
@@ -504,6 +506,52 @@ class CreateProjectPanel(FORM_CLASS, QWidget):
             widget.setEnabled(True)
         self.processing_info_label.setVisible(False)
         self.processing_info_label.setText("")
+
+    def reset_for_new_project_flow(self):
+        """Fully reset panel state for a new project entry from setup panel."""
+        self.enable_widgets()
+        self._incomplete_setup_warned = False
+        self.working_dir = ""
+
+        self.project_path_label.setText("Project path not set.")
+        self.create_project_directory_button.setText("📂 Create or select a project directory")
+        self.folder_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
+
+        self.national_scale.setChecked(True)
+        self.spatial_scale_changed("national")
+        self.h3_resolution_combo.setCurrentIndex(6)
+        self.women_considerations_checkbox.setChecked(True)
+
+        if hasattr(self.layer_combo, "setAllowEmptyLayer"):
+            self.layer_combo.setAllowEmptyLayer(True)
+        self.layer_combo.setLayer(None)
+        self.field_combo.setLayer(None)
+        self.field_combo.clear()
+
+        self.use_boundary_crs.setChecked(False)
+        self.use_boundary_crs.setEnabled(False)
+        self.crs_label.setText("CRS: Not set")
+
+        self.progress_bar.setMinimum(0)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setFormat("%p%")
+        self.progress_bar.setVisible(False)
+        self.progress_bar.setEnabled(False)
+
+        self.child_progress_bar.setMinimum(0)
+        self.child_progress_bar.setMaximum(100)
+        self.child_progress_bar.setValue(0)
+        self.child_progress_bar.setFormat("%p%")
+        self.child_progress_bar.setVisible(False)
+        self.child_progress_bar.setEnabled(False)
+
+        self.processing_info_label.setText("")
+        self.processing_info_label.setVisible(False)
+        self.processing_info_label.setEnabled(False)
+
+        # Refresh layer-dependent state after clearing boundary selection.
+        self.layer_changed(self.layer_combo.currentLayer())
 
     def reference_layer(self):
         """Get the admin boundary reference layer.
