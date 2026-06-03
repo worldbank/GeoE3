@@ -61,6 +61,7 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
         parent_layout.replaceWidget(self.banner_label, self.custom_label)
         self.banner_label.deleteLater()
         parent_layout.update()
+        self.label_2.setText("GeoE3 Open Existing Project")
 
         self.dir_button.clicked.connect(self.select_directory)
         self.open_project_button.clicked.connect(self.load_project)
@@ -223,9 +224,14 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
 
     def set_font_size(self):
         """⚙️ Set font size."""
-        # Scale the font size to fit the text in the available space
-        # log_message(f"Label Width: {self.label.rect().width()}")
-        # scale the font size linearly from 16 pt to 8 ps as the width of the panel decreases
-        font_size = int(linear_interpolation(self.label.rect().width(), 12, 16, 400, 600))
-        # log_message(f"Label Font Size: {font_size}")
-        self.label.setFont(QFont("Arial", font_size))
+        panel_width = self.label.rect().width()
+        title_size = int(linear_interpolation(panel_width, 16, 20, 400, 800))
+        content_size = int(linear_interpolation(panel_width, 11, 15, 400, 800))
+        control_size = int(linear_interpolation(panel_width, 12, 16, 400, 800))
+
+        title_font = QFont("Arial", title_size)
+        title_font.setWeight(QFont.DemiBold)
+        self.label_2.setFont(title_font)
+        self.label.setFont(QFont("Arial", content_size))
+        self.previous_project_combo.setFont(QFont("Arial", control_size))
+        self.dir_button.setFont(QFont("Arial", control_size))

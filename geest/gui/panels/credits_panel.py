@@ -45,6 +45,7 @@ class CreditsPanel(FORM_CLASS, QWidget):
         parent_layout.replaceWidget(self.banner_label, self.custom_label)
         self.banner_label.deleteLater()
         parent_layout.update()
+        self.label_2.setText("About GeoE3")
 
         self.next_button.clicked.connect(self.on_next_button_clicked)
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
@@ -79,10 +80,14 @@ class CreditsPanel(FORM_CLASS, QWidget):
 
     def set_font_size(self):
         """⚙️ Set font size."""
-        # Scale the font size to fit the text in the available space
-        # log_message(f"Label Width: {self.description.rect().width()}")
-        # scale the font size linearly from 16 pt to 8 ps as the width of the panel decreases
-        font_size = int(linear_interpolation(self.description.rect().width(), 12, 16, 400, 600))
-        # log_message(f"Label Font Size: {font_size}")
-        self.description.setFont(QFont("Arial", font_size))
+        panel_width = self.description.rect().width()
+        title_size = int(linear_interpolation(panel_width, 16, 20, 400, 800))
+        content_size = int(linear_interpolation(panel_width, 11, 15, 400, 800))
+        footer_size = int(linear_interpolation(panel_width, 11, 14, 400, 800))
+
+        title_font = QFont("Arial", title_size)
+        title_font.setWeight(QFont.DemiBold)
+        self.label_2.setFont(title_font)
+        self.description.setFont(QFont("Arial", content_size))
+        self.label.setFont(QFont("Arial", footer_size))
         self.description.repaint()
