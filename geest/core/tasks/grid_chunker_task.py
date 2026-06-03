@@ -112,15 +112,13 @@ class GridChunkerTask:
         if self.geometry.GetCoordinateDimension() == 3:
             self.geometry.FlattenTo2D()
 
-        # Check the geom is a single part and if not, raise an error
-        if self.geometry.GetGeometryCount() > 1:
-            raise ValueError("The geometry must be a single part.")
-
-        # Check the geom is a polygon and if not, raise an error
-        if self.geometry.GetGeometryType() != ogr.wkbPolygon:
-            # Get the geomtery type name from the geometry type
+        # Accept polygonal geometries (Polygon or MultiPolygon).
+        # Polygon geometries with holes report GeometryCount > 1 (rings),
+        # so part-count checks are not reliable for validating AOI type.
+        flat_geom_type = ogr.GT_Flatten(self.geometry.GetGeometryType())
+        if flat_geom_type not in (ogr.wkbPolygon, ogr.wkbMultiPolygon):
             geom_type_name = ogr.GeometryTypeToName(self.geometry.GetGeometryType())
-            raise ValueError(f"The geometry must be a polygon. Received a geometry of type {geom_type_name}")
+            raise ValueError(f"The geometry must be polygonal. Received geometry type: {geom_type_name}")
 
         # check the geom is in the same projection as the grid by seeing if they intersect
         if not self.geometry.Intersects(self.geometry):

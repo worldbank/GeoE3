@@ -878,8 +878,11 @@ class StudyAreaProcessingTask(QgsTask):
         super().__init__("Study Area Preparation", QgsTask.CanCancel)
         self._previous_gdal_sqlite_options = {}
 
-        self.input_vector_path = self.export_qgs_layer_to_shapefile(layer, working_dir)
         self.field_name = field_name
+        self.input_vector_path = self.export_qgs_layer_to_shapefile(layer, working_dir)
+        self.input_vector_path = self.dissolve_input_layer_by_field(
+            self.input_vector_path, self.field_name, working_dir
+        )
         self.cell_size_m = cell_size_m
         self.analysis_scale = analysis_scale
         self.h3_resolution = (
@@ -1048,6 +1051,97 @@ class StudyAreaProcessingTask(QgsTask):
             raise RuntimeError(f"Failed to export layer to Shapefile: {err[1]}")
 
         return shapefile_path
+
+    def dissolve_input_layer_by_field(self, input_vector_path, field_name, output_dir):
+        """Dissolve input polygons by selected area-name field.
+
+        Args:
+            input_vector_path: Path to source vector layer exported from QGIS.
+            field_name: Field used to group/dissolve AOI geometries.
+            output_dir: Working directory for writing dissolved output.
+
+        Returns:
+            Path to dissolved GeoPackage.
+
+        Raises:
+            RuntimeError: If dissolve fails or required field is missing.
+        """
+        log_message(f"Dissolving input AOI by '{field_name}' before grid generation")
+
+        source_ds = ogr.Open(input_vector_path, 0)
+        if not source_ds:
+            raise RuntimeError(f"Could not open input layer for dissolve: {input_vector_path}")
+
+        source_layer = source_ds.GetLayer(0)
+        if not source_layer:
+            source_ds = None
+            raise RuntimeError("Could not read source layer for dissolve")
+
+        source_defn = source_layer.GetLayerDefn()
+        if source_defn.GetFieldIndex(field_name) < 0:
+            source_ds = None
+            raise RuntimeError(f"Field '{field_name}' not found in source layer for dissolve")
+
+        dissolved_geometries = {}
+        source_layer.ResetReading()
+        for feature in source_layer:
+            geom = feature.GetGeometryRef()
+            if geom is None or geom.IsEmpty():
+                continue
+
+            geom_clone = geom.Clone()
+            try:
+                if not geom_clone.IsValid():
+                    geom_clone = geom_clone.MakeValid()
+            except Exception:  # nosec B110
+                pass
+
+            area_name = feature.GetField(field_name)
+            if area_name is None or str(area_name).strip() == "":
+                area_name = f"area_{feature.GetFID()}"
+            area_name = str(area_name)
+
+            if area_name in dissolved_geometries:
+                dissolved_geometries[area_name] = dissolved_geometries[area_name].Union(geom_clone)
+            else:
+                dissolved_geometries[area_name] = geom_clone
+
+        source_srs = source_layer.GetSpatialRef()
+        source_ds = None
+
+        if not dissolved_geometries:
+            raise RuntimeError("No valid geometries found to dissolve")
+
+        dissolved_path = os.path.join(output_dir, "study_area", "boundaries_dissolved.gpkg")
+        if os.path.exists(dissolved_path):
+            try:
+                os.remove(dissolved_path)
+            except OSError as error:
+                raise RuntimeError(f"Could not replace dissolved AOI file: {error}") from error
+
+        driver = ogr.GetDriverByName("GPKG")
+        dissolved_ds = driver.CreateDataSource(dissolved_path)
+        if not dissolved_ds:
+            raise RuntimeError(f"Could not create dissolved AOI dataset: {dissolved_path}")
+
+        dissolved_layer = dissolved_ds.CreateLayer("boundaries_dissolved", source_srs, geom_type=ogr.wkbUnknown)
+        dissolved_layer.CreateField(ogr.FieldDefn(field_name, ogr.OFTString))
+
+        for area_name, dissolved_geom in dissolved_geometries.items():
+            if dissolved_geom is None or dissolved_geom.IsEmpty():
+                continue
+            if dissolved_geom.GetCoordinateDimension() == 3:
+                dissolved_geom.FlattenTo2D()
+
+            feature = ogr.Feature(dissolved_layer.GetLayerDefn())
+            feature.SetField(field_name, area_name)
+            feature.SetGeometry(dissolved_geom)
+            dissolved_layer.CreateFeature(feature)
+            feature = None
+
+        dissolved_ds = None
+        log_message(f"Dissolved AOI created with {len(dissolved_geometries)} grouped feature(s)")
+        return dissolved_path
 
     def download_and_process_ghsl(self):
         """
