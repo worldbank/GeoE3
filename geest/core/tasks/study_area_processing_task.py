@@ -1061,26 +1061,37 @@ class StudyAreaProcessingTask(QgsTask):
             output_dir: Working directory for writing dissolved output.
 
         Returns:
-            Path to dissolved GeoPackage.
+            Path to dissolved output, or original input if dissolve is unavailable.
 
-        Raises:
-            RuntimeError: If dissolve fails or required field is missing.
+        Notes:
+            This is a best-effort preprocessing step. If dissolve fails because of
+            environment/driver/path issues, processing falls back to the original
+            exported layer instead of aborting task initialization.
         """
         log_message(f"Dissolving input AOI by '{field_name}' before grid generation")
 
         source_ds = ogr.Open(input_vector_path, 0)
         if not source_ds:
-            raise RuntimeError(f"Could not open input layer for dissolve: {input_vector_path}")
+            log_message(
+                f"Could not open input layer for dissolve, using original AOI: {input_vector_path}",
+                level="WARNING",
+            )
+            return input_vector_path
 
         source_layer = source_ds.GetLayer(0)
         if not source_layer:
             source_ds = None
-            raise RuntimeError("Could not read source layer for dissolve")
+            log_message("Could not read source layer for dissolve, using original AOI", level="WARNING")
+            return input_vector_path
 
         source_defn = source_layer.GetLayerDefn()
         if source_defn.GetFieldIndex(field_name) < 0:
             source_ds = None
-            raise RuntimeError(f"Field '{field_name}' not found in source layer for dissolve")
+            log_message(
+                f"Field '{field_name}' not found for dissolve, using original AOI",
+                level="WARNING",
+            )
+            return input_vector_path
 
         dissolved_geometries = {}
         source_layer.ResetReading()
@@ -1110,7 +1121,8 @@ class StudyAreaProcessingTask(QgsTask):
         source_ds = None
 
         if not dissolved_geometries:
-            raise RuntimeError("No valid geometries found to dissolve")
+            log_message("No valid geometries found to dissolve, using original AOI", level="WARNING")
+            return input_vector_path
 
         dissolved_dir = os.path.join(output_dir, "study_area")
         os.makedirs(dissolved_dir, exist_ok=True)
@@ -1119,14 +1131,26 @@ class StudyAreaProcessingTask(QgsTask):
             try:
                 os.remove(dissolved_path)
             except OSError as error:
-                raise RuntimeError(f"Could not replace dissolved AOI file: {error}") from error
+                log_message(f"Could not replace dissolved AOI file: {error}. Using original AOI.", level="WARNING")
+                return input_vector_path
 
         driver = ogr.GetDriverByName("GPKG")
+        if driver is None:
+            log_message("GPKG driver unavailable for dissolve output, using original AOI", level="WARNING")
+            return input_vector_path
         dissolved_ds = driver.CreateDataSource(dissolved_path)
         if not dissolved_ds:
-            raise RuntimeError(f"Could not create dissolved AOI dataset: {dissolved_path}")
+            log_message(
+                f"Could not create dissolved AOI dataset: {dissolved_path}. Using original AOI.",
+                level="WARNING",
+            )
+            return input_vector_path
 
         dissolved_layer = dissolved_ds.CreateLayer("boundaries_dissolved", source_srs, geom_type=ogr.wkbUnknown)
+        if dissolved_layer is None:
+            dissolved_ds = None
+            log_message("Could not create dissolved AOI layer, using original AOI", level="WARNING")
+            return input_vector_path
         dissolved_layer.CreateField(ogr.FieldDefn(field_name, ogr.OFTString))
 
         for area_name, dissolved_geom in dissolved_geometries.items():
