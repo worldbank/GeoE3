@@ -5,7 +5,113 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+Version policy: the version here and in `config.json`/`geest/metadata.txt`
+stays exactly one semver step ahead of the last version actually tagged
+and released on GitHub - never bumped again per commit after that. All
+work since the last release accumulates under that single pending
+version (upgrading patch->minor->major in place if a later change needs
+a bigger bump) until a release is cut and tagged, at which point the next
+single step begins.
+
 ## [Unreleased]
+
+## [2.1.0] - 2026-10-16
+
+Everything below accumulated on top of the last tagged release, v2.0.6;
+none of it has been released yet, so it is kept under this single pending
+version per the policy above.
+
+### Added
+
+- Safety Perception's nighttime lights indicator can now download its own
+  raster directly in-app at local/national scale (worldbank/GeoE3#452),
+  following the same button/`QgsTask` pattern as the existing S2S
+  downloaders. The source is the annual VIIRS nighttime lights composite
+  (OpenGeoHub/Hengl mirror on Zenodo, CC-BY 4.0, 2000-2024, no login
+  required - the authoritative EOG source now gates all downloads behind
+  free account registration, which this avoids). The global composite
+  (~60 MB) is downloaded with `QgsNetworkAccessManager`'s blocking GET
+  (the same pattern `S2SClient` already uses) rather than GDAL's
+  `/vsicurl/` driver reading it remotely - some network/proxy environments
+  block the HTTP Range requests `/vsicurl/` needs, so a plain synchronous
+  download is more portable even though it means fetching the whole file;
+  cropping to the study area then happens locally. `SafetyRasterWorkflow`
+  needed no changes: the download writes to the same
+  `nighttime_lights_raster` attribute the manual file picker already
+  populated.
+
+### Fixed
+
+- OSM point and mixed-to-point downloads (health facilities, schools,
+  pharmacies, financial services, kindergartens, grocery stores, green
+  spaces, public transport, water points) now retain the OSM `name` tag
+  as an entity name attribute, instead of only the feature `id`. Polygon
+  downloads gain the same `name` attribute (#453).
+- S2S download is no longer offered for flood hazards at local or
+  national analysis scale. Flood now follows the same regional-only S2S
+  gating as every other environmental hazard (#449).
+- A broken/missing road network layer reference could linger silently in
+  `model.json` forever: when the Road Network panel detected the file was
+  gone it tried to clear the stored path, but the clear signal's value was
+  discarded by the receiving slot (which re-fetched the combo box selection
+  instead) and the slot also silently ignored empty/`None` values, so the
+  stale path was never actually removed. Setting the road network layer now
+  validates the file exists before storing it (showing a clear error if
+  not), clearing is no longer a no-op, and a missing file detected on
+  restore now also surfaces a message-bar warning instead of only a log
+  line.
+- Contextual index-score indicators (e.g. workplace discrimination) could
+  fail with "VRT Layer generation failed" when a study area contained a
+  sliver/island fragment too small to have been assigned any
+  `study_area_grid` cells. `rasterize_grid_column` silently fell back to
+  rasterizing the whole study area's extent for such an area (burning
+  nothing, since no grid rows matched), producing a degenerate raster that
+  broke downstream masking and VRT combination - either aborting the whole
+  indicator or corrupting its combined output depending on exact pixel
+  rounding. `rasterize_grid_column` now detects the zero-matching-cells
+  case up front and refuses to rasterize, and
+  `ContextualIndexScoreWorkflow` treats that as "no features for this
+  area" and falls back to a neutral (zero) raster for just that one area,
+  matching the existing fallback behaviour used elsewhere for areas with
+  no input features. A single, un-partitioned study area can legitimately
+  leave `area_name` NULL on every `study_area_grid` row while still naming
+  the area itself - that case is distinguished from a genuinely missing
+  sliver (grid cells exist for other areas, just not this one) so it still
+  rasterizes normally instead of being skipped.
+- Masking a raster to a geometrically thin area (a narrow coastal strip or
+  sliver islet, not necessarily a small one) could fail entirely:
+  `gdal:cliprasterbymasklayer` with `CROP_TO_CUTLINE` snaps the crop window
+  to pixel boundaries, which can round down to zero rows or columns even
+  when the source raster is perfectly valid, so `gdalwarp` refused to
+  create a 0-sized dataset and no masked file was written. `_mask_raster`
+  silently returned that nonexistent path anyway, so the area vanished from
+  the combined VRT with no error reported (seen as `entrepreneurship_index`
+  dropping several Cabo Verde islands while still reporting success).
+  `_mask_raster` now detects a failed/degenerate crop and retries without
+  `CROP_TO_CUTLINE`, keeping the source raster's own (already-valid) extent
+  and masking only the pixel values - and raises clearly if that still
+  doesn't produce a valid raster, instead of returning a bogus path.
+- `factor_aggregation` and `dimension_aggregation` (the workflows behind
+  every factor/dimension/analysis rollup, e.g. workplace discrimination's
+  factor score) aborted the *entire* indicator with "produced no raster
+  output for area cv_part20" whenever one area had no matching
+  `study_area_grid` cells - the same sliver-area condition fixed above,
+  but `AggregationWorkflowBase` lacked the `supports_empty_features_fallback`
+  flag that lets a single ungridded area fall back to a neutral raster
+  instead of failing the whole run. It now sets that flag like the other
+  grid-first workflows, so one gridless sliver no longer blocks the
+  factor/dimension/analysis score for the other 26 areas.
+
+### Changed
+
+- Grid-first workflows (`ContextualIndexScoreWorkflow`, `AggregationWorkflowBase`
+  - index scores, factor/dimension/analysis aggregation) wrote their value
+  to `study_area_grid` with one whole-table SQL `UPDATE` per area, even
+  though that SQL has no area filter and produces an identical result every
+  time - for a 27-area study area that meant running the same multi-second
+  `UPDATE` 27 times over. It now runs once per workflow; per-area
+  rasterizing, masking, and VRT-combining (needed to keep the output raster
+  sparse rather than one dense bounding-box raster) are unchanged.
 
 ## [2.0.6] - 2026-10-13
 
