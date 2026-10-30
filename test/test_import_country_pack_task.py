@@ -3,6 +3,7 @@
 actually land in the QGIS project, not just on disk.
 """
 
+import json
 import os
 import shutil
 import tempfile
@@ -84,6 +85,21 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
                 os.path.abspath(source_path).startswith(import_dir_abs),
                 f"'{layer.name()}' points outside the new working directory: {source_path}",
             )
+
+    def test_saves_a_qgis_project_named_after_the_working_directory(self):
+        build_country_pack(working_directory=TEST_DATA, model=self._model(), output_path=self.pack_path)
+
+        task = ImportCountryPackTask(self.pack_path, self.import_dir)
+        self.assertTrue(task.run())
+        task.finished(True)
+
+        expected_project_path = os.path.join(self.import_dir, f"{os.path.basename(self.import_dir)}.qgz")
+        self.assertTrue(os.path.exists(expected_project_path))
+        self.assertEqual(QgsProject.instance().fileName(), expected_project_path)
+
+        with open(os.path.join(self.import_dir, "model.json"), encoding="utf-8") as f:
+            model = json.load(f)
+        self.assertEqual(model["qgis_project_path"], expected_project_path)
 
     def test_csv_backed_indicator_loads_via_the_delimitedtext_provider(self):
         model = self._model()

@@ -110,6 +110,15 @@ class ImportCountryPackTask(QgsTask):
         in it already points inside self.working_directory, so this
         can't pull in anything from outside it.
 
+        Once every layer is added, also saves the live QgsProject (still
+        otherwise blank at this point - see blank_project_guard.py) as a
+        new .qgz inside self.working_directory, and records it as
+        model.json's qgis_project_path - import_country_pack() cleared
+        that field earlier since the exporting machine's own .qgz is
+        meaningless here (see its docstring), so without this the user
+        would land on a project with everything loaded but nothing to
+        reopen it from later.
+
         For every indicator/project-level source, also points its
         "already-loaded-layer" companion fields (_layer_id etc - see
         sync_layer_metadata_fields()) at the layer just added, and
@@ -179,6 +188,23 @@ class ImportCountryPackTask(QgsTask):
                 log_message(f"Could not add layer '{source.layer_name}': {e}", tag="GeoE3", level=Qgis.Warning)
 
         log_message(f"Added {added}/{len(sources)} layers to the QGIS project.", tag="GeoE3", level=Qgis.Info)
+
+        if added:
+            # Names it after the destination folder rather than the
+            # country (unlike build_country_pack()'s *_geoe3.gpkg) -
+            # the admin0 name lives in study_area/boundaries_dissolved.gpkg,
+            # a file the export/import round trip doesn't preserve
+            # (study area layers all land in one study_area.gpkg here -
+            # see _extract_vector_into()'s callers above), so the folder
+            # name is the only stable label available post-import.
+            project_name = os.path.basename(os.path.normpath(self.working_directory)) or "project"
+            project_path = os.path.join(self.working_directory, f"{project_name}.qgz")
+            if project.write(project_path):
+                log_message(f"Saved QGIS project to '{project_path}'.", tag="GeoE3", level=Qgis.Info)
+                model["qgis_project_path"] = project_path
+                metadata_changed = True
+            else:
+                log_message(f"Could not save QGIS project to '{project_path}'.", tag="GeoE3", level=Qgis.Warning)
 
         if metadata_changed:
             try:
