@@ -67,7 +67,12 @@ class JsonTreeModel(QAbstractItemModel):
 
         # Create the 'Analysis' parent item
         analysis_name = json_data.get("analysis_name", "Analysis")
-        analysis_description = json_data.get("description", "No Description")
+        # "" (not a literal "No Description") so item_info_panel.py's own
+        # "no description to show" handling applies - it fills in a
+        # context-aware default (women's empowerment vs. generic) based
+        # on women_considerations_enabled instead of persisting static
+        # placeholder text into model.json forever.
+        analysis_description = json_data.get("description", "")
         analysis_scale = json_data.get("analysis_scale", "local")
         analysis_cell_size_m = json_data.get("analysis_cell_size_m", 100.0)
         # START I don't love that this list of layer paths is hard coded here
@@ -116,10 +121,12 @@ class JsonTreeModel(QAbstractItemModel):
         population_s2s_output_path = json_data.get("population_s2s_output_path") or ""
         population_s2s_field = json_data.get("population_s2s_field") or DEFAULT_S2S_POPULATION_FIELD
         population_source = json_data.get("population_source", "raster")
+        women_considerations_enabled = json_data.get("women_considerations_enabled", True)
         # Store special properties in the attributes dictionary
         analysis_attributes = {
             "analysis_name": analysis_name,
             "description": analysis_description,
+            "women_considerations_enabled": women_considerations_enabled,
             "working_folder": working_folder,
             "analysis_cell_size_m": analysis_cell_size_m,
             "analysis_scale": analysis_scale,
