@@ -159,6 +159,24 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
 
         self.assertEqual(self.panel.item_meta_label.toPlainText(), "Analysis · A custom description someone typed in.")
 
+    def test_analysis_item_with_the_legacy_persisted_placeholder_gets_the_default_too(self):
+        # Every project saved before the "No Description" default was
+        # fixed in treeview.py has that literal string baked into its
+        # model.json on disk - confirmed live against StLuciaH3 and
+        # every other real project in data/GeestWorkingDirectory. It
+        # must be treated the same as a genuinely empty description,
+        # not displayed verbatim.
+        item = make_fake_item("analysis", "Analysis", description="No Description", women_considerations_enabled=True)
+
+        self.panel.show_item(item)
+
+        self.assertEqual(
+            self.panel.item_meta_label.toPlainText(),
+            "Analysis · The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+            "Characterization dimensions into a single measure of how enabling the "
+            "environment is for women's economic empowerment in this study area.",
+        )
+
     def test_run_warning_text_is_never_shown_as_the_description(self):
         # getItemTooltip() can surface a transient run warning/error (e.g.
         # "No service areas could be computed...") - that belongs on the

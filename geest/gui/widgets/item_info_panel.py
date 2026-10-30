@@ -80,6 +80,12 @@ _ROLE_LABELS = {
     "analysis": "Analysis",
 }
 
+#: treeview.py used to default a missing Analysis description to this
+#: literal string and persist it to model.json - every project saved
+#: before that was fixed still carries it on disk, so it's treated the
+#: same as an empty description here rather than displayed verbatim.
+_LEGACY_NO_DESCRIPTION_PLACEHOLDER = "No Description"
+
 
 class ItemInfoPanel(QWidget):
     """Collapsible "what is this item" panel with a methodology slide-over."""
@@ -570,6 +576,8 @@ class ItemInfoPanel(QWidget):
 
         role_label = _ROLE_LABELS.get(role, role.title() if role else "")
         description = item.attribute("description", "") if hasattr(item, "attribute") else ""
+        if description == _LEGACY_NO_DESCRIPTION_PLACEHOLDER:
+            description = ""
         if not description and role == "analysis":
             description = self._analysis_default_description(item)
         if not description:
