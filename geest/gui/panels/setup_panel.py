@@ -8,6 +8,7 @@ from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtGui import QFont
 from qgis.PyQt.QtWidgets import QWidget
 
+from geest.gui.panels.blank_project_guard import ensure_blank_qgis_project
 from geest.gui.widgets import CustomBannerLabel
 from geest.utilities import (
     get_ui_class,
@@ -24,6 +25,7 @@ class SetupPanel(FORM_CLASS, QWidget):
 
     switch_to_load_project_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
     switch_to_create_project_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
+    switch_to_import_project_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
     switch_to_previous_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
 
     def __init__(self):
@@ -49,6 +51,7 @@ class SetupPanel(FORM_CLASS, QWidget):
 
         self.open_existing_project_button.clicked.connect(self.load_project)
         self.create_new_project_button.clicked.connect(self.create_project)
+        self.import_country_pack_button.clicked.connect(self.import_project)
         self.previous_button.clicked.connect(self.on_previous_button_clicked)
         self.set_font_size()
 
@@ -59,6 +62,18 @@ class SetupPanel(FORM_CLASS, QWidget):
     def create_project(self):
         """⚙️ Create project."""
         self.switch_to_create_project_tab.emit()
+
+    def import_project(self):
+        """⚙️ Import a country pack - prompts to save and start fresh if needed.
+
+        Importing points the dock's working directory at a different
+        project's data and re-populates the Tree panel from its
+        model.json - doing that on top of an already-open project would
+        silently mix the two, so a blank QGIS project is required first.
+        """
+        if not ensure_blank_qgis_project(self):
+            return
+        self.switch_to_import_project_tab.emit()
 
     def on_previous_button_clicked(self):
         """⚙️ On previous button clicked."""
@@ -86,3 +101,4 @@ class SetupPanel(FORM_CLASS, QWidget):
         self.description.setFont(QFont("Arial", content_size))
         self.open_existing_project_button.setFont(QFont("Arial", control_size))
         self.create_new_project_button.setFont(QFont("Arial", control_size))
+        self.import_country_pack_button.setFont(QFont("Arial", control_size))

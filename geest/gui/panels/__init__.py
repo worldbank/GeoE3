@@ -7,9 +7,11 @@
 This module contains functionality for panels.
 """
 
+from .blank_project_guard import ensure_blank_qgis_project
 from .create_project_panel import CreateProjectPanel
 from .credits_panel import CreditsPanel
 from .help_panel import HelpPanel
+from .import_project_panel import ImportProjectPanel
 from .intro_panel import IntroPanel
 from .open_project_panel import OpenProjectPanel
 from .ors_panel import OrsPanel
