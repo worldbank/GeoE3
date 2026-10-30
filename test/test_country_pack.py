@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import unittest
 
-from osgeo import ogr, osr
+import numpy as np
+from osgeo import gdal, ogr, osr
 
 from geest.core.country_pack import (
+    FLOAT32_MAX,
     INDEX_SCORE_TABLE_NAME,
     PROJECT_MODEL_TABLE_NAME,
+    PackSource,
     _actual_table_names,
     all_sources,
     build_country_pack,
@@ -15,6 +19,7 @@ from geest.core.country_pack import (
     project_level_sources,
     result_sources,
     study_area_sources,
+    write_raster_source,
 )
 
 TEST_DATA = os.path.join(os.path.dirname(__file__), "test_data")
@@ -619,6 +624,58 @@ class TestBuildCountryPack(unittest.TestCase):
         ds = None
 
         self.assertEqual(reloaded, model)
+
+
+class TestWriteRasterSourceNodataOverflow(unittest.TestCase):
+    """Regression test: several real GeoE3 result rasters are Float64
+
+    with NoDataValue set to Float64's own max (an "unset" sentinel) -
+    downcasting straight to Float32 for GPKG storage silently overflows
+    that value to +inf while the GPKG's own metadata keeps reporting the
+    original, now-mismatched Float64 value - confirmed live against a
+    real project's geoe3_score_by_population_ghsl_masked result."""
+
+    def setUp(self):
+        self.src_path = os.path.join(TEST_DATA, "rasters", "_float64_overflow_nodata.tif")
+        self.out_gpkg = os.path.join(TEST_DATA, "_write_raster_source_nodata_test.gpkg")
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+
+        driver = gdal.GetDriverByName("GTiff")
+        dataset = driver.Create(self.src_path, 2, 2, 1, gdal.GDT_Float64)
+        dataset.SetGeoTransform((0, 1, 0, 2, 0, -1))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        dataset.SetProjection(srs.ExportToWkt())
+        band = dataset.GetRasterBand(1)
+        band.SetNoDataValue(sys.float_info.max)
+        band.WriteArray(np.array([[5.0, sys.float_info.max], [sys.float_info.max, 9.0]]))
+        dataset = None
+
+    def tearDown(self):
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+
+    def test_nodata_survives_the_float32_downcast_without_overflowing(self):
+        source = PackSource("overflow_test", self.src_path, "raster", clip=False)
+        write_raster_source(source, "", "", self.out_gpkg, append=False)
+
+        dataset = gdal.Open(f"GPKG:{self.out_gpkg}:overflow_test")
+        band = dataset.GetRasterBand(1)
+        nodata = band.GetNoDataValue()
+        array = band.ReadAsArray()
+        dataset = None
+
+        self.assertEqual(nodata, FLOAT32_MAX)
+        self.assertEqual(float(array[0][1]), FLOAT32_MAX)
+        self.assertEqual(float(array[1][0]), FLOAT32_MAX)
+        self.assertFalse(
+            any(value != nodata and value in (float("inf"), float("-inf")) for row in array for value in row)
+        )
+        self.assertEqual(float(array[0][0]), 5.0)
+        self.assertEqual(float(array[1][1]), 9.0)
 
 
 if __name__ == "__main__":

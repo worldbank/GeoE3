@@ -137,6 +137,13 @@ PROJECT_LEVEL_SOURCES = [
 #: must be downcast (see _raster_needs_float32()).
 GPKG_RASTER_TYPES = ("Byte", "Int16", "UInt16", "Float32")
 
+#: IEEE 754 single-precision max - see write_raster_source()'s docstring
+#: on why an out-of-range Float64 nodata sentinel must be clamped to
+#: this rather than cast as-is when downcasting to Float32. The exact
+#: value, not the usual rounded "3.4028235e38" - that rounds up past
+#: the true max and makes GDAL re-clamp it anyway (with a warning).
+FLOAT32_MAX = 3.4028234663852886e38
+
 
 @dataclass
 class PackSource:
@@ -535,6 +542,39 @@ def _raster_needs_float32(path: str) -> bool:
     return dtype not in GPKG_RASTER_TYPES
 
 
+def _float32_safe_nodata(path: str) -> Optional[float]:
+    """A Float32-safe nodata value for a raster being downcast to Float32.
+
+    Confirmed live against a real GeoE3 result raster: several result
+    rasters are Float64 with NoDataValue set to Float64's own max
+    (effectively an "unset" sentinel) - gdal.Warp's dtype downcast casts
+    that straight into the output band's data, silently overflowing it
+    to +inf, while the output's NoDataValue metadata keeps reporting the
+    original, now-mismatched Float64 value. Any later `pixel == nodata`
+    check that doesn't itself re-cast to Float32 first (e.g. comparing
+    against a value read straight from model.json or another layer's
+    metadata) then fails to recognise those pixels as nodata at all.
+
+    Args:
+        path: Path to the source raster.
+
+    Returns:
+        The source band's own nodata value, clamped to +/-FLOAT32_MAX if
+        it would otherwise overflow, or None if the source has no nodata
+        value set (or can't be opened - the warp itself raises a clearer
+        error in that case).
+    """
+    base_path, _ = _split_source_uri(path)
+    dataset = gdal.Open(base_path)
+    if dataset is None:
+        return None
+    nodata = dataset.GetRasterBand(1).GetNoDataValue()
+    dataset = None
+    if nodata is None or abs(nodata) <= FLOAT32_MAX:
+        return nodata
+    return FLOAT32_MAX if nodata > 0 else -FLOAT32_MAX
+
+
 def write_raster_source(
     source: PackSource,
     study_area_gpkg: str,
@@ -569,9 +609,14 @@ def write_raster_source(
             "cutlineLayer": study_area_layer,
             "cropToCutline": True,
         }
+    needs_float32 = _raster_needs_float32(source.path)
+    if needs_float32:
+        safe_nodata = _float32_safe_nodata(source.path)
+        if safe_nodata is not None:
+            warp_kwargs["dstNodata"] = safe_nodata
     options = gdal.WarpOptions(
         format="GPKG",
-        outputType=(gdal.GDT_Float32 if _raster_needs_float32(source.path) else gdal.GDT_Unknown),
+        outputType=(gdal.GDT_Float32 if needs_float32 else gdal.GDT_Unknown),
         creationOptions=creation_options,
         **warp_kwargs,
     )
