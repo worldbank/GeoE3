@@ -1378,7 +1378,19 @@ class TreePanel(QWidget):
         QgsApplication.taskManager().addTask(self.analysis_report_task)
 
     def on_analysis_report_completed(self):
-        """Slot called when analysis report generation completes successfully."""
+        """Slot called when the task completes.
+
+        AnalysisReportTask.run() is a deliberate no-op (the actual
+        report generation moved to finished(), the only point in the
+        task's lifecycle guaranteed to run on the main thread - see
+        its docstring for why) - taskCompleted fires regardless of
+        whether that real work succeeded, so check the task's own
+        exception attribute to tell which.
+        """
+        if getattr(self.analysis_report_task, "exception", None) is not None:
+            self.on_analysis_report_failed()
+            return
+
         log_message("Analysis report generated successfully.", tag="GeoE3", level=Qgis.Info)
 
         self.overall_progress_bar.setMinimum(0)

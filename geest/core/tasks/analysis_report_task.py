@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Analysis Report Generation Task.
 
-This module contains the QgsTask for generating analysis reports in the background.
+This module contains the QgsTask for generating analysis reports.
 """
 
 import os
@@ -13,7 +13,11 @@ from geest.utilities import log_message, open_with_system_handler
 
 
 class AnalysisReportTask(QgsTask):
-    """Background task for analysis report generation."""
+    """Background task for analysis report generation.
+
+    run() is deliberately a no-op - see finished()'s docstring for why
+    the real work moved there.
+    """
 
     def __init__(self, working_dir: str, model_path: str):
         """Initialize the task.
@@ -29,12 +33,53 @@ class AnalysisReportTask(QgsTask):
         self.qpt_path = os.path.join(working_dir, "analysis_report.qpt")
         self.exception = None
 
-    def run(self):
-        """Generate the report in background thread.
+    def run(self) -> bool:
+        """Does nothing - the real work happens in finished() instead.
+
+        QgsTask.run() always executes on a worker thread, and none of
+        AnalysisReport's layout construction is safe there (see
+        finished()'s docstring). Always returns True so finished()
+        gets a chance to run, except when QGIS itself cancels the task
+        before run() ever starts (QgsTask.CanCancel) - that still
+        calls finished(False), handled there.
 
         Returns:
-            bool: True if successful, False otherwise.
+            bool: Always True.
         """
+        return True
+
+    def finished(self, result: bool) -> None:
+        """Build and export the report here, on the main thread.
+
+        QgsLayout/QgsLayoutItem* (QgsLayoutItemLabel, etc.) are not
+        safe to construct off the main thread - confirmed live: doing
+        so from run() (always a worker thread, by QgsTask's design)
+        raised a Windows access violation - a fatal crash, not a
+        catchable Python exception - while AnalysisReport built its
+        detail pages. finished() is the first point in this task's
+        lifecycle guaranteed to run on the main thread, so the real
+        work moved here; run() above is a deliberate no-op. This
+        sacrifices genuine background execution (the UI blocks for the
+        duration of report generation, same as not using a QgsTask at
+        all) - the alternative (a worker-thread crash) is worse.
+
+        An exception escaping a Qt slot aborts the application outright
+        on PyQt6 (qFatal), so this is wrapped in its own try/except
+        rather than letting one propagate - geoe3_dock.py's
+        _open_road_network_from_ors() hit the exact same hazard.
+        Since run() always returns True, QgsTask's own taskCompleted
+        signal fires regardless of whether the work below actually
+        succeeded - callers must check self.exception themselves
+        (see TreePanel.on_analysis_report_completed()).
+
+        Args:
+            result: True unless QGIS cancelled the task before run()
+                started - run() itself never returns False.
+        """
+        if not result:
+            log_message("Analysis report generation cancelled before it started.", tag="GeoE3", level=Qgis.Warning)
+            return
+
         try:
             log_message("Starting analysis report generation...", tag="GeoE3", level=Qgis.Info)
 
@@ -56,27 +101,15 @@ class AnalysisReportTask(QgsTask):
                 tag="GeoE3",
                 level=Qgis.Info,
             )
-            return True
+            # Open the PDF using the system PDF viewer (detached - already
+            # on the main thread here, so no extra marshalling needed).
+            open_with_system_handler(self.pdf_path)
 
         except Exception as e:
             self.exception = e
             log_message(f"Error generating analysis report: {e}", tag="GeoE3", level=Qgis.Critical)
-            return False
 
-    def finished(self, result: bool):
-        """Called when task finishes (in main thread).
-
-        Args:
-            result: True if task succeeded, False otherwise.
-        """
-        if result:
-            # Open the PDF using the system PDF viewer (detached — this
-            # runs on the main thread and must not block the event loop).
-            open_with_system_handler(self.pdf_path)
-        else:
-            log_message("Analysis report generation failed.", tag="GeoE3", level=Qgis.Critical)
-
-    def cancel(self):
+    def cancel(self) -> None:
         """Called when task is cancelled."""
         log_message("Analysis report generation cancelled.", tag="GeoE3", level=Qgis.Warning)
         super().cancel()
