@@ -101,6 +101,38 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
             model = json.load(f)
         self.assertEqual(model["qgis_project_path"], expected_project_path)
 
+    def test_layers_land_in_three_mutually_exclusive_groups(self):
+        build_country_pack(working_directory=TEST_DATA, model=self._model(), output_path=self.pack_path)
+
+        task = ImportCountryPackTask(self.pack_path, self.import_dir)
+        self.assertTrue(task.run())
+        task.finished(True)
+
+        root = QgsProject.instance().layerTreeRoot()
+        study_area_group = root.findGroup("Study Area")
+        results_group = root.findGroup("GeoE3 Results")
+        inputs_group = root.findGroup(os.path.basename(self.import_dir))
+        self.assertIsNotNone(study_area_group)
+        self.assertIsNotNone(results_group)
+        self.assertIsNotNone(inputs_group)
+        for group in (study_area_group, results_group, inputs_group):
+            self.assertTrue(group.isMutuallyExclusive())
+
+        childcare_node = root.findLayer(
+            next(
+                layer.id()
+                for layer in QgsProject.instance().mapLayers().values()
+                if layer.name() == "Childcare_Location"
+            )
+        )
+        study_area_grid_node = root.findLayer(
+            next(
+                layer.id() for layer in QgsProject.instance().mapLayers().values() if layer.name() == "study_area_grid"
+            )
+        )
+        self.assertEqual(childcare_node.parent(), inputs_group)
+        self.assertEqual(study_area_grid_node.parent(), study_area_group)
+
     def test_csv_backed_indicator_loads_via_the_delimitedtext_provider(self):
         model = self._model()
         model["dimensions"][0]["factors"][0]["indicators"].append(
