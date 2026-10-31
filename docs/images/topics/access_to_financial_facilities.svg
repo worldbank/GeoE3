@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Access to Financial Facilities (banks): bank/columned building -->
+  <path d="M3 9.5 12 4l9 5.5Z" stroke="#002244" stroke-width="1.8" stroke-linejoin="round"/>
+  <line x1="3" y1="9.5" x2="21" y2="9.5" stroke="#002244" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="6" y1="9.5" x2="6" y2="17.5" stroke="#002244" stroke-width="1.8"/>
+  <line x1="12" y1="9.5" x2="12" y2="17.5" stroke="#002244" stroke-width="1.8"/>
+  <line x1="18" y1="9.5" x2="18" y2="17.5" stroke="#002244" stroke-width="1.8"/>
+  <line x1="3" y1="20" x2="21" y2="20" stroke="#009FDA" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

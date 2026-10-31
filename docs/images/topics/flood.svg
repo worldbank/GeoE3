@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Flood hazard: rising water waves -->
+  <path d="M2.5 17c1.4-1.4 2.8-1.4 4.2 0s2.8 1.4 4.2 0 2.8-1.4 4.2 0 2.8 1.4 4.2 0" stroke="#002244" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M2.5 21c1.4-1.4 2.8-1.4 4.2 0s2.8 1.4 4.2 0 2.8-1.4 4.2 0 2.8 1.4 4.2 0" stroke="#009FDA" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M12 3v10M8.5 9.5 12 13l3.5-3.5" stroke="#002244" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

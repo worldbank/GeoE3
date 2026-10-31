@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Technique: zone classification — the cell takes the score of whichever named zone it falls inside. -->
+  <g stroke="#FFFFFF" stroke-width="3">
+    <path d="M20 20 L120 20 L95 90 L55 110 L20 100 Z" fill="#fdae61"/>
+    <path d="M120 20 L185 20 L185 70 L140 95 L95 90 Z" fill="#bce1b8"/>
+    <path d="M55 110 L95 90 L140 95 L150 150 L100 185 L40 180 L20 100 Z" fill="#ffffbf"/>
+    <path d="M140 95 L185 70 L185 185 L100 185 L150 150 Z" fill="#2c7bb6"/>
+  </g>
+  <g stroke="#002244" stroke-width="3" fill="none">
+    <path d="M20 20 L120 20 L185 20 L185 185 L20 185 Z"/>
+  </g>
+
+  <!-- the grid cell straddling a zone boundary -->
+  <rect x="78" y="86" width="40" height="40" fill="none" stroke="#002244" stroke-width="4" stroke-dasharray="5,3"/>
+  <circle cx="98" cy="106" r="5" fill="#002244"/>
+</svg>

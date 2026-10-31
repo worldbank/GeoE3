@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Technique: index score — one published number, applied to every cell it's relevant to. -->
+  <defs>
+    <marker id="index_score_arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#009FDA"/>
+    </marker>
+  </defs>
+
+  <!-- Source document -->
+  <rect x="14" y="68" width="54" height="66" rx="4" fill="#FFFFFF" stroke="#002244" stroke-width="3"/>
+  <line x1="25" y1="86" x2="57" y2="86" stroke="#6E7B85" stroke-width="3"/>
+  <line x1="25" y1="100" x2="57" y2="100" stroke="#6E7B85" stroke-width="3"/>
+  <line x1="25" y1="114" x2="49" y2="114" stroke="#6E7B85" stroke-width="3"/>
+  <text x="41" y="154" font-family="sans-serif" font-size="13" fill="#333333" text-anchor="middle">index</text>
+
+  <!-- Arrows fanning out from the document to every cell -->
+  <g stroke="#009FDA" stroke-width="2.5" fill="none" marker-end="url(#index_score_arrow)">
+    <path d="M70 90 L112 56"/>
+    <path d="M70 95 L112 82"/>
+    <path d="M70 100 L112 108"/>
+    <path d="M70 108 L112 134"/>
+    <path d="M70 112 L112 160"/>
+  </g>
+
+  <!-- 3x3 grid, every cell the same colour -->
+  <g stroke="#002244" stroke-width="2.5" fill="#bce1b8">
+    <rect x="120" y="44" width="24" height="24"/>
+    <rect x="146" y="44" width="24" height="24"/>
+    <rect x="172" y="44" width="24" height="24"/>
+    <rect x="120" y="70" width="24" height="24"/>
+    <rect x="146" y="70" width="24" height="24"/>
+    <rect x="172" y="70" width="24" height="24"/>
+    <rect x="120" y="96" width="24" height="24"/>
+    <rect x="146" y="96" width="24" height="24"/>
+    <rect x="172" y="96" width="24" height="24"/>
+  </g>
+  <text x="156" y="138" font-family="sans-serif" font-size="12" fill="#333333" text-anchor="middle">same score</text>
+</svg>

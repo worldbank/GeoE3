@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Accessibility dimension: a route from here to a destination pin -->
+  <circle cx="4.5" cy="18.5" r="2" stroke="#002244" stroke-width="1.8"/>
+  <path d="M6.3 17.2C10 13 13 10 15 6" stroke="#009FDA" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.2 3"/>
+  <path d="M16 3c-2.4 0-4.2 1.9-4.2 4.2 0 3.2 4.2 7.3 4.2 7.3s4.2-4.1 4.2-7.3C20.2 4.9 18.4 3 16 3Z" stroke="#002244" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="16" cy="7.2" r="1.5" stroke="#002244" stroke-width="1.6"/>
+</svg>

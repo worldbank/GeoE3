@@ -1,0 +1,587 @@
+/* SPDX-FileCopyrightText: Kartoza
+   SPDX-License-Identifier: MIT
+
+   GeoE3 Material for MkDocs theme, adapted from the Kartoza documentation
+   design pack (see kartoza/InfrastructureMapper). Consumes stylesheets/tokens.css
+   as the single source of truth for colour and type — no hardcoded hexes here.
+
+   Brand rules:
+     · Flat — no shadows, bevels, glows or gradients on UI elements.
+     · Navy carries body text; Blue is the primary accent, Sky the
+       secondary/highlight accent.
+     · Nunito for everything; JetBrains Mono for code. */
+
+/* -----------------------------------------------------------------------
+   mkdocs-material primary/accent mapping.
+   `theme.palette.primary: custom` activates [data-md-color-primary="custom"];
+   `theme.palette.accent: custom` activates [data-md-color-accent="custom"].
+   ----------------------------------------------------------------------- */
+
+[data-md-color-primary="custom"] {
+    --md-primary-fg-color:            var(--text-default);   /* Charcoal */
+    --md-primary-fg-color--light:     var(--text-muted);
+    --md-primary-fg-color--dark:      #1f1f1f;
+    --md-primary-bg-color:            var(--surface-white);
+    --md-primary-bg-color--light:     rgba(255, 255, 255, 0.7);
+}
+
+[data-md-color-accent="custom"] {
+    --md-accent-fg-color:             var(--brand-blue);
+    --md-accent-fg-color--transparent: rgba(84, 162, 204, 0.10);
+    --md-accent-bg-color:             var(--surface-white);
+    --md-accent-bg-color--light:      rgba(255, 255, 255, 0.7);
+}
+
+/* -----------------------------------------------------------------------
+   Light scheme — Cloud surfaces under Charcoal body text. Flat.
+   ----------------------------------------------------------------------- */
+
+[data-md-color-scheme="default"] {
+    --md-default-bg-color:            var(--surface-white);
+    --md-default-fg-color:            var(--text-default);
+    --md-default-fg-color--light:     var(--text-muted);
+    --md-default-fg-color--lighter:   var(--rule-line);
+    --md-default-fg-color--lightest:  var(--surface-cloud);
+    --md-typeset-a-color:             var(--brand-blue);
+    --md-code-bg-color:               var(--surface-cloud);
+    --md-code-fg-color:               var(--text-default);
+    --md-code-hl-color:               rgba(238, 179, 72, 0.18); /* amber tint */
+    --md-typeset-mark-color:          rgba(238, 179, 72, 0.28);
+    --md-footer-bg-color:             var(--text-default);
+    --md-footer-bg-color--dark:       #1f1f1f;
+}
+
+[data-md-color-scheme="default"] .md-header,
+[data-md-color-scheme="default"] .md-tabs {
+    /* Flat Charcoal bar — no gradient. */
+    background: var(--text-default);
+    color: var(--surface-white);
+}
+
+/* -----------------------------------------------------------------------
+   Dark scheme — Charcoal field, white type. The reversed-knockout brand.
+   ----------------------------------------------------------------------- */
+
+[data-md-color-scheme="slate"] {
+    --md-default-bg-color:            #1c1d1d;            /* deeper than Charcoal */
+    --md-default-fg-color:            var(--surface-cloud);
+    --md-default-fg-color--light:     #c8c9c4;
+    --md-default-fg-color--lighter:   #6d6f6f;
+    --md-default-fg-color--lightest:  #2a2b2b;
+    --md-typeset-a-color:             var(--brand-blue);
+    --md-code-bg-color:               #262727;
+    --md-code-fg-color:               var(--surface-cloud);
+    --md-typeset-mark-color:          rgba(238, 179, 72, 0.32);
+}
+
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs {
+    background: var(--text-default);
+    color: var(--surface-white);
+}
+
+/* -----------------------------------------------------------------------
+   Typography — Nunito everywhere, JetBrains Mono for code.
+   ----------------------------------------------------------------------- */
+
+body,
+.md-typeset,
+.md-header,
+.md-tabs {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "ss02";
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+    font-family: var(--font-sans);
+    color: var(--md-default-fg-color);
+    font-weight: 700;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+}
+
+.md-typeset h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.4em;
+}
+
+.md-typeset h2 {
+    font-size: 1.4rem;
+    margin-top: 2.2em;
+}
+
+.md-typeset h3 {
+    font-size: 1.1rem;
+}
+
+.md-typeset code,
+.md-typeset pre {
+    font-family: var(--font-mono);
+}
+
+.md-typeset code {
+    border-radius: 0.25rem;
+    padding: 0.05em 0.35em;
+}
+
+/* Eyebrows — KARTOZA · X style (Secondary Grey, spaced uppercase, per FR-024). */
+.md-typeset .kz-eyebrow {
+    display: inline-block;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+/* -----------------------------------------------------------------------
+   Hero block on the landing page — slim horizontal banner.
+   Slant-title motif sits behind a flat Cloud surface so type stays
+   legible (FR-031). Flat: no gradients (linear-gradient is used only
+   as a lightening tint over the motif, not as a decorative fill).
+   Long prose belongs in normal markdown blocks below the hero, not in
+   it.
+   ----------------------------------------------------------------------- */
+
+.kz-hero {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 1.75rem;
+    margin: -1.5rem -0.75rem 2rem -0.75rem;
+    border-radius: 0.75rem;
+    background-color: var(--surface-cloud);
+    color: var(--text-default);
+    overflow: hidden;
+}
+
+[data-md-color-scheme="slate"] .kz-hero {
+    background-color: #232525;
+    color: var(--surface-cloud);
+}
+
+.kz-hero h1 {
+    margin: 0.25rem auto 0.5rem;
+    max-width: 24ch;
+    font-size: 2.2rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.kz-hero p {
+    margin: 0 auto 1.5rem;
+    max-width: 50ch;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-default);
+}
+
+.kz-hero .kz-eyebrow {
+    margin-bottom: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] .kz-hero p {
+    color: var(--surface-cloud);
+}
+
+/* The product GIF lives below the hero as a centred figure, not inside
+   it. This class wraps the standalone image. */
+.kz-figure {
+    display: block;
+    margin: 0 auto 2rem;
+    max-width: 720px;
+    border-radius: 0.5rem;
+    border: 1px solid var(--rule-line);
+}
+
+/* Hero CTA buttons — flat, no shadow, Blue primary, Cloud secondary.
+   markdown wraps consecutive links in a single <p>; we apply the flex
+   layout to that <p> too so buttons sit side-by-side instead of
+   collapsing on the line. */
+.kz-cta,
+.kz-cta > p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+    justify-content: center;
+}
+/* Selectors are intentionally prefixed with `.md-typeset` so they beat
+   mkdocs-material's `.md-typeset a { color: … }` rule (which would
+   otherwise repaint our CTA text in Kartoza Blue and make it
+   invisible against the Blue primary fill). */
+.md-typeset .kz-cta a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.25rem;
+    border-radius: 0.375rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.md-typeset .kz-cta a.kz-cta__primary {
+    background: var(--brand-blue);
+    color: var(--surface-white);
+    border: 2px solid var(--brand-blue);
+}
+.md-typeset .kz-cta a.kz-cta__primary:hover {
+    background: #4790b8;
+    border-color: #4790b8;
+    color: var(--surface-white);
+}
+.md-typeset .kz-cta a.kz-cta__secondary {
+    background: var(--surface-white);
+    color: var(--text-default);
+    border: 2px solid var(--text-default);
+}
+.md-typeset .kz-cta a.kz-cta__secondary:hover {
+    background: var(--text-default);
+    color: var(--surface-white);
+}
+[data-md-color-scheme="slate"] .md-typeset .kz-cta a.kz-cta__secondary {
+    background: transparent;
+    color: var(--surface-cloud);
+    border-color: var(--surface-cloud);
+}
+[data-md-color-scheme="slate"] .md-typeset .kz-cta a.kz-cta__secondary:hover {
+    background: var(--surface-cloud);
+    color: var(--text-default);
+}
+
+@media (max-width: 768px) {
+    .kz-hero {
+        grid-template-columns: 1fr;
+        padding: 2rem 1.5rem;
+    }
+    .kz-hero h1 { font-size: 1.8rem; }
+}
+
+/* -----------------------------------------------------------------------
+   Material's built-in grid cards — restyle flat with Light Grey hairline,
+   Blue hover border. No box-shadow.
+   ----------------------------------------------------------------------- */
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+    background: var(--surface-white);
+    border: 1px solid var(--rule-line);
+    border-radius: 0.5rem;
+    box-shadow: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+    border-color: var(--brand-blue);
+    background: var(--surface-cloud);
+    box-shadow: none;
+    transform: none;  /* flat — no lift */
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li {
+    background: #232525;
+    border-color: #3a3b3b;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li:hover,
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ol > li:hover {
+    border-color: var(--brand-blue);
+    background: #2a2c2c;
+}
+
+/* Card leading icon coloured to Kartoza Blue (primary accent). */
+.md-typeset .grid.cards .twemoji.lg,
+.md-typeset .grid.cards .twemoji.lg svg {
+    color: var(--brand-blue);
+}
+
+/* -----------------------------------------------------------------------
+   Admonitions — brand-coloured per FR-054 / FR-080.
+     · note      → grey (Note)
+     · info/tip  → blue (Why this matters)
+     · warning   → amber (Highlight / Caution)
+     · success   → success green
+     · danger    → error red
+   Flat fills with a 4px brand-coloured left rule, no shadow.
+   ----------------------------------------------------------------------- */
+
+.md-typeset .admonition,
+.md-typeset details {
+    border: 0;
+    border-left: 4px solid var(--rule-line);
+    border-radius: 0.25rem;
+    background: var(--surface-cloud);
+    box-shadow: none;
+    font-size: 0.78rem;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+    background: transparent;
+    color: var(--text-default);
+    font-weight: 700;
+}
+
+/* Info / tip — Blue */
+.md-typeset .admonition.info,
+.md-typeset details.info,
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+    border-left-color: var(--brand-blue);
+    background: rgba(84, 162, 204, 0.08);
+}
+.md-typeset .info > .admonition-title::before,
+.md-typeset .tip  > .admonition-title::before { background-color: var(--brand-blue); }
+
+/* Warning — Amber */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+    border-left-color: var(--status-warn);
+    background: var(--status-warn-tint);
+}
+.md-typeset .warning > .admonition-title::before { background-color: var(--status-warn); }
+
+/* Note — Grey */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+    border-left-color: var(--brand-grey);
+    background: var(--surface-cloud);
+}
+.md-typeset .note > .admonition-title::before { background-color: var(--brand-grey); }
+
+/* Success */
+.md-typeset .admonition.success,
+.md-typeset details.success {
+    border-left-color: var(--status-success);
+    background: var(--status-success-tint);
+}
+.md-typeset .success > .admonition-title::before { background-color: var(--status-success); }
+
+/* Danger / Error */
+.md-typeset .admonition.danger,
+.md-typeset details.danger,
+.md-typeset .admonition.failure,
+.md-typeset details.failure {
+    border-left-color: var(--status-error);
+    background: var(--status-error-tint);
+}
+.md-typeset .danger  > .admonition-title::before,
+.md-typeset .failure > .admonition-title::before { background-color: var(--status-error); }
+
+[data-md-color-scheme="slate"] .md-typeset .admonition,
+[data-md-color-scheme="slate"] .md-typeset details {
+    background: #2a2b2b;
+}
+[data-md-color-scheme="slate"] .md-typeset .admonition.info,
+[data-md-color-scheme="slate"] .md-typeset details.info,
+[data-md-color-scheme="slate"] .md-typeset .admonition.tip,
+[data-md-color-scheme="slate"] .md-typeset details.tip {
+    background: rgba(84, 162, 204, 0.16);
+}
+
+/* -----------------------------------------------------------------------
+   Tables + misc.
+   ----------------------------------------------------------------------- */
+
+/* Tables — Kartoza Table style (charcoal header, Light Grey rules,
+   Cloud zebra) per FR-053. */
+.md-typeset table:not([class]) {
+    box-shadow: none;
+    border: 1px solid var(--rule-line);
+    border-radius: 0.25rem;
+}
+
+.md-typeset table:not([class]) th {
+    background: var(--text-default);
+    color: var(--surface-white);
+    font-weight: 700;
+}
+
+.md-typeset table:not([class]) tr:nth-child(even) {
+    background: var(--surface-cloud);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:nth-child(even) {
+    background: #2a2b2b;
+}
+
+.md-typeset table:not([class]) code {
+    font-size: 0.85em;
+}
+
+/* Mermaid — flat, transparent background; brand body text colour. */
+.mermaid {
+    background: transparent !important;
+    color: var(--text-default);
+}
+
+/* -----------------------------------------------------------------------
+   PDF export (mkdocs-with-pdf / weasyprint). #doc-cover only exists in
+   the combined PDF document weasyprint renders — these rules are inert
+   on the live site.
+   ----------------------------------------------------------------------- */
+
+@page {
+    size: A4;
+    margin: 2.4cm 1.8cm 2.6cm 1.8cm;
+}
+
+/* PDF rendering uses Lato, not the site's own Nunito (see scripts/docs.sh
+   pdf) — there's no standalone `nunito-fonts` package in nixpkgs. Without
+   this override the --font-sans chain's first face would be unavailable
+   and everything would silently fall back past Lato to DejaVu Sans. */
+@media print {
+    body,
+    .md-typeset,
+    .md-typeset .kz-eyebrow,
+    #doc-cover {
+        font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+    }
+}
+
+/* mkdocs-with-pdf's own bundled stylesheet hardcodes red heading rules
+   (article h1 { border-bottom: 2px solid #f00 }, h2 #f99) — loaded after
+   ours, so it wins on equal specificity without !important here. Brand
+   blue, not red. */
+@media print {
+    article h1,
+    #doc-cover h1 {
+        border-bottom: 2px solid var(--brand-blue) !important;
+    }
+    article h2 {
+        border-bottom: 1px solid var(--rule-line) !important;
+    }
+}
+
+/* This weasyprint build's CSS Grid `minmax()` support crashes on
+   mkdocs-material's own `.grid` rule (repeat(auto-fit, minmax(...))) —
+   fall back to flexbox for print only; screen users never see this. */
+@media print {
+    .md-typeset .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    .md-typeset .grid.cards > ul,
+    .md-typeset .grid.cards > ol {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        width: 100%;
+    }
+    .md-typeset .grid.cards > ul > li,
+    .md-typeset .grid.cards > ol > li {
+        flex: 1 1 14rem;
+    }
+}
+
+/* mkdocs-material's admonition title icon is a masked ::before, absolutely
+   positioned into the title's left padding — WeasyPrint doesn't honour
+   that positioning, so the icon collides with the title text instead of
+   sitting beside it. And its ul/li bullets (• ) render as stray dots that
+   don't line up with the hanging-indent spacing meant for them. Rather
+   than chase exact pixel offsets in a renderer we can't preview directly,
+   drop the icon and switch admonition lists to plain unmarked paragraphs
+   for print; the colour-coded left rule still identifies the admonition
+   type on its own. Screen readers keep both, unaffected. */
+@media print {
+    .md-typeset .admonition-title::before,
+    .md-typeset summary::before {
+        display: none;
+    }
+    .md-typeset .admonition-title,
+    .md-typeset summary {
+        padding-left: 0.6rem;
+    }
+    .md-typeset .admonition ul,
+    .md-typeset .admonition ol {
+        list-style: none;
+        margin-left: 0;
+        padding-left: 0;
+    }
+    .md-typeset .admonition li {
+        margin-left: 0;
+    }
+}
+
+/* The home page's hero already has a proper cover page ahead of it
+   (#doc-cover, from mkdocs-with-pdf's own cover: true setting) — its
+   "Get Started" / "Training Walkthrough" / "GitHub" buttons are
+   interactive web navigation with nothing to click in a PDF, so they'd
+   just sit there as three empty-looking boxes on what's effectively a
+   second, redundant cover page. Keep the hero's title and description
+   (still useful framing text) but drop the button row in print. */
+@media print {
+    .kz-cta {
+        display: none;
+    }
+}
+
+@page:not(:first) {
+    @bottom-center {
+        content: "GeoE3 Documentation";
+        font-family: var(--font-sans);
+        font-size: 8pt;
+        color: var(--text-muted);
+    }
+    @bottom-right {
+        content: counter(page);
+        font-family: var(--font-sans);
+        font-size: 8pt;
+        color: var(--text-muted);
+    }
+}
+
+#doc-cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 24cm;
+    text-align: center;
+    page-break-after: always;
+}
+
+#doc-cover .wrapper.upper {
+    margin-top: 2.5cm;
+}
+
+#doc-cover .logo {
+    width: 240px;
+    height: 100px;
+    margin: 0 auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+#doc-cover h1 {
+    margin-top: 2cm;
+    font-size: 26pt;
+    font-weight: 800;
+    color: var(--text-default);
+}
+
+#doc-cover h2 {
+    font-size: 13pt;
+    font-weight: 400;
+    color: var(--text-muted);
+    max-width: 32ch;
+    margin: 0.5cm auto 0;
+}
+
+#doc-cover .properties {
+    margin-bottom: 2cm;
+    color: var(--text-muted);
+    font-size: 9pt;
+}
+
+#doc-cover .properties address {
+    font-style: normal;
+}

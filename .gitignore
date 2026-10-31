@@ -126,3 +126,16 @@ symbology-style.db
 vscode.log
 flake.lock.pre-nixpkgs-qgis.bak
 TODO.md
+
+# Raw screencast source footage (too large for git, kept locally only)
+/ScreencastsGitIgnore/
+
+# Screencast transcripts + extracted frames (source material for the
+# training docs) — large, and a verifiable local reference kept outside
+# version control, not a build artefact to regenerate casually.
+/TranscriptsGitIgnore/
+
+# Example PDF analysis report (Portugal) used as source material for the
+# "Analysis Report" training page's page images — real example output,
+# not something to commit.
+/analysis_report.pdf

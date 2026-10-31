@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Technique: population share — a pre-matched demographic split, joined onto the grid by location key, no spatial join of its own. -->
+  <rect x="40" y="30" width="120" height="120" fill="#EEF4F8" stroke="#002244" stroke-width="3"/>
+
+  <!-- urban vs rural split as a simple pie -->
+  <g transform="translate(100,90)">
+    <path d="M0 0 L0 -45 A45 45 0 0 1 38 25 Z" fill="#2c7bb6"/>
+    <path d="M0 0 L38 25 A45 45 0 1 1 0 -45 Z" fill="#bce1b8"/>
+    <circle r="45" fill="none" stroke="#002244" stroke-width="3"/>
+  </g>
+
+  <!-- key/lookup linking it to the grid cell -->
+  <path d="M40 150 L15 175" stroke="#009FDA" stroke-width="3" fill="none"/>
+  <rect x="2" y="170" width="30" height="20" rx="3" fill="#FFFFFF" stroke="#002244" stroke-width="2"/>
+  <text x="17" y="184" font-family="sans-serif" font-size="10" fill="#333333" text-anchor="middle">id</text>
+
+  <text x="100" y="168" font-family="sans-serif" font-size="12" fill="#333333" text-anchor="middle">urban / rural</text>
+</svg>

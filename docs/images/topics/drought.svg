@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Drought hazard: sun over a cracked, dry ground -->
+  <circle cx="12" cy="7.5" r="3.2" stroke="#002244" stroke-width="1.8"/>
+  <path d="M12 2.3v1.4M12 2.3v1.4M6 7.5H4.6M19.4 7.5H18M8 3.5 8.8 4.7M16 3.5 15.2 4.7" stroke="#002244" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M2.5 19h19M7 19l1.5 3M12 19l-1 3M17 19l1.5 3" stroke="#009FDA" stroke-width="1.7" stroke-linecap="round"/>
+</svg>

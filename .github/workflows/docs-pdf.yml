@@ -1,0 +1,65 @@
+name: Build documentation PDF
+
+# Builds the single-PDF export of the documentation site (see
+# scripts/docs.sh pdf / mkdocs-pdf.yml) and publishes it two ways:
+#   - every PR gets it as a short-lived (7 day) workflow artifact, so a
+#     reviewer can download the PDF exactly as it would read with that
+#     PR's changes applied, without checking the branch out locally.
+#   - every published release gets it attached as a permanent release
+#     asset, alongside the plugin zip from release.yml.
+# GitHub Pages publishing on merge to main is handled separately by the
+# existing gh-pages.yml (plain `mkdocs build`, no PDF/WeasyPrint involved).
+
+on:
+  pull_request:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install WeasyPrint system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libpango-1.0-0 libpangocairo-1.0-0 libharfbuzz-subset0 \
+            libgdk-pixbuf2.0-0 libcairo2 libffi-dev shared-mime-info \
+            fonts-lato fonts-dejavu-core fonts-noto-mono
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r docs/requirements.txt weasyprint
+
+      - name: Build PDF
+        run: |
+          mkdocs build -f mkdocs-pdf.yml
+
+      - name: Upload PDF as a PR artifact (7 days)
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: GeoE3-Documentation-PDF
+          path: site/pdf/GeoE3-Documentation.pdf
+          retention-days: 7
+
+      - name: Attach PDF to the release
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            site/pdf/GeoE3-Documentation.pdf --clobber
