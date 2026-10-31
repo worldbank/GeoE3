@@ -8,11 +8,11 @@ hide:
 
 <span class="kz-eyebrow">WORLD BANK GROUP &middot; GEOE3</span>
 
-# Map where places enable — or block — women's access to jobs
+# Map where places enable or block economic enablement
 
-A QGIS plugin that scores any landscape against the 15 spatial factors of the
-Geospatial Women's Employment Analytical Framework (GeoWEAF), so you can see
-exactly where to invest to close the gap.
+A QGIS plugin that scores any landscape against factors that enable or limit
+access to the economic activity, so you can see exactly where to invest to
+close the gap.
 
 <div class="kz-cta" markdown>
 [:material-rocket-launch: Get Started](training/installation.md){ .kz-cta__primary }
