@@ -16,7 +16,16 @@ from geest.gui.widgets.item_info_panel import ItemInfoPanel
 from geest.utilities import resources_path
 
 
-def make_fake_item(role, name, description="", analysis_mode="", tooltip="", item_id="", parent=None):
+def make_fake_item(
+    role,
+    name,
+    description="",
+    analysis_mode="",
+    tooltip="",
+    item_id="",
+    parent=None,
+    women_considerations_enabled=True,
+):
     """A duck-typed stand-in for JsonTreeItem carrying only what
     ItemInfoPanel.show_item() actually reads.
     """
@@ -26,7 +35,12 @@ def make_fake_item(role, name, description="", analysis_mode="", tooltip="", ite
     item.getIcon.return_value = QIcon()
     item.getItemTooltip.return_value = tooltip
     item.parentItem = parent
-    attrs = {"description": description, "analysis_mode": analysis_mode, "id": item_id}
+    attrs = {
+        "description": description,
+        "analysis_mode": analysis_mode,
+        "id": item_id,
+        "women_considerations_enabled": women_considerations_enabled,
+    }
     item.attribute.side_effect = lambda key, default="": attrs.get(key, default)
     return item
 
@@ -108,6 +122,60 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
         self.panel.show_item(item)
 
         self.assertEqual(self.panel.item_meta_label.toPlainText(), "Dimension")
+
+    def test_analysis_item_with_no_description_gets_the_womens_empowerment_default(self):
+        # model.json never carries a real "description" for the Analysis
+        # item itself - treeview.py used to default it to the literal
+        # string "No Description", which then got persisted to disk and
+        # displayed verbatim ("Analysis · No Description"). It should
+        # show real, context-aware copy instead.
+        item = make_fake_item("analysis", "Analysis", description="", women_considerations_enabled=True)
+
+        self.panel.show_item(item)
+
+        self.assertEqual(
+            self.panel.item_meta_label.toPlainText(),
+            "Analysis · The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+            "Characterization dimensions into a single measure of how enabling the "
+            "environment is for women's economic empowerment in this study area.",
+        )
+
+    def test_analysis_item_uses_the_generic_default_when_womens_considerations_disabled(self):
+        item = make_fake_item("analysis", "Analysis", description="", women_considerations_enabled=False)
+
+        self.panel.show_item(item)
+
+        self.assertEqual(
+            self.panel.item_meta_label.toPlainText(),
+            "Analysis · The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+            "Characterization dimensions into a single measure of how enabling the "
+            "environment is for employment and entrepreneurship in this study area.",
+        )
+
+    def test_analysis_item_with_a_real_description_keeps_it(self):
+        item = make_fake_item("analysis", "Analysis", description="A custom description someone typed in.")
+
+        self.panel.show_item(item)
+
+        self.assertEqual(self.panel.item_meta_label.toPlainText(), "Analysis · A custom description someone typed in.")
+
+    def test_analysis_item_with_the_legacy_persisted_placeholder_gets_the_default_too(self):
+        # Every project saved before the "No Description" default was
+        # fixed in treeview.py has that literal string baked into its
+        # model.json on disk - confirmed live against StLuciaH3 and
+        # every other real project in data/GeestWorkingDirectory. It
+        # must be treated the same as a genuinely empty description,
+        # not displayed verbatim.
+        item = make_fake_item("analysis", "Analysis", description="No Description", women_considerations_enabled=True)
+
+        self.panel.show_item(item)
+
+        self.assertEqual(
+            self.panel.item_meta_label.toPlainText(),
+            "Analysis · The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+            "Characterization dimensions into a single measure of how enabling the "
+            "environment is for women's economic empowerment in this study area.",
+        )
 
     def test_run_warning_text_is_never_shown_as_the_description(self):
         # getItemTooltip() can surface a transient run warning/error (e.g.

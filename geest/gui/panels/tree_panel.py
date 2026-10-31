@@ -44,6 +44,7 @@ from qgis.PyQt.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qgis.PyQt.QtXml import QDomDocument
 from qgis.utils import iface
 
 from geest.core import JsonTreeItem, WorkflowQueueManager
@@ -57,10 +58,11 @@ from geest.core.algorithms import (
     WEEByPopulationScoreProcessingTask,
 )
 from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD, MAX_FEATURES_FOR_VECTOR
+from geest.core.country_pack import all_sources
 from geest.core.i18n import tr
-from geest.core.reports import StudyAreaReport
+from geest.core.reports import AnalysisReport, StudyAreaReport
 from geest.core.settings import set_setting, setting
-from geest.core.tasks import AnalysisReportTask
+from geest.core.tasks import AnalysisReportTask, CountryPackTask
 from geest.core.utilities import add_grid_layer_to_map, add_to_map, validate_network_layer
 from geest.core.women_considerations import resolve_women_enabling_for_factor
 from geest.gui.dialogs import (
@@ -1250,6 +1252,10 @@ class TreePanel(QWidget):
             add_analysis_report_action.triggered.connect(self.generate_analysis_report)
             menu.addAction(add_analysis_report_action)
 
+            build_country_pack_action = QAction("Bundle Input Data to GeoPackage", self)
+            build_country_pack_action.triggered.connect(self.build_country_pack)
+            menu.addAction(build_country_pack_action)
+
             add_study_area_report_action = QAction("Show Study Area Report", self)
             add_study_area_report_action.triggered.connect(self.generate_study_area_report)
             menu.addAction(add_study_area_report_action)
@@ -1378,7 +1384,19 @@ class TreePanel(QWidget):
         QgsApplication.taskManager().addTask(self.analysis_report_task)
 
     def on_analysis_report_completed(self):
-        """Slot called when analysis report generation completes successfully."""
+        """Slot called when the task completes.
+
+        AnalysisReportTask.run() is a deliberate no-op (the actual
+        report generation moved to finished(), the only point in the
+        task's lifecycle guaranteed to run on the main thread - see
+        its docstring for why) - taskCompleted fires regardless of
+        whether that real work succeeded, so check the task's own
+        exception attribute to tell which.
+        """
+        if getattr(self.analysis_report_task, "exception", None) is not None:
+            self.on_analysis_report_failed()
+            return
+
         log_message("Analysis report generated successfully.", tag="GeoE3", level=Qgis.Info)
 
         self.overall_progress_bar.setMinimum(0)
@@ -1397,6 +1415,108 @@ class TreePanel(QWidget):
         )
 
         log_message(f"Analysis report generation failed: {error_msg}", tag="GeoE3", level=Qgis.Critical)
+
+        self.overall_progress_bar.setMinimum(0)
+        self.overall_progress_bar.setMaximum(100)
+        self.overall_progress_bar.setValue(0)
+        self.overall_progress_bar.setFormat(f"Error: {error_msg}")
+        self.overall_progress_bar.setVisible(False)
+        self.item_info_panel.hide_progress()
+
+    def _resolve_live_layer_styles(self, sources) -> dict:
+        """Export style XML for any pack source currently loaded in the live project.
+
+        Must run on the main thread - CountryPackTask's worker thread never
+        touches QgsProject.instance() (see the module docstring on
+        country_pack.py for why: reading the project's layer registry
+        off-thread is the same hazard class that corrupted
+        AnalysisReportTask before it was fixed).
+
+        Args:
+            sources: PackSource list from geest.core.country_pack.all_sources().
+
+        Returns:
+            Source path -> style XML, for sources that matched a layer
+            currently loaded in the project.
+        """
+        source_paths = {source.path.split("|")[0] for source in sources}
+        style_xml_by_path = {}
+        for layer in QgsProject.instance().mapLayers().values():
+            layer_path = layer.source().split("|")[0]
+            if layer_path not in source_paths or layer_path in style_xml_by_path:
+                continue
+            doc = QDomDocument()
+            error = layer.exportNamedStyle(doc)
+            if not error:
+                style_xml_by_path[layer_path] = doc.toString()
+        return style_xml_by_path
+
+    def build_country_pack(self):
+        """Bundle every configured input dataset into a single GeoPackage."""
+        if not self.working_directory:
+            log_message(
+                "No working directory set, cannot build a country pack.",
+                tag="GeoE3",
+                level=Qgis.Warning,
+            )
+            return
+
+        model_path = os.path.join(self.working_directory, "model.json")
+        with open(model_path, "r", encoding="utf-8") as f:
+            model = json.load(f)
+
+        sources = all_sources(model)
+        if not sources:
+            log_message(
+                "No configured input data found - nothing to bundle.",
+                tag="GeoE3",
+                level=Qgis.Warning,
+            )
+            return
+
+        country_name = AnalysisReport._admin0_name(self.working_directory) or "country"
+        safe_name = "".join(c if c.isalnum() else "_" for c in country_name).strip("_") or "country"
+        output_path = os.path.join(self.working_directory, f"{safe_name}_geoe3.gpkg")
+
+        style_xml_by_path = self._resolve_live_layer_styles(sources)
+
+        self.item_info_panel.show_progress("Building country pack...")
+        self.overall_progress_bar.setVisible(True)
+        self.overall_progress_bar.setMinimum(0)
+        self.overall_progress_bar.setMaximum(100)
+        self.overall_progress_bar.setFormat("Building country pack... %p%")
+
+        self.country_pack_task = CountryPackTask(self.working_directory, model_path, output_path, style_xml_by_path)
+        self.country_pack_task.taskCompleted.connect(self.on_country_pack_completed)
+        self.country_pack_task.taskTerminated.connect(self.on_country_pack_failed)
+
+        QgsApplication.taskManager().addTask(self.country_pack_task)
+
+    def on_country_pack_completed(self):
+        """Slot called when country pack generation completes successfully."""
+        summary = self.country_pack_task.summary
+        log_message(
+            f"Country pack generated: {len(summary['written'])} layers written, " f"{len(summary['skipped'])} skipped.",
+            tag="GeoE3",
+            level=Qgis.Info,
+        )
+
+        self.overall_progress_bar.setMinimum(0)
+        self.overall_progress_bar.setMaximum(100)
+        self.overall_progress_bar.setValue(100)
+        self.overall_progress_bar.setFormat(f"Country pack ready ({len(summary['written'])} layers)")
+        self.overall_progress_bar.setVisible(False)
+        self.item_info_panel.hide_progress()
+
+    def on_country_pack_failed(self):
+        """Slot called when country pack generation fails."""
+        error_msg = (
+            str(self.country_pack_task.exception)
+            if hasattr(self.country_pack_task, "exception") and self.country_pack_task.exception
+            else "Unknown error"
+        )
+
+        log_message(f"Country pack generation failed: {error_msg}", tag="GeoE3", level=Qgis.Critical)
 
         self.overall_progress_bar.setMinimum(0)
         self.overall_progress_bar.setMaximum(100)

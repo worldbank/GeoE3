@@ -19,6 +19,7 @@ from geest.gui.panels import (
     CreateProjectPanel,
     CreditsPanel,
     HelpPanel,
+    ImportProjectPanel,
     IntroPanel,
     OpenProjectPanel,
     OrsPanel,
@@ -44,6 +45,7 @@ ORS_PANEL = 6
 ROAD_NETWORK_PANEL = 7
 TREE_PANEL = 8
 HELP_PANEL = 9
+IMPORT_PROJECT_PANEL = 10
 
 
 class GeoE3Dock(QDockWidget):
@@ -96,6 +98,7 @@ class GeoE3Dock(QDockWidget):
         self.credits_widget: CreditsPanel = CreditsPanel()
         self.setup_widget: SetupPanel = SetupPanel()
         self.open_project_widget: OpenProjectPanel = OpenProjectPanel()
+        self.import_project_widget: ImportProjectPanel = ImportProjectPanel()
         self.road_network_widget: RoadNetworkPanel = RoadNetworkPanel()
         self.road_network_widget.set_message_bar(self.message_bar)  # Pass message bar reference
         self.create_project_widget: CreateProjectPanel = CreateProjectPanel()
@@ -147,6 +150,10 @@ class GeoE3Dock(QDockWidget):
             )
 
             self.setup_widget.switch_to_create_project_tab.connect(self._open_create_project_from_setup)
+
+            self.setup_widget.switch_to_import_project_tab.connect(
+                lambda: self.stacked_widget.setCurrentIndex(IMPORT_PROJECT_PANEL)
+            )
 
             self.setup_widget.switch_to_previous_tab.connect(
                 # Switch to the previous tab when the button is clicked
@@ -305,6 +312,29 @@ class GeoE3Dock(QDockWidget):
                 # Switch to the previous tab when the button is clicked
                 lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
             )
+
+            # IMPORT_PROJECT_PANEL = 10
+            # Create and add the "Import Country Pack" panel
+
+            import_project_panel: QWidget = QWidget()
+            import_project_layout: QVBoxLayout = QVBoxLayout(import_project_panel)
+            import_project_layout.setContentsMargins(10, 10, 10, 10)  # Minimize padding
+            import_project_layout.addWidget(self.import_project_widget)
+            self.stacked_widget.addWidget(import_project_panel)
+
+            self.import_project_widget.switch_to_previous_tab.connect(
+                lambda: self.stacked_widget.setCurrentIndex(SETUP_PANEL)
+            )
+
+            self.import_project_widget.switch_to_next_tab.connect(
+                lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
+            )
+
+            self.import_project_widget.set_working_directory.connect(
+                lambda: self.tree_widget.set_working_directory(self.import_project_widget.working_dir)
+            )
+
+            self.import_project_widget.project_loaded.connect(lambda: self.open_associated_qgis_project())
 
             # Add the stacked widget to the main layout
             layout.addWidget(self.stacked_widget)
@@ -472,6 +502,8 @@ class GeoE3Dock(QDockWidget):
             # self.tree_widget.set_working_directory(self.setup_widget.working_dir)
         elif index == HELP_PANEL:
             log_message("Switched to Help panel")
+        elif index == IMPORT_PROJECT_PANEL:
+            log_message("Switched to Import Country Pack panel")
 
     def _open_road_network_from_ors(self) -> None:
         """Open the road network panel from ORS with a valid working directory.

@@ -80,6 +80,12 @@ _ROLE_LABELS = {
     "analysis": "Analysis",
 }
 
+#: treeview.py used to default a missing Analysis description to this
+#: literal string and persist it to model.json - every project saved
+#: before that was fixed still carries it on disk, so it's treated the
+#: same as an empty description here rather than displayed verbatim.
+_LEGACY_NO_DESCRIPTION_PLACEHOLDER = "No Description"
+
 
 class ItemInfoPanel(QWidget):
     """Collapsible "what is this item" panel with a methodology slide-over."""
@@ -468,6 +474,38 @@ class ItemInfoPanel(QWidget):
         icon = QIcon(resources_path("resources", "icons", "topics", filename))
         return icon if not icon.isNull() else None
 
+    def _analysis_default_description(self, item) -> str:
+        """⚙️ Context-aware default description for the top-level Analysis node.
+
+        model.json never carries a real "description" for the Analysis
+        item itself (only dimensions/factors/indicators do), and the
+        root item has no parent to borrow one from via
+        _inherited_description() - so this fills in generic copy
+        instead, chosen by women_considerations_enabled so it always
+        matches the project's current mode rather than freezing in
+        whatever was true the first time the project was loaded.
+
+        Args:
+            item: The JsonTreeItem the user just clicked.
+
+        Returns:
+            Women's-empowerment- or generic-mode description text.
+        """
+        women_considerations_enabled = (
+            item.attribute("women_considerations_enabled", True) if hasattr(item, "attribute") else True
+        )
+        if women_considerations_enabled:
+            return (
+                "The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+                "Characterization dimensions into a single measure of how enabling the "
+                "environment is for women's economic empowerment in this study area."
+            )
+        return (
+            "The overall GeoE3 score combines the Contextual, Accessibility, and Place "
+            "Characterization dimensions into a single measure of how enabling the "
+            "environment is for employment and entrepreneurship in this study area."
+        )
+
     def _inherited_description(self, item) -> str:
         """⚙️ Borrow a parent's description when the item has none of its own.
 
@@ -538,6 +576,10 @@ class ItemInfoPanel(QWidget):
 
         role_label = _ROLE_LABELS.get(role, role.title() if role else "")
         description = item.attribute("description", "") if hasattr(item, "attribute") else ""
+        if description == _LEGACY_NO_DESCRIPTION_PLACEHOLDER:
+            description = ""
+        if not description and role == "analysis":
+            description = self._analysis_default_description(item)
         if not description:
             description = self._inherited_description(item)
         # No truncation: a borrowed factor description can run well past
