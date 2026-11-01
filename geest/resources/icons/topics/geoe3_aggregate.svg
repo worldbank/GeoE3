@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+  <!-- GeoE3 Aggregate: grid cells rolled up into one administrative zone -->
+  <rect x="4" y="4" width="16" height="16" rx="1" stroke="#002244" stroke-width="1.8"/>
+  <line x1="4" y1="12" x2="20" y2="12" stroke="#009FDA" stroke-width="1.8"/>
+  <line x1="12" y1="4" x2="12" y2="20" stroke="#009FDA" stroke-width="1.8"/>
+</svg>
