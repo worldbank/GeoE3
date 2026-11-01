@@ -2,17 +2,15 @@
 # SPDX-FileCopyrightText: Kartoza
 # SPDX-License-Identifier: MIT
 #
-# Lifecycle commands for the GeoE3 mkdocs site: one script, modes — not
-# parallel start/stop scripts. Requires the nix devShell's .venv to be
-# active (mkdocs/mkdocs-material come from requirements-dev.txt).
+# Commands for the GeoE3 mkdocs site: serve, build, pdf. Requires the nix
+# devShell's .venv to be active (mkdocs/mkdocs-material come from
+# requirements-dev.txt).
 set -euo pipefail
 
 # Silences mkdocs-material's own "MkDocs 2.0 is coming" nag banner —
 # noise on every invocation, not something this project can act on.
 export NO_MKDOCS_2_WARNING=true
 
-PID_FILE="${TMPDIR:-/tmp}/geoe3-mkdocs-serve.pid"
-LOG_FILE="${TMPDIR:-/tmp}/geoe3-mkdocs-serve.log"
 ADDR="${GEOE3_DOCS_ADDR:-127.0.0.1:8005}"
 NIX="nix --extra-experimental-features nix-command --extra-experimental-features flakes"
 
@@ -30,47 +28,10 @@ require_nix() {
   fi
 }
 
-is_running() {
-  [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null
-}
-
 cmd_serve() {
   require_mkdocs
-  if is_running; then
-    echo "mkdocs serve already running (pid $(cat "$PID_FILE")) at http://$ADDR"
-    return 0
-  fi
-  echo "Starting mkdocs serve at http://$ADDR (log: $LOG_FILE)"
-  nohup mkdocs serve --dev-addr "$ADDR" >"$LOG_FILE" 2>&1 &
-  echo $! >"$PID_FILE"
-  sleep 1
-  if is_running; then
-    echo "Running (pid $(cat "$PID_FILE")). Stop with: scripts/docs.sh stop"
-  else
-    echo "Failed to start — see $LOG_FILE" >&2
-    rm -f "$PID_FILE"
-    exit 1
-  fi
-}
-
-cmd_stop() {
-  if ! is_running; then
-    echo "mkdocs serve is not running"
-    rm -f "$PID_FILE"
-    return 0
-  fi
-  pid="$(cat "$PID_FILE")"
-  kill "$pid"
-  rm -f "$PID_FILE"
-  echo "Stopped mkdocs serve (pid $pid)"
-}
-
-cmd_status() {
-  if is_running; then
-    echo "mkdocs serve running (pid $(cat "$PID_FILE")) at http://$ADDR"
-  else
-    echo "mkdocs serve is not running"
-  fi
+  echo "Starting mkdocs serve at http://$ADDR (Ctrl-C to stop)"
+  exec mkdocs serve --dev-addr "$ADDR"
 }
 
 cmd_build() {
@@ -136,12 +97,10 @@ cmd_pdf() {
 
 case "${1:-}" in
   serve) cmd_serve ;;
-  stop) cmd_stop ;;
-  status) cmd_status ;;
   build) cmd_build ;;
   pdf) cmd_pdf ;;
   *)
-    echo "Usage: $0 {serve|stop|status|build|pdf}" >&2
+    echo "Usage: $0 {serve|build|pdf}" >&2
     exit 1
     ;;
 esac
