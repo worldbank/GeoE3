@@ -28,6 +28,7 @@ from qgis.core import (
 from qgis.PyQt.QtCore import QRectF, Qt
 from qgis.PyQt.QtGui import QColor, QImage, QPainter
 
+from geest.core import sparkline_data
 from geest.core.constants import GEOE3_BY_POPULATION_COLORS, SCORE_LEGEND_COLORS
 from geest.core.settings import setting
 from geest.utilities import log_message, resources_path
@@ -611,6 +612,9 @@ class AnalysisReport(BaseReport):
         (one administrative zone per feature), with no study_area_grid
         column backing them the way per-cell products have.
 
+        Delegates to geest.core.sparkline_data, shared with the item
+        info panel's Sparkline page so both read/bin identically.
+
         Args:
             layer: The vector layer to read.
             field_name: Attribute holding the per-zone score (e.g.
@@ -619,15 +623,7 @@ class AnalysisReport(BaseReport):
         Returns:
             A 1-D numpy array of the field's non-null, non-zero values.
         """
-        field_index = layer.fields().indexFromName(field_name)
-        if field_index < 0:
-            return numpy.array([])
-        values = [
-            value
-            for value in (feature.attribute(field_index) for feature in layer.getFeatures())
-            if value is not None and value > 0
-        ]
-        return numpy.array(values, dtype=float)
+        return sparkline_data.read_vector_field_values(layer, field_name)
 
     def _map_layers(self, layer: QgsRasterLayer) -> list:
         """Raster plus the study area outline when available."""
@@ -804,38 +800,16 @@ class AnalysisReport(BaseReport):
         score), and counting it would flatten the distribution any
         sparkline built from this exists to show.
 
+        Delegates to geest.core.sparkline_data, shared with the item
+        info panel's Sparkline page so both read/bin identically.
+
         Args:
             column_name: study_area_grid column to read.
 
         Returns:
             A 1-D numpy array of the column's non-null, non-zero values.
         """
-        import sqlite3
-
-        from geest.core.grid_column_utils import _quote_sql_identifier
-
-        if not self.grid_gpkg_path or not os.path.exists(self.grid_gpkg_path):
-            return numpy.array([])
-        try:
-            quoted_column = _quote_sql_identifier(column_name)
-        except ValueError as error:
-            log_message(f"Refusing to read grid column for sparkline: {error}", tag="GeoE3")
-            return numpy.array([])
-
-        try:
-            connection = sqlite3.connect(self.grid_gpkg_path)
-            try:
-                rows = connection.execute(
-                    f"SELECT {quoted_column} FROM study_area_grid "  # nosec B608
-                    f"WHERE {quoted_column} IS NOT NULL AND {quoted_column} > 0"
-                ).fetchall()
-            finally:
-                connection.close()
-        except sqlite3.Error as error:
-            log_message(f"Could not read grid column '{column_name}' for sparkline: {error}", tag="GeoE3")
-            return numpy.array([])
-
-        return numpy.array([row[0] for row in rows], dtype=float)
+        return sparkline_data.read_grid_column_values(self.grid_gpkg_path, column_name)
 
     def _read_grid_columns(self, column_names: list) -> list:
         """Fetch several study_area_grid columns at once as a list of
@@ -969,14 +943,13 @@ class AnalysisReport(BaseReport):
         aggregation vector fields (per-zone), which carry the same 0-5
         score but from different sources.
 
+        Delegates to geest.core.sparkline_data, shared with the item
+        info panel's Sparkline page so both read/bin identically.
+
         Returns:
             list: Five counts, one per QML class, in (0,1] .. (4,5] order.
         """
-        # right=True => bins[i-1] < value <= bins[i], matching the QML's
-        # own right-inclusive class boundaries; index 5 (value > 5) is
-        # out of range and dropped by only counting indices 0-4.
-        class_index = numpy.digitize(values, bins=[1, 2, 3, 4, 5], right=True)
-        return [int(numpy.count_nonzero(class_index == i)) for i in range(5)]
+        return sparkline_data.score_histogram_from_values(values)
 
     @staticmethod
     def _palette_histogram_from_values(values, n_classes: int) -> list:
@@ -987,11 +960,13 @@ class AnalysisReport(BaseReport):
         DISCRETE range bucketing, each class here is a single exact
         value, not a (lower, upper] interval.
 
+        Delegates to geest.core.sparkline_data, shared with the item
+        info panel's Sparkline page so both read/bin identically.
+
         Returns:
             list: n_classes counts, for values 1..n_classes in order.
         """
-        rounded = numpy.round(values).astype(int)
-        return [int(numpy.count_nonzero(rounded == v)) for v in range(1, n_classes + 1)]
+        return sparkline_data.palette_histogram_from_values(values, n_classes)
 
     def _draw_sparkline_for_values(self, values, palette: str, x: float, y: float, w: float, h: float, page: int):
         """Draw a score-distribution sparkline for an already-read array

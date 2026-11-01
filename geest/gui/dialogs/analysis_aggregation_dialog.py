@@ -229,6 +229,15 @@ class AnalysisAggregationDialog(FORM_CLASS, CustomBaseDialog):
         buffer_distance = self.tree_item.attribute("buffer_distance_m", 0)
         self.buffer_distance_m.setValue(int(buffer_distance))
 
+        # Restore the display (raster vs grid) radio button state - defaults
+        # to raster for a project that has never set this (new projects, and
+        # every project saved before this toggle existed).
+        render_strategy = self.tree_item.attribute("render_strategy", "raster")
+        if render_strategy == "vector":
+            self.grid_display_radio_button.setChecked(True)
+        else:
+            self.raster_display_radio_button.setChecked(True)
+
         # Restore the dialog geometry
         self.restore_dialog_geometry()
 
@@ -983,6 +992,12 @@ class AnalysisAggregationDialog(FORM_CLASS, CustomBaseDialog):
             self.tree_item.setAttribute("mask_mode", "raster")
         elif self.ghsl_radio_button.isChecked():
             self.tree_item.setAttribute("mask_mode", "ghsl")  # gloabl human settlements layer
+
+        # Save the display (raster vs grid) radio button state
+        if self.grid_display_radio_button.isChecked():
+            self.tree_item.setAttribute("render_strategy", "vector")
+        else:
+            self.tree_item.setAttribute("render_strategy", "raster")
 
         self.tree_item.setAttribute("buffer_distance_m", self.buffer_distance_m.value())
         # Save the dialog geometry

@@ -10,6 +10,7 @@ from geest.core.country_pack import (
     FLOAT32_MAX,
     INDEX_SCORE_TABLE_NAME,
     PROJECT_MODEL_TABLE_NAME,
+    STUDY_AREA_MASK_TABLE_PREFIX,
     PackSource,
     _actual_table_names,
     all_sources,
@@ -18,9 +19,11 @@ from geest.core.country_pack import (
     indicator_source,
     project_level_sources,
     result_sources,
+    study_area_mask_sources,
     study_area_sources,
     write_raster_source,
 )
+from geest.core.country_pack_import import _extract_study_area_mask, _rebuild_combined_mask_vrt
 
 TEST_DATA = os.path.join(os.path.dirname(__file__), "test_data")
 
@@ -103,6 +106,39 @@ class TestIndicatorSource(unittest.TestCase):
         source = indicator_source(indicator)
         self.assertEqual(source.path, "/path/s2s_ntl.gpkg|layername=s2s_ntl")
         self.assertEqual(source.kind, "vector")
+
+    def test_environmental_hazards_s2s_field_holding_an_actual_raster_is_still_a_raster(self):
+        """Regression test: RasterDataSourceWidget.update_attributes() also
+        populates environmental_hazards_layer_source with the raster's own
+        path - not just environmental_hazards_raster - whenever the user
+        picks it from an already-loaded QGIS layer via the combo box
+        rather than browsing to a file, leaving environmental_hazards_
+        raster empty even at local scale. Confirmed live against a real
+        local-scale project where every hazard/nighttime-lights indicator
+        was silently dropped from the pack because this field was assumed
+        to always hold an S2S vector, and the raster got routed into
+        write_vector_source() instead."""
+        raster_path = os.path.join(TEST_DATA, "rasters", "_s2s_field_raster_test.tif")
+        driver = gdal.GetDriverByName("GTiff")
+        dataset = driver.Create(raster_path, 1, 1, 1, gdal.GDT_Byte)
+        dataset.SetGeoTransform((0, 1, 0, 1, 0, -1))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        dataset.SetProjection(srs.ExportToWkt())
+        dataset = None
+        try:
+            indicator = {
+                "id": "Fire",
+                "analysis_mode": "use_environmental_hazards",
+                "environmental_hazards_raster": "",
+                "environmental_hazards_layer_source": raster_path,
+                "environmental_hazards_layer_provider_type": "gdal",
+            }
+            source = indicator_source(indicator)
+            self.assertEqual(source.path, raster_path)
+            self.assertEqual(source.kind, "raster")
+        finally:
+            os.remove(raster_path)
 
     def test_csv_mode_captures_xy_fields(self):
         indicator = {
@@ -224,6 +260,135 @@ class TestStudyAreaSources(unittest.TestCase):
 
     def test_missing_study_area_gpkg_returns_empty_list(self):
         self.assertEqual(study_area_sources("/no/such/working/directory"), [])
+
+
+class TestStudyAreaMaskSources(unittest.TestCase):
+    """study_area_mask_sources() reads study_area_creation_status directly
+    (not study_area_bboxes/study_area_polygons, and not a directory
+    glob) since a part can have rows in those other two tables and
+    still never get a mask .tif, if the GHSL-intersection filter skipped
+    it afterwards - see the function's own docstring."""
+
+    def setUp(self):
+        self.working_directory = os.path.join(TEST_DATA, "_mask_sources_test")
+        self.study_area_dir = os.path.join(self.working_directory, "study_area")
+        os.makedirs(self.study_area_dir, exist_ok=True)
+        self.gpkg_path = os.path.join(self.study_area_dir, "study_area.gpkg")
+
+        driver = ogr.GetDriverByName("GPKG")
+        dataset = driver.CreateDataSource(self.gpkg_path)
+        layer = dataset.CreateLayer("study_area_creation_status", geom_type=ogr.wkbNone)
+        layer.CreateField(ogr.FieldDefn("area_name", ogr.OFTString))
+        layer.CreateField(ogr.FieldDefn("mask_processed", ogr.OFTInteger))
+        for area_name, mask_processed in [
+            ("part0", 1),  # processed, .tif present below
+            ("part1", 0),  # skipped by the GHSL filter - never masked
+            ("part2", 1),  # processed, but its .tif is missing on disk
+        ]:
+            feature = ogr.Feature(layer.GetLayerDefn())
+            feature.SetField("area_name", area_name)
+            feature.SetField("mask_processed", mask_processed)
+            layer.CreateFeature(feature)
+        dataset = None
+
+        driver = gdal.GetDriverByName("GTiff")
+        tif_dataset = driver.Create(os.path.join(self.study_area_dir, "part0.tif"), 2, 2, 1, gdal.GDT_Byte)
+        tif_dataset.SetGeoTransform((0, 1, 0, 2, 0, -1))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        tif_dataset.SetProjection(srs.ExportToWkt())
+        tif_dataset = None
+
+    def tearDown(self):
+        import shutil
+
+        shutil.rmtree(self.working_directory, ignore_errors=True)
+
+    def test_only_processed_masks_with_a_surviving_file_are_returned(self):
+        sources = study_area_mask_sources(self.working_directory)
+        self.assertEqual(len(sources), 1)
+        self.assertEqual(sources[0].layer_name, f"{STUDY_AREA_MASK_TABLE_PREFIX}part0")
+        self.assertEqual(sources[0].path, os.path.join(self.study_area_dir, "part0.tif"))
+        self.assertEqual(sources[0].kind, "raster")
+        self.assertFalse(sources[0].clip)
+
+    def test_missing_study_area_gpkg_returns_empty_list(self):
+        self.assertEqual(study_area_mask_sources("/no/such/working/directory"), [])
+
+    def test_study_area_gpkg_without_creation_status_table_returns_empty_list(self):
+        no_status_dir = os.path.join(TEST_DATA, "_mask_sources_no_status_test")
+        os.makedirs(os.path.join(no_status_dir, "study_area"), exist_ok=True)
+        try:
+            driver = ogr.GetDriverByName("GPKG")
+            dataset = driver.CreateDataSource(os.path.join(no_status_dir, "study_area", "study_area.gpkg"))
+            dataset.CreateLayer("some_other_layer", geom_type=ogr.wkbPoint)
+            dataset = None
+
+            self.assertEqual(study_area_mask_sources(no_status_dir), [])
+        finally:
+            import shutil
+
+            shutil.rmtree(no_status_dir, ignore_errors=True)
+
+
+class TestStudyAreaMaskRoundTrip(unittest.TestCase):
+    """End-to-end: write a study-area mask raster into a pack, then
+    restore it via the import side's own helpers - the same two-function
+    contract (write_raster_source()/_extract_study_area_mask()) that
+    build_country_pack()/import_country_pack() wire together, exercised
+    directly so the test doesn't need a full model.json or working
+    directory."""
+
+    def setUp(self):
+        self.src_path = os.path.join(TEST_DATA, "rasters", "_study_area_mask_roundtrip.tif")
+        self.out_gpkg = os.path.join(TEST_DATA, "_study_area_mask_roundtrip.gpkg")
+        self.restore_dir = os.path.join(TEST_DATA, "_study_area_mask_roundtrip_restored")
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+
+        driver = gdal.GetDriverByName("GTiff")
+        dataset = driver.Create(self.src_path, 2, 2, 1, gdal.GDT_Byte)
+        dataset.SetGeoTransform((0, 1, 0, 2, 0, -1))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        dataset.SetProjection(srs.ExportToWkt())
+        dataset.GetRasterBand(1).WriteArray(np.array([[0, 1], [1, 0]], dtype="uint8"))
+        dataset = None
+
+    def tearDown(self):
+        import shutil
+
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+        shutil.rmtree(self.restore_dir, ignore_errors=True)
+
+    def test_mask_values_and_combined_vrt_survive_the_round_trip(self):
+        table_name = f"{STUDY_AREA_MASK_TABLE_PREFIX}saint_lucia"
+        source = PackSource(table_name, self.src_path, "raster", clip=False)
+        write_raster_source(source, "", "", self.out_gpkg, append=False)
+
+        restored_path = _extract_study_area_mask(self.out_gpkg, table_name, self.restore_dir)
+        self.assertEqual(restored_path, os.path.join(self.restore_dir, "saint_lucia.tif"))
+
+        # Keep the Dataset alive in a variable rather than chaining
+        # gdal.Open(...).GetRasterBand(...).ReadAsArray() in one
+        # expression - with nothing holding a reference, the Dataset can
+        # be garbage-collected out from under the Band before
+        # ReadAsArray() runs, segfaulting (confirmed live).
+        restored_dataset = gdal.Open(restored_path)
+        restored = restored_dataset.GetRasterBand(1).ReadAsArray()
+        restored_dataset = None
+        self.assertEqual(sorted(set(int(v) for row in restored for v in row)), [0, 1])
+
+        _rebuild_combined_mask_vrt(self.restore_dir, [restored_path])
+        vrt_path = os.path.join(self.restore_dir, "combined_mask.vrt")
+        self.assertTrue(os.path.exists(vrt_path))
+        vrt_dataset = gdal.Open(vrt_path)
+        vrt_values = vrt_dataset.GetRasterBand(1).ReadAsArray()
+        vrt_dataset = None
+        self.assertEqual(sorted(set(int(v) for row in vrt_values for v in row)), [0, 1])
 
 
 class TestResultSources(unittest.TestCase):
@@ -624,6 +789,82 @@ class TestBuildCountryPack(unittest.TestCase):
         ds = None
 
         self.assertEqual(reloaded, model)
+
+
+class TestWriteRasterSourceByteRasterKeepsExactValues(unittest.TestCase):
+    """Regression test: a single-band Byte raster (cyclone frequency, a
+    real indicator source legitimately typed Byte since its counts fit
+    in 0-255) got silently corrupted on a real project - GDAL's GPKG
+    driver's default tile format applies a min/max colour stretch to a
+    single-band Byte source (meant for a nice-looking render, not
+    literal value storage), re-quantizing every value into a tiny 0-4ish
+    range and destroying the real data. write_raster_source() forces
+    TILE_FORMAT=PNG8 for Byte sources, whose palette-index storage keeps
+    every value exact while still writing an actual Byte raster (masks
+    and counts like this one are deliberately Byte, not a type to
+    downcast away from)."""
+
+    def setUp(self):
+        self.src_path = os.path.join(TEST_DATA, "rasters", "_byte_single_band.tif")
+        self.out_gpkg = os.path.join(TEST_DATA, "_write_raster_source_byte_test.gpkg")
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+
+        driver = gdal.GetDriverByName("GTiff")
+        dataset = driver.Create(self.src_path, 2, 2, 1, gdal.GDT_Byte)
+        dataset.SetGeoTransform((0, 1, 0, 2, 0, -1))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        dataset.SetProjection(srs.ExportToWkt())
+        dataset.GetRasterBand(1).WriteArray(np.array([[10, 50], [90, 110]], dtype="uint8"))
+        dataset = None
+
+    def tearDown(self):
+        for path in (self.src_path, self.out_gpkg):
+            if os.path.exists(path):
+                os.remove(path)
+
+    def test_byte_values_above_four_survive_the_round_trip(self):
+        source = PackSource("cyclone_test", self.src_path, "raster", clip=False)
+        write_raster_source(source, "", "", self.out_gpkg, append=False)
+
+        dataset = gdal.Open(f"GPKG:{self.out_gpkg}:cyclone_test")
+        self.assertEqual(gdal.GetDataTypeName(dataset.GetRasterBand(1).DataType), "Byte")
+        array = dataset.GetRasterBand(1).ReadAsArray()
+        dataset = None
+
+        self.assertEqual(sorted(float(v) for row in array for v in row), [10.0, 50.0, 90.0, 110.0])
+
+    def test_binary_mask_zero_one_values_are_not_stretched_to_zero_255(self):
+        """A 0/1 study area mask is the narrowest possible case for the
+        same bug: GDAL's own palette-generation heuristic (not just the
+        default tile format) spread 0/1 across the full 0-255 range on a
+        real project's mask raster, same as the default format did for
+        cyclone frequency - an explicit identity palette is what
+        actually fixes it, not TILE_FORMAT=PNG8 alone."""
+        mask_path = os.path.join(TEST_DATA, "rasters", "_byte_binary_mask.tif")
+        try:
+            driver = gdal.GetDriverByName("GTiff")
+            dataset = driver.Create(mask_path, 2, 2, 1, gdal.GDT_Byte)
+            dataset.SetGeoTransform((0, 1, 0, 2, 0, -1))
+            srs = osr.SpatialReference()
+            srs.ImportFromEPSG(4326)
+            dataset.SetProjection(srs.ExportToWkt())
+            dataset.GetRasterBand(1).WriteArray(np.array([[0, 1], [1, 0]], dtype="uint8"))
+            dataset = None
+
+            source = PackSource("mask_test", mask_path, "raster", clip=False)
+            write_raster_source(source, "", "", self.out_gpkg, append=False)
+
+            dataset = gdal.Open(f"GPKG:{self.out_gpkg}:mask_test")
+            array = dataset.GetRasterBand(1).ReadAsArray()
+            dataset = None
+
+            self.assertEqual(sorted(set(int(v) for row in array for v in row)), [0, 1])
+        finally:
+            if os.path.exists(mask_path):
+                os.remove(mask_path)
 
 
 class TestWriteRasterSourceNodataOverflow(unittest.TestCase):
