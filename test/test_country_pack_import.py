@@ -53,7 +53,7 @@ class TestIndicatorImportTargets(unittest.TestCase):
                 }
             ]
         }
-        targets = _indicator_import_targets(model)
+        targets = _indicator_import_targets(model, "/nonexistent/pack.gpkg")
         self.assertEqual(set(targets), {"Fire"})
         indicator, field_name, kind = targets["Fire"]
         self.assertIs(indicator, model["dimensions"][0]["factors"][0]["indicators"][0])
@@ -79,9 +79,49 @@ class TestIndicatorImportTargets(unittest.TestCase):
                 }
             ]
         }
-        _, field_name, kind = _indicator_import_targets(model)["Fire"]
+        _, field_name, kind = _indicator_import_targets(model, "/nonexistent/pack.gpkg")["Fire"]
         self.assertEqual(field_name, "environmental_hazards_layer_source")
         self.assertEqual(kind, "vector")
+
+    def test_s2s_vector_field_holding_a_raster_resolves_from_the_pack_not_the_stale_path(self):
+        """A regression test for a cross-machine import crash/misclassification.
+
+        RasterDataSourceWidget.update_attributes() can populate the S2S
+        "_layer_source" field with a raster's own path (see
+        S2S_VECTOR_FIELD_BY_MODE's docstring). On export that's detected
+        correctly by opening the file. On import, the same field's value
+        is still the *exporting* machine's path - it may not exist at
+        all on the importing machine, so guessing from it is unreliable.
+        This confirms the importer instead confirms the kind against the
+        table actually bundled in the pack.
+        """
+        pack_path = os.path.join(TEST_DATA, "rasters", "raster.tif")
+        model = {
+            "dimensions": [
+                {
+                    "factors": [
+                        {
+                            "indicators": [
+                                {
+                                    "id": "fire",
+                                    "analysis_mode": "use_environmental_hazards",
+                                    "environmental_hazards_raster": "",
+                                    "environmental_hazards_layer_source": (
+                                        "/path/that/does/not/exist/on/this/machine.tif"
+                                    ),
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            real_pack = os.path.join(tmp, "real_pack.gpkg")
+            gdal.Translate(real_pack, pack_path, format="GPKG", creationOptions=["RASTER_TABLE=fire"])
+            _, field_name, kind = _indicator_import_targets(model, real_pack)["fire"]
+        self.assertEqual(field_name, "environmental_hazards_layer_source")
+        self.assertEqual(kind, "raster")
 
 
 class TestProjectLevelImportTargets(unittest.TestCase):

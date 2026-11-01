@@ -214,7 +214,17 @@ def _s2s_field_kind(path: str) -> str:
         "raster" if the path opens as a raster dataset, "vector" otherwise.
     """
     base_path, _ = _split_source_uri(path)
-    dataset = gdal.Open(base_path)
+    try:
+        dataset = gdal.Open(base_path)
+    except RuntimeError:
+        # With GDAL's exceptions mode on (see ogr.UseExceptions() in
+        # ookla_downloader.py - GDAL/OGR share one exceptions flag),
+        # Open() raises instead of returning None on a missing/
+        # unreadable path - confirmed live importing a country pack on
+        # a machine that never had the exporting machine's original
+        # path, which otherwise aborted the whole import before the
+        # per-table try/except even started.
+        dataset = None
     kind = "raster" if dataset is not None else "vector"
     dataset = None
     return kind

@@ -143,7 +143,7 @@ class ImportCountryPackTask(QgsTask):
             log_message(f"Could not reload model.json to populate the map: {e}", tag="GeoE3", level=Qgis.Warning)
             return
 
-        indicator_targets = _indicator_import_targets(model)
+        indicator_targets = _indicator_import_targets(model, self.pack_path)
         project_targets = _project_level_import_targets(model)
         result_roles = result_layer_roles(model)
 

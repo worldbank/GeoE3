@@ -247,7 +247,34 @@ def _read_project_model(pack_path: str) -> dict:
     return model
 
 
-def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
+def _pack_table_kind(pack_path: str, table_name: str) -> str:
+    """Whether a table actually bundled in the pack is raster- or vector-backed.
+
+    Ground truth, unlike _s2s_field_kind(): that helper opens the
+    indicator's *original*, exporting-machine source path to guess its
+    kind - which fails (now handled, see its docstring) when that path
+    doesn't exist on the importing machine. Here the pack itself is
+    opened instead, which always exists (it's the file being imported),
+    so this is immune to that whole class of problem.
+
+    Args:
+        pack_path: Path to the country pack GeoPackage.
+        table_name: Name of the table to check.
+
+    Returns:
+        "raster" if the table opens as a raster subdataset, "vector"
+        otherwise.
+    """
+    try:
+        dataset = gdal.Open(f"GPKG:{pack_path}:{table_name}")
+    except RuntimeError:
+        dataset = None
+    kind = "raster" if dataset is not None else "vector"
+    dataset = None
+    return kind
+
+
+def _indicator_import_targets(model: dict, pack_path: str) -> Dict[str, tuple]:
     """layer_name -> (indicator, field_name, kind) for every indicator's configured input.
 
     Mirrors indicator_source()'s own traversal and field resolution (via
@@ -256,6 +283,12 @@ def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
 
     Args:
         model: The parsed model.json document.
+        pack_path: Path to the country pack GeoPackage - used to confirm
+            the real kind of an S2S_VECTOR_FIELD_BY_MODE field directly
+            against the bundled table (see _pack_table_kind()), since
+            _indicator_source_field()'s own guess for that field can
+            only be based on the indicator's stale, exporting-machine
+            path.
 
     Returns:
         One entry per indicator that has a file-based input configured.
@@ -270,6 +303,8 @@ def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
                 resolved = _indicator_source_field(indicator)
                 if resolved:
                     field_name, kind, _, _ = resolved
+                    if field_name in S2S_VECTOR_FIELD_BY_MODE.values():
+                        kind = _pack_table_kind(pack_path, layer_name)
                     targets[layer_name] = (indicator, field_name, kind)
     return targets
 
@@ -532,7 +567,7 @@ def import_country_pack(
         raise RuntimeError(f"'{working_directory}' already has a model.json - import needs an empty working directory.")
 
     model = _read_project_model(pack_path)
-    indicator_targets = _indicator_import_targets(model)
+    indicator_targets = _indicator_import_targets(model, pack_path)
     project_targets = _project_level_import_targets(model)
     result_targets = _result_import_targets(model)
 
