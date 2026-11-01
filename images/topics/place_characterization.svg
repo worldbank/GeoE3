@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Place Characterization dimension: layered terrain -->
+  <path d="M2 17.5 7.5 11l3.2 3.4L15 9l7 8.5Z" stroke="#002244" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M2 20.5h20" stroke="#002244" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="17.5" cy="6" r="1.6" stroke="#009FDA" stroke-width="1.8"/>
+</svg>

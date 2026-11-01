@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Technique: network isochrone — travel-time rings traced along the real road network, not a straight-line circle. -->
+  <!-- roads -->
+  <g stroke="#6E7B85" stroke-width="4" fill="none" stroke-linecap="round">
+    <path d="M100 100 L170 60"/>
+    <path d="M100 100 L175 120"/>
+    <path d="M100 100 L120 180"/>
+    <path d="M100 100 L40 150"/>
+    <path d="M100 100 L35 55"/>
+    <path d="M100 100 L95 20"/>
+  </g>
+
+  <!-- outer (furthest) travel-time ring, hugging the roads -->
+  <path d="M100 100 C140 70, 165 75, 170 60 C178 85, 180 115, 175 120
+           C168 150, 140 170, 120 180 C90 185, 55 175, 40 150
+           C25 120, 25 85, 35 55 C55 35, 80 22, 95 20
+           C100 45, 100 75, 100 100 Z"
+        fill="#fdae61" fill-opacity="0.55" stroke="none"/>
+
+  <!-- middle ring -->
+  <path d="M100 100 C125 82, 142 85, 150 72 C158 92, 158 112, 150 122
+           C140 140, 118 150, 100 150 C78 150, 60 140, 52 122
+           C45 105, 48 85, 60 72 C72 60, 88 55, 100 60
+           C100 73, 100 88, 100 100 Z"
+        fill="#ffffbf" fill-opacity="0.75" stroke="none"/>
+
+  <!-- inner (closest) ring -->
+  <circle cx="100" cy="100" r="26" fill="#bce1b8"/>
+
+  <!-- the facility point -->
+  <circle cx="100" cy="100" r="7" fill="#002244"/>
+  <circle cx="100" cy="100" r="26" fill="none" stroke="#002244" stroke-width="1.5" stroke-dasharray="3,3"/>
+</svg>

@@ -1,0 +1,2058 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Geospatial Enabling Environments for Employment — a QGIS plugin implementing the World Bank's Geospatial Women's Employment Analytical Framework (GeoWEAF).
+">
+      
+      
+        <meta name="author" content="Kartoza">
+      
+      
+        <link rel="canonical" href="https://worldbank.github.io/GeoE3/training/placecharacterization/">
+      
+      
+        <link rel="prev" href="../accessibility/">
+      
+      
+        <link rel="next" href="../running-the-analysis/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Place Characterization Dimension - GeoE3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Nunito";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/tokens.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#place-characterization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GeoE3" class="md-header__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoE3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Place Characterization Dimension
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard="" data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Training Walkthrough
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../about/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GeoE3" class="md-nav__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    GeoE3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training Walkthrough
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../the-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../processor-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processor Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datacollection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuring-items/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Items
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contextual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextual Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../accessibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessibility Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Place Characterization Dimension
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Place Characterization Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#place-characterization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Place Characterization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Place Characterization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-place-characterization-factors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Place Characterization factors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Place Characterization factors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#active-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-perception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Perception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fcv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FCV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#education" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Education
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-hazards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Hazards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#water-sanitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Water sanitation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running-the-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running the Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../insights/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../about/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Background &amp; Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/acknowledgements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acknowledgements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/media/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Media &amp; Publications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/legacy-detailed-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Detailed Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#place-characterization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Place Characterization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Place Characterization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-place-characterization-factors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Place Characterization factors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Place Characterization factors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#active-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety-perception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Perception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fcv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FCV
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#education" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Education
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-hazards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Hazards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#water-sanitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Water sanitation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation">
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Training Walkthrough
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/worldbank/GeoE3/edit/new_docs/docs/training/placecharacterization.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/worldbank/GeoE3/raw/new_docs/docs/training/placecharacterization.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0 9.821 9.821 0 0 0-17.64 0"></path></svg>
+    </a>
+  
+
+
+  <h1>Place Characterization Dimension</h1>
+
+<h2 id="place-characterization"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/place_characterization.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/place_characterization.svg" style="vertical-align:middle;margin-right:0.4rem;" width="28"></a> Place Characterization<a class="headerlink" href="#place-characterization" title="Permanent link">¶</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">Learning objective</p>
+<p>By the end of this page you'll be able to configure all seven Place
+Characterization factors, choose between the alternative data input
+options several of them offer, and understand how two of them
+(Education and Digital Inclusion) combine a national index score
+with spatial masking or coverage layers rather than raw point data.</p>
+</div>
+<p>The Place Characterization Dimension refers to the social,
+environmental, and infrastructural attributes of geographical
+locations, such as walkability, safety, and vulnerability to natural
+hazards. Unlike the Accessibility Dimension, these factors do not
+involve mobility but focus on the inherent characteristics of a place
+that influence people's ability to participate in the workforce. For
+more information on data input used from open sources, see <a href="../datacollection/">Getting
+Data</a>.</p>
+<p>Place Characterization factors span almost every <a href="../processor-types/">processor
+type</a>: distance buffers, feature counts, published
+index numbers, ready-made rasters and zone lookups all appear here, and
+several factors support more than one depending on the data you give
+them. Configure each one using the <a href="../configuring-items/#the-generic-pattern">generic
+pattern</a>: double-click,
+provide its data, and right-click → <strong>Run Item Workflow</strong> once you're
+done.</p>
+<h3 id="general-overview">General Overview<a class="headerlink" href="#general-overview" title="Permanent link">¶</a></h3>
+<p>Place Characterization factors refer to the following indicators:</p>
+<ul>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/active_transport.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/active_transport.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Active Transport:</strong> identifies areas based on their capacity to support safe and efficient active transport (walking, cycling, and other non-motorized modes) by analyzing and categorizing the road network features downloaded during the project setup phase.</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/safety_perception.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/safety_perception.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Safety Perception:</strong> defines areas perceived as safe based on specific data or, alternatively, on how brightly lit they are, assuming that brightly lit areas are safer than those with no lights.</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/fcv.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/fcv.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Fragility, conflict and violence (FCV):</strong> assigns scores by analyzing overlap with ACLED data and buffers representing various types of events.</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/education.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/education.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Education:</strong> computes a raster that provides a standardized measure of the percentage of people who have attained higher education within the country or region of interest. The spatial representation of education attainment is confined to inhabited areas as classified by GHS-SMOD. The default classes to be excluded from GHS-SMOD are 10 (Water grid cell) and 11 (Very low density rural grid cell).</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/digital_inclusion.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/digital_inclusion.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Digital Inclusion:</strong> assesses the availability and accessibility of digital infrastructure by computing a national index score. If local statistics are available, this is used in conjunction with Ookla coverage layers, which supports the spatial representation of the data. Each Ookla polygon receives the DI score and it is further mapped to the raster cell. Raster cells that do not intersect Ookla polygons receive a score of 0 (no access).</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/environmental_hazards.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/environmental_hazards.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Environmental Hazards:</strong> characterizes areas based on their vulnerability to natural disasters.</li>
+<li><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/water_sanitation.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/water_sanitation.svg" style="vertical-align:middle;margin-right:0.3rem;" width="18"></a> <strong>Water sanitation:</strong> assesses the availability and accessibility of clean water and sanitation facilities.</li>
+</ul>
+<p>For certain factors, <strong>multiple data input options</strong> are available depending on the data's format and availability.</p>
+<p>As with the Accessibility dimension, <strong>Active transport, Safety and Water sanitation</strong> factors can be processed according to the level of analysis—whether conducted at a broader scale, such as the <strong>national level</strong>, or tailored to a more localized context, such as <strong>urban or regional</strong> areas.</p>
+<h3 id="input-place-characterization-factors">Input Place Characterization factors<a class="headerlink" href="#input-place-characterization-factors" title="Permanent link">¶</a></h3>
+<hr>
+<h4 id="active-transport"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/active_transport.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/active_transport.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Active Transport<a class="headerlink" href="#active-transport" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/feature_count.svg" data-desc-position="bottom"><img alt="Feature Count technique: tallying road and cycle features inside a grid cell" src="../../images/methodology/feature_count.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Active Transport</strong> refers to the availability of walkable
+environments and cycling infrastructure, recognizing that people often
+rely on non-motorized modes of travel for daily commutes and errands.
+It is computed using the OpenStreetMap road network, where road types
+are classified based on their suitability for walking and cycling.</p>
+<p><strong>Locate Active Transport Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Active Transport section</strong> to open the pop-up.</li>
+<li>📝 In the <em>Input</em> field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>point features for street crossings, lines for cycle paths and footpaths and polygons for block layout</strong>) corresponding to the indicators by clicking the three-dot button.</li>
+<li>⚖️ <strong>Assign Weights</strong>: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.</li>
+<li>🚫 <strong>Exclude Unused Factors (optional)</strong>: If a specific factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>🔄 <strong>Readjust Weights</strong>: Weight values must add up to 1 or they're shown in red. After excluding any subfactors, press <strong>Balance Weights</strong> to reset the remaining ones to an equal share rather than typing each value by hand.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/ActiveTransport.jpg" data-desc-position="bottom"><img alt="Active Transport input" src="../../images/new%20images/ActiveTransport.jpg" width="75%"></a></p>
+<p><strong>Active Transport</strong> factor is calculated based on road types from OpenStreetMap as follows:
+| Subfactor               | Score 0          | Score 1               | Score 2                 | Score 3                 | Score 4                 | Score 5                 |
+|----------------------|------------------|-----------------------|-------------------------|-------------------------|-------------------------|-------------------------|
+| <strong>Key = highway</strong> | bus_guideway, escape, raceway, construction and proposed roads           | motorway, motorway_link, trunk and trunk_lin                 | primary, primary_link and track                  | secondary, secondary_link, unclassified, road, bridleway and service          | tertiary and tertiary_link                    | Pedestrian, Footway, Residential, Living_street, steps           |
+| <strong>Key = cycleway</strong>      | None             | N/A                   | N/A                     | 1 cycle path            | lane, shared_lane, share_busway, track, separate, crossing, shoulder and link                     | N/A              |</p>
+<hr>
+<h4 id="safety-perception"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/safety_perception.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/safety_perception.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Safety Perception<a class="headerlink" href="#safety-perception" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/distance_buffer.svg" data-desc-position="bottom"><img alt="Straight-Line Distance technique: a fixed-radius circle around a point" src="../../images/methodology/distance_buffer.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Safety Perception</strong> addresses the perceived security of public
+spaces, evaluated through the availability of adequate lighting, which
+affects women's ability to move freely, seek employment, and access
+essential services.</p>
+<p><strong>Locate Safety Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Safety section</strong> to open the pop-up.</li>
+<li>📂 <strong>Flexible Data Input Options</strong>: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:</li>
+<li>1️⃣ Using <strong>Perceived Safety data</strong> index score as input:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/SafetyPerception.jpg" data-desc-position="bottom"><img alt="Safety index score" src="../../images/new%20images/SafetyPerception.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>2️⃣ Using <strong>Classified Safety data</strong> as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>polygon features</strong>) corresponding to the safety data by clicking the three-dot button and the classification field; this layer will be used for processing:</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Safety_classes1.jpg" data-desc-position="bottom"><img alt="Safety classes" src="../../images/new%20images/Safety_classes1.jpg" width="55%"></a></p>
+<ul>
+<li>3️⃣ Using <strong>Nighttime Lights data</strong> as input; VIIRS Nighttime Lights raster may be used as proxy data for presence of area illumination at night time; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the (<strong>raster data</strong>) corresponding to NTL by clicking the three-dot button; this layer will be used for processing:</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/SafetyPerception2.jpg" data-desc-position="bottom"><img alt="Safety NTL" src="../../images/new%20images/SafetyPerception2.jpg" width="55%"></a></p>
+<ul>
+<li>4️⃣ Using <strong>Street lights data</strong> as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>point locations</strong>) representing street lights by clicking the three-dot button; this layer will be used for processing:</li>
+</ul>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Safety_street1.jpg" data-desc-position="bottom"><img alt="Safety street lights" src="../../images/new%20images/Safety_street1.jpg" width="55%"></a></p>
+<ul>
+<li>🚫 <strong>Exclude Unused Factors (optional)</strong>: If this factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><strong>Safety</strong> is calculated by generating 20-meter buffers around streetlights using the default thresholds:</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Score 0</th>
+<th>Score 1</th>
+<th>Score 2</th>
+<th>Score 3</th>
+<th>Score 4</th>
+<th>Score 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Safety</strong></td>
+<td>No overlap</td>
+<td>1-19% intersection</td>
+<td>20-39% intersection</td>
+<td>40-59% intersection</td>
+<td>60-79% intersection</td>
+<td>80-100% intersection</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Use nighttime light data only if streetlight data is unavailable.</p>
+<hr>
+<h4 id="fcv"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/fcv.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/fcv.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> FCV<a class="headerlink" href="#fcv" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/distance_buffer.svg" data-desc-position="bottom"><img alt="Straight-Line Distance technique: a fixed-radius circle around a point" src="../../images/methodology/distance_buffer.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Fragility, conflict and violence (FCV)</strong> considers the frequency of
+events related to political unrest, conflict, and violence in a
+region, which can increase people's vulnerability and limit their
+access to employment and essential services.</p>
+<p><strong>Locate FCV Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>FCV section</strong> to open the pop-up.</li>
+<li>📂 <strong>Flexible Data Input Options</strong>: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:</li>
+<li>1️⃣ Using <strong>Point features data</strong> as input; select point locations representing data related to fragility, conflict and violence events; a buffer is needed to estimate the spatial impact of these events, the default radius is 5000m but if the impact radius of an event is known, it should be used instead:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/FCV1.jpg" data-desc-position="bottom"><img alt="FCV points" src="../../images/new%20images/FCV1.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>2️⃣ Using <strong>ACLED data</strong> as input; select ACLED data in CSV format representing fragility, conflict, and violence events; this indicator is structured by assigning scores to rasters based on their overlap with buffers indicating different types of events. Using point locations of FCV events, generate circular buffers with a default radius of 5 km to estimate the spatial impact of these events. If the impact radius of an event is known, it should be used instead; a pop-up will appear to validate the CSV format.</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/FCV2.jpg" data-desc-position="bottom"><img alt="FCV csv data" src="../../images/new%20images/FCV2.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>🚫 <strong>Exclude Unused Factor (optional)</strong>: If this factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><strong>FCV</strong> is structured by assigning scores to raster cells based on their overlap with buffers representing different types of events. Using point locations of FCV (Fragility, Conflict, and Violence) events, create circular buffers with a radius of 5 km to estimate the spatial impact. If a specific event's impact radius is known, it should be applied instead. Raster cells intersecting with these default buffers are scored as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Score 0</th>
+<th>Score 1</th>
+<th>Score 2</th>
+<th>Score 3</th>
+<th>Score 4</th>
+<th>Score 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FCV</strong></td>
+<td>battles and explosions</td>
+<td>explosions and remote violence</td>
+<td>violence against civilians</td>
+<td>not applicable</td>
+<td>protests and riots</td>
+<td>no overlap with any event</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h4 id="education"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/education.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/education.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Education<a class="headerlink" href="#education" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/index_score.svg" data-desc-position="bottom"><img alt="National Index Score technique: one published value filled across every cell" src="../../images/methodology/index_score.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Education</strong> refers to the proportion of women in a region who have
+attained higher education, particularly in the specific field of
+analysis, serving as an indicator of societal attitudes towards women
+working in that sector. The raster file is filtered by GHSL classes to
+account only for areas where people live.</p>
+<p><strong>Locate Education Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Education section</strong> to open the pop-up.</li>
+<li>📂 <strong>Flexible Data Input Options</strong>: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:</li>
+<li>1️⃣ Using <strong>Index score</strong> at the national or regional level, based on the proportion of women who have attained higher education as input:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Education1.jpg" data-desc-position="bottom"><img alt="Education index score" src="../../images/new%20images/Education1.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>2️⃣ Using <strong>Classify Polygon Into Classes data</strong> as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>polygon features</strong>) corresponding to the education data by clicking the three-dot button then, select the classification field to be used for processing:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Education2.jpg" data-desc-position="bottom"><img alt="Education classified polygons data" src="../../images/new%20images/Education2.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>🚫 <strong>Exclude Unused Factor (optional)</strong>: If this factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><strong>Education</strong> reclassifies the input data to a standardized scale from 0 to 5 using a linear scaling process. In this scale, a <em>score of 5</em> represents areas where all women have a university degree, while a <em>score of 0</em> represents areas where no women have a university degree.</p>
+<hr>
+<h4 id="digital-inclusion"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/digital_inclusion.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/digital_inclusion.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Digital Inclusion<a class="headerlink" href="#digital-inclusion" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/index_score.svg" data-desc-position="bottom"><img alt="National Index Score technique: one published value filled across every cell" src="../../images/methodology/index_score.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Digital Inclusion</strong> assesses the presence of digital infrastructure
+in a specific location, which is essential for women to pursue job
+opportunities, access training and education opportunities, and use
+financial services. This dataset is masked using the Ookla dataset, to
+account for areas where internet coverage has been mapped and exclude
+inhabited areas.</p>
+<p><strong>Locate Digital Inclusion Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Digital Inclusion section</strong> to open the pop-up.</li>
+<li>📂 <strong>Flexible Data Input Options</strong>: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:</li>
+<li>1️⃣ Using <strong>Index score</strong> at the national or regional level, based on the proportion of available digital infrastructure as input:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/DigitalInclusion1.jpg" data-desc-position="bottom"><img alt="Digital Inclusion index score" src="../../images/new%20images/DigitalInclusion1.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>2️⃣ Using <strong>Classify Polygon Into Classes data</strong> as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>polygon features</strong>) corresponding to the digital inclusion data by clicking the three-dot button then, select the classification field to be used for processing:</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/DigitalInclusion2.jpg" data-desc-position="bottom"><img alt="Digital Inclusion classified polygons data" src="../../images/new%20images/DigitalInclusion2.jpg" width="55%"></a></p>
+<blockquote>
+<ul>
+<li>🚫 <strong>Exclude Unused Factor (optional)</strong>: If this factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><strong>Digital Inclusion</strong> reclassifies input data to a standardized scale of 0 to 5 using a linear scaling process, where <em>5</em> represents areas where 100% of households have internet access, and <em>0</em> represents areas where no households have internet access.</p>
+<hr>
+<h4 id="environmental-hazards"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/environmental_hazards.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/environmental_hazards.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Environmental Hazards<a class="headerlink" href="#environmental-hazards" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/raster_lookup.svg" data-desc-position="bottom"><img alt="Map Value Lookup technique: reading a value straight off an existing map" src="../../images/methodology/raster_lookup.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Environmental Hazards</strong> relate to the impact of environmental risks,
+such as floods, droughts, landslides, fires and extreme weather events,
+which can disrupt job stability, particularly for women in vulnerable
+sectors.</p>
+<p>This factor is composed, by default, of five subfactors representing
+different types of hazards: fires, floods, landslides, tropical
+cyclones and droughts. These subfactors are aggregated into a single
+factor, referred to as Environmental Hazards, based on the selected
+weights assigned to each subfactor.</p>
+<p>If data for one or more hazard types is not available, these subfactors
+can be excluded from the processing. In such cases, the tool will
+automatically adjust the weights of the remaining subfactors to ensure
+accurate aggregation.</p>
+<p>The thresholds for defining hazard levels are based on a predefined
+scoring list. The input data relies on globally available open data
+sources and is reclassified for use within the tool. However, if more
+precise and localized data is available, users are encouraged to
+incorporate it into the processing. In doing so, users should align the
+data with the thresholds provided to maintain consistency and
+reliability.</p>
+<p><strong>Locate Environmental Hazards Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Environmental Hazards section</strong> to open the pop-up.</li>
+<li>📝 In the <em>Input</em> field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the <strong>raster features</strong> corresponding to the indicators by clicking the three-dot button.</li>
+<li>⚖️ <strong>Assign Weights</strong>: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.</li>
+<li>🚫 <strong>Exclude Unused Factors (optional)</strong>: If a specific factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>🔄 <strong>Readjust Weights</strong>: Weight values must add up to 1 or they're shown in red. After excluding any subfactors, press <strong>Balance Weights</strong> to reset the remaining ones to an equal share rather than typing each value by hand.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/EnvHazards.jpg" data-desc-position="bottom"><img alt="Environmental Hazards data input" src="../../images/new%20images/EnvHazards.jpg" width="55%"></a></p>
+<p><strong>Environmental Hazards</strong> reclassifies input data to a standardized scale of 0 to 5 using a linear scaling process, where <em>5</em> represents areas with no environmental hazards and <em>0</em> represents areas with the highest level of hazard.</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Class 0</th>
+<th>Class 1</th>
+<th>Class 2</th>
+<th>Class 3</th>
+<th>Class 4</th>
+<th>Class 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Number of Fires per km²</strong></td>
+<td>&gt;8</td>
+<td>5–8</td>
+<td>2–5</td>
+<td>1–2</td>
+<td>0–1</td>
+<td>0 or No Data</td>
+</tr>
+<tr>
+<td><strong>Floods Data</strong></td>
+<td>720–900 cm</td>
+<td>540–720 cm</td>
+<td>360–540 cm</td>
+<td>180–360 cm</td>
+<td>&lt;180 cm</td>
+<td>No Data or 0</td>
+</tr>
+<tr>
+<td><strong>Landslide Data</strong></td>
+<td>Severe</td>
+<td>High-Moderate2 (4)</td>
+<td>Moderate (3)</td>
+<td>Low-Moderate1 (2)</td>
+<td>Slight (1)</td>
+<td>No Data or 0</td>
+</tr>
+<tr>
+<td><strong>Tropical Cyclone Frequency (100 Years)</strong></td>
+<td>&gt;100 events</td>
+<td>75–100 events</td>
+<td>50–75 events</td>
+<td>25–50 events</td>
+<td>&lt;25 events</td>
+<td>No Data or 0</td>
+</tr>
+<tr>
+<td><strong>Drought Data</strong></td>
+<td>4–5</td>
+<td>3–4</td>
+<td>2–3</td>
+<td>1–2</td>
+<td>0–1</td>
+<td>No Data or 0</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h4 id="water-sanitation"><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/topics/water_sanitation.svg" data-desc-position="bottom"><img alt="" src="../../images/topics/water_sanitation.svg" style="vertical-align:middle;margin-right:0.4rem;" width="22"></a> Water sanitation<a class="headerlink" href="#water-sanitation" title="Permanent link">¶</a></h4>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/methodology/distance_buffer.svg" data-desc-position="bottom"><img alt="Straight-Line Distance technique: a fixed-radius circle around a point" src="../../images/methodology/distance_buffer.svg" style="float:right;width:72px;margin:0 0 0.75rem 1rem;"></a></p>
+<p><strong>Water sanitation</strong> concerns the availability of clean water and
+sanitation facilities, affecting women's time allocation and capacity
+to engage in employment. It is captured indirectly, by accounting for
+the spatial distribution of facilities whose operation depends on
+reliable water supply and sanitation services. The presence of these
+points of interest suggests the existence of minimum water and
+sanitation infrastructure necessary for service delivery, even where
+direct household level data are unavailable.</p>
+<p><strong>Locate Water sanitation Section</strong></p>
+<blockquote>
+<ul>
+<li>🖱️🖱️ <strong>Double-click</strong> on the <strong>Water sanitation section</strong> to open the pop-up.</li>
+<li>📝 In the <em>Input</em> field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (<strong>point features</strong>) corresponding to the points of interest by clicking the three-dot button; a buffer is needed to estimate the spatial impact of these facilities, the default radius is set to 1000 meters; however, this value can be adjusted based on the user's considerations.</li>
+<li>🚫 <strong>Exclude Unused Factor (optional)</strong>: If this specific factor is not intended to be included in the process, uncheck the <strong>Use</strong> button associated with it.</li>
+<li>✅ <strong>Finalize</strong>: Once all settings are configured, click OK to confirm and proceed to the next step.</li>
+</ul>
+</blockquote>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/WaterSanitation.jpg" data-desc-position="bottom"><img alt="Water sanitation input" src="../../images/new%20images/WaterSanitation.jpg" width="55%"></a></p>
+<p><strong>Water Sanitation</strong> is assessed based on the presence of water related features within a raster cell, applying a default 3000m buffer. The scoring is as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Factor</th>
+<th>Score 0</th>
+<th>Score 1</th>
+<th>Score 2</th>
+<th>Score 3</th>
+<th>Score 4</th>
+<th>Score 5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Water Sanitation</strong></td>
+<td>outside the 3km buffer</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>intersection with the 3km buffer</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>Once every factor has its data, double-click the <strong>Place
+Characterization</strong> dimension and follow the same <a href="../configuring-items/#the-generic-pattern">generic
+pattern</a> as every other item
+in the tree: assign weights, balance them, and run it.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/PC_weights0.jpg" data-desc-position="bottom"><img alt="Place Characterization Weights" src="../../images/new%20images/PC_weights0.jpg" width="75%"></a></p>
+<p>The outputs (all seven factors and their subfactors, plus their
+aggregation into the final Place Characterization score) land in the
+Place Characterization folder within your project folder, on the usual
+<a href="../the-model/#the-05-likert-scale">0–5 enablement scale</a>.</p>
+<div class="admonition success">
+<p class="admonition-title">Recap</p>
+<ul>
+<li>Place Characterization has seven factors; most take point, line or
+  polygon OSM-style data, but Education and Digital Inclusion are
+  driven by a national index score combined with a spatial mask or
+  coverage layer, closer in spirit to the Contextual factors.</li>
+<li>Several factors (Safety Perception, Active Transport, Water
+  sanitation) offer more than one input option. Pick whichever
+  matches the data you actually have.</li>
+<li>Results combine into a single Place Characterization output on the
+  usual 0–5 enablement scale.</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../accessibility/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Accessibility Dimension">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Accessibility Dimension
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../running-the-analysis/" class="md-footer__link md-footer__link--next" aria-label="Next: Running the Analysis">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Running the Analysis
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © World Bank Group — Made with 💗 by <a href="https://kartoza.com">Kartoza</a> · <a href="https://github.com/sponsors/kartoza">Donate</a> · <a href="https://github.com/worldbank/GeoE3">GitHub</a>
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/worldbank/GeoE3" target="_blank" rel="noopener" title="GitHub repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/sponsors/kartoza" target="_blank" rel="noopener" title="Sponsor Kartoza on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="m241 87.1 15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1v2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7v-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1"></path></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

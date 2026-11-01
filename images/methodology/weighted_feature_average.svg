@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Technique: score-weighted average of every road/cycle path in the
+       cell - thicker, darker lines are higher-scoring features and pull
+       the blended result toward themselves more than thin, faint ones. -->
+  <rect x="40" y="30" width="120" height="120" fill="#EEF4F8" stroke="#002244" stroke-width="3"/>
+
+  <!-- three features of different scores, stroke weight shows influence -->
+  <path d="M50 150 C75 110, 95 150, 150 70" stroke="#002244" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M55 50 L110 95" stroke="#009FDA" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M130 45 L148 110" stroke="#C9D3D8" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- balance scale motif: the heavier (higher-scoring) side sits lower -->
+  <g stroke="#002244" stroke-width="2.5" fill="none">
+    <line x1="168" y1="15" x2="168" y2="45"/>
+    <line x1="152" y1="22" x2="184" y2="22"/>
+    <path d="M152 22 L146 34 a7 7 0 0 0 12 0 Z"/>
+    <path d="M184 22 L178 30 a5 5 0 0 0 10 0 Z"/>
+  </g>
+
+  <!-- blended result badge -->
+  <circle cx="168" cy="160" r="20" fill="#2c7bb6" stroke="#002244" stroke-width="2.5"/>
+  <text x="168" y="166" font-family="sans-serif" font-size="18" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4</text>
+</svg>

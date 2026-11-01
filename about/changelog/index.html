@@ -1,0 +1,2966 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Geospatial Enabling Environments for Employment — a QGIS plugin implementing the World Bank's Geospatial Women's Employment Analytical Framework (GeoWEAF).
+">
+      
+      
+        <meta name="author" content="Kartoza">
+      
+      
+        <link rel="canonical" href="https://worldbank.github.io/GeoE3/about/changelog/">
+      
+      
+        <link rel="prev" href="../license/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Changelog - GeoE3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Nunito";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/tokens.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GeoE3" class="md-header__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoE3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard="" data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../training/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Training Walkthrough
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GeoE3" class="md-nav__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    GeoE3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../training/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training Walkthrough
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/the-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/processor-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processor Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/datacollection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/configuring-items/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Items
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/contextual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextual Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/accessibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessibility Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/placecharacterization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Place Characterization Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/running-the-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running the Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/insights/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Background &amp; Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acknowledgements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acknowledgements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../media/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Media &amp; Publications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../legacy-detailed-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Detailed Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [Unreleased]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#210-2026-10-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.1.0] - 2026-10-16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.1.0] - 2026-10-16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#206-2026-10-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.6] - 2026-10-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.0.6] - 2026-10-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#205-2026-09-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.5] - 2026-09-01
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.0.5] - 2026-09-01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#210-2026-07-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.1.0] - 2026-07-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.1.0] - 2026-07-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#204-earlier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.4] - earlier
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#unreleased" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [Unreleased]
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#210-2026-10-16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.1.0] - 2026-10-16
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.1.0] - 2026-10-16">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#206-2026-10-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.6] - 2026-10-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.0.6] - 2026-10-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#205-2026-09-01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.5] - 2026-09-01
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.0.5] - 2026-09-01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#210-2026-07-13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.1.0] - 2026-07-13
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[2.1.0] - 2026-07-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#204-earlier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [2.0.4] - earlier
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation">
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    About
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/worldbank/GeoE3/edit/new_docs/docs/about/changelog.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/worldbank/GeoE3/raw/new_docs/docs/about/changelog.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0 9.821 9.821 0 0 0-17.64 0"></path></svg>
+    </a>
+  
+
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">¶</a></h1>
+<p>All notable changes to this project will be documented in this file.</p>
+<p>The format is based on <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<p>Version policy: the version here and in <code>config.json</code>/<code>geest/metadata.txt</code>
+stays exactly one semver step ahead of the last version actually tagged
+and released on GitHub - never bumped again per commit after that. All
+work since the last release accumulates under that single pending
+version (upgrading patch-&gt;minor-&gt;major in place if a later change needs
+a bigger bump) until a release is cut and tagged, at which point the next
+single step begins.</p>
+<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">¶</a></h2>
+<h2 id="210-2026-10-16">[2.1.0] - 2026-10-16<a class="headerlink" href="#210-2026-10-16" title="Permanent link">¶</a></h2>
+<p>Everything below accumulated on top of the last tagged release, v2.0.6;
+none of it has been released yet, so it is kept under this single pending
+version per the policy above.</p>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">¶</a></h3>
+<ul>
+<li>The "Factor Correlations" insights page now explains how to read its
+  heatmap: a "How to read this grid" caption covering the numbered
+  row/column key and what the diagonal means, plus a diverging
+  colour-scale bar (red -1 / white 0 / navy +1) with tick labels -
+  the colours alone didn't say which direction was good or what the
+  diagonal represented. <code>AnalysisReport._draw_correlation_scale_bar()</code>;
+  <code>_draw_correlation_heatmap()</code> now returns its bottom y-coordinate so
+  the caller can place the new block directly beneath it without
+  duplicating the layout geometry.</li>
+<li>A new "How Scores Combine" diagram augments the Methodology section's
+  own intro page (not a page of its own) and traces a score from a
+  single indicator all the way up to the four published products:
+  indicator -&gt; factor -&gt; dimension -&gt; GeoE3 Score (each step a weighted
+  sum, labelled with the actual <code>factor_weighting</code>/<code>dimension_weighting</code>/
+  <code>analysis_weighting</code> model.json attributes), then the total filtered
+  two independent ways - by population tercile and by the opportunities
+  mask - to produce "GeoE3 score", "By population", "GHSL masked" and
+  "By population (GHSL)". The two filters sit level with the GeoE3
+  Score box rather than up near the funnel's top, so the two feed
+  arrows run as clean right angles instead of diagonals crossing
+  through the "every other used factor/dimension" ghost notes above;
+  the "both filters" lane merges into a single trunk just below the
+  filter boxes instead of running as two parallel lines the full page
+  height. New <code>geest/resources/methodology/scoring_pipeline.svg</code>,
+  folded into <code>AnalysisReport.make_methodology_pages()</code>.</li>
+<li>A new collapsible "item info" panel sits above the tree panel's
+  button row, explaining whatever dimension/factor/indicator is
+  currently selected: a heading, a short description and its tree
+  icon. For an indicator with a known scoring technique, a
+  "Methodology →" link slides over to a second page showing the real-
+  world technique behind its score - the same name, description and
+  icon used on the analysis report's own Methodology pages, so the
+  two stay in sync. Replaces the old map-canvas overlay
+  (<code>LayerDescriptionItem</code>, deleted - it had been disabled since May
+  2026 and a dock panel next to the controls the user is already
+  looking at beats a floating label on the map). New
+  <code>geest.gui.widgets.ItemInfoPanel</code>.</li>
+<li>That item info panel now shows a hand-drawn, topic-relevant icon for
+  the selected dimension/factor/indicator instead of the generic tree
+  role glyph (the same cube/folder/leaf icon regardless of whether the
+  item was "Accessibility" or "Fire risk"). 30 new brand-aligned SVGs
+  (navy <code>#002244</code> line art with one cyan <code>#009FDA</code> accent each, matching
+  the report's own colour constants) cover the analysis level, all 3
+  dimensions, all 16 factors and the 10 indicators that don't already
+  share their parent factor's icon (the other 14 factors have exactly
+  one indicator covering the same real-world topic, so factor and
+  indicator intentionally share a file rather than duplicating it).
+  The icon now sits inside a rounded square tile to the left of the
+  heading/description text, instead of a bare unframed glyph. New
+  <code>geest/resources/icons/topics/</code> and <code>geest.core.topic_icons</code>
+  (<code>topic_icon_filename()</code>), falling back to the existing generic role
+  icon for any item id that isn't mapped. Two icons (the bus and the
+  bank) originally had one of a pair/trio of otherwise-identical shapes
+  (a wheel, a column) coloured cyan while its siblings stayed navy -
+  fixed so repeated shapes are always the same colour and the one cyan
+  accent per icon lands on a structurally distinct element instead.
+  The panel's description line also no longer falls back to
+  <code>getItemTooltip()</code>, which could surface a transient run warning/error
+  (e.g. "No service areas could be computed...") as if it were a
+  description of the indicator - that text still shows correctly on the
+  tree row's own hover tooltip, just not here. Since almost every
+  indicator's own <code>description</code> in model.json is blank, the panel now
+  borrows its parent factor's description instead (always populated)
+  rather than showing the bare word "Indicator" with nothing after it,
+  truncated the same way the methodology summary already is so a long
+  borrowed description doesn't overflow the card. The bicycle icon's
+  frame didn't reach the centre of one wheel and its cyan accent
+  overlapped the wheel's rim, reading as a mis-coloured wheel - redrawn
+  with a proper diamond frame that meets both hubs exactly, with the
+  accent moved well clear of either wheel. The "Methodology →" link
+  moved out of the card into the header row, to the left of the
+  collapse/expand chevron, freeing a full line of the card's height for
+  the description; the card itself grew (112px -&gt; 140px). The header nav
+  is now a true carousel: "Selected item" itself becomes a clickable
+  "← Selected item" back-link on the methodology page, replacing the
+  separate in-card back-link row entirely and freeing another line.
+  Clicking the header bar, the header nav or the Methodology link while
+  the panel is collapsed now re-expands it first, rather than being a
+  dead end. The description and methodology summary are no longer
+  truncated with an ellipsis at all - character-count truncation always
+  left the reader hanging mid-sentence with no way to see the rest, so
+  both are now scrollable read-only text areas (<code>QTextEdit</code>, not <code>QLabel</code>)
+  showing the complete text, with a scrollbar appearing only when it's
+  actually needed.</li>
+<li>The status text and the two progress bars shown during an analysis
+  run, a resource download, or a report export now live inside that
+  same item info panel, on their own page, instead of a separate status
+  row and two fixed-width bars in the button row below - the panel
+  auto-expands and its header reads "Analysis in progress...",
+  "Downloading resources...", "Generating analysis report..." or
+  "Generating study area report..." (whichever started it) for the
+  duration, then returns to "Selected item" when it finishes. New
+  <code>ItemInfoPanel.show_progress()</code>/<code>hide_progress()</code>;
+  <code>TreePanel.overall_progress_bar</code>/<code>workflow_progress_bar</code>/<code>status_label</code>
+  are now aliases onto the panel's own widgets, so none of the ~30
+  existing call sites that update them needed to change.</li>
+<li>Every map in the analysis report - the large main map (inset into its
+  own bottom-right corner over a translucent backing panel) and every
+  minimap (dimension/factor/indicator grids, plus the GeoE3 score/
+  GHSL-masked/by-population products) - now shows a small score-
+  distribution sparkline, read directly from that layer's own
+  <code>study_area_grid</code> column in the GeoPackage - the same values every
+  result raster was rasterised from. Plain 0-5 products use a 5-bar
+  likert chart matching <code>resources/qml/analysis.qml</code>'s DISCRETE boundaries
+  <code>(0,1],(1,2],...</code> and colours (<code>SCORE_LEGEND_COLORS</code>); the "by
+  population" bivariate product uses its own 15-bar chart matching
+  <code>geoe3_by_population_score.qml</code>'s exact-value palette
+  (<code>GEOE3_BY_POPULATION_COLORS</code>) instead, rather than being misread
+  through the wrong 5-class scale. Score 0 (masked/excluded cells) is
+  excluded from every count - it's typically the overwhelming majority of
+  cells outside the populated/opportunity area, and including it would
+  flatten the distribution the sparkline exists to show. Products on no
+  usable scale (the binary opportunities mask) are skipped rather than
+  shown with a meaningless chart. New generic <code>BaseReport._draw_sparkline()</code>
+  primitive and <code>AnalysisReport._grid_column_score_histogram()</code>/
+  <code>_grid_column_palette_histogram()</code>/<code>_draw_sparkline_for_column()</code>/
+  <code>_draw_main_map_sparkline()</code>.</li>
+<li>Indicator/factor configuration dialogs' value-range|index-score mapping
+  tables (the reference table shown while picking an analysis mode, e.g.
+  Contextual Index Score, Street Lights, Multi/Single Buffer, Safety
+  Raster, ACLED CSV, OSM Transport highway/cycleway classification) now
+  show a "Legend" column with a solid colour swatch for each row, matching
+  the same 5-class colour ramp (<code>#d7191c</code>→<code>#2c7bb6</code>) every result
+  map/raster already uses (<code>resources/qml/indicator.qml</code>/<code>factor.qml</code>), so
+  a user can see at a glance which map colour a given score corresponds to
+  without cross-referencing the separate map legend. New shared
+  <code>geest.core.constants.SCORE_LEGEND_COLORS</code> and
+  <code>legend_cell_html()</code>/<code>legend_color_for_score()</code> helpers in
+  <code>base_configuration_widget.py</code>, reused by every affected widget rather
+  than hand-rolling the colour lookup per table. Left out: Safety
+  Polygon's classification table (user-editable 0-100 values, not a
+  read-only 1-5 score reference) and the plain Index Score widget (has no
+  mapping table at all).</li>
+<li><code>admin.py generate-zip</code> now bundles <code>h3</code> into the release zip by
+  default (<code>VENDORED_PACKAGES = ["h3==4.4.2"]</code>), wired automatically into
+  <code>build()</code> rather than requiring a separate manual <code>bundle-deps</code> step
+  beforehand - the previous default (<code>VENDORED_PACKAGES = []</code>, with CI
+  passing <code>--packages "h3==4.4.2"</code> as an override) meant a plain local
+  <code>generate-zip</code> silently shipped a plugin that would fail to import h3
+  wherever the end user's own QGIS Python doesn't already have it.
+  <code>.github/workflows/release.yml</code>'s now-redundant explicit "Bundle
+  dependencies" step was removed.
+  Also fixed two real gaps found while verifying this: <code>WHEEL_PLATFORMS</code>
+  never requested a <code>cp313</code> wheel for Windows/macOS at all (only Linux
+  had it - any Windows/macOS user on QGIS 4.x, which ships Python 3.13,
+  would have hit an ImportError), and macOS Intel/ARM wheels were
+  silently clobbering each other at extraction time (h3 publishes no
+  universal2 wheel, and macOS wheel filenames don't encode architecture
+  the way manylinux's do, so both unpack to the identical path) - every
+  bundled macOS <code>.so</code> was actually arm64 only despite Intel also being
+  requested. <code>WHEEL_PLATFORMS</code> now targets cp312/cp313 only
+  (Linux/Windows/macOS-arm64), dropping cp311/cp314 and Intel macOS -
+  this was also necessary to fit under the plugin zip's 15MB hard limit
+  on QGIS's plugin repository infrastructure (see below), which a
+  correctly-complete bundle would otherwise have exceeded.</li>
+<li><code>generate-zip</code> now refuses to produce a zip over 15MB (<code>MAX_ZIP_SIZE_MB</code>),
+  QGIS's plugin repository hard limit, and always prints a small ASCII
+  dashboard breaking the zip's compressed size down by top-level plugin
+  area (<code>extlibs</code>, <code>core</code>, <code>gui</code>, <code>resources</code>, ...) with a bar chart, so
+  it's obvious at a glance what's actually driving the size - not just
+  the final pass/fail total.</li>
+<li><code>bundle_deps()</code> now strips build-time-only files after extracting each
+  wheel (Cython <code>.pyx</code>/<code>.pxd</code> source, C headers, static libs, CMake
+  config) - never needed to just <code>import h3</code> at runtime, pure dead
+  weight in every release before now.</li>
+<li><code>admin.py</code>'s packaging excludes a short list of dev-only files that were
+  previously swept into every release zip for no runtime benefit
+  (<code>EXCLUDE_FILES</code>): <code>generate_model.py</code>/<code>geoe3.ods</code> (the
+  spreadsheet-to-<code>model.json</code> tooling invoked only by
+  <code>scripts/import-ods-to-model.sh</code>, never imported by the plugin itself),
+  <code>geoe3_styling.xlsx</code> (a design reference, not loaded by any code),
+  <code>ghs-mod-2023-tile-scheme.qmd</code> (a QGIS-authored metadata sidecar for the
+  GHSL tile scheme layer, not read back - the plugin only ever loads the
+  sibling <code>.parquet</code>/<code>.gpkg</code>), and <code>insights.model3</code> (an unused QGIS
+  Processing model with no code reference).</li>
+<li><code>analysis_summary_report_template.qpt</code>'s two picture items were
+  embedding base64 copies of <code>geest/resources/images/geoe3-bg.png</code> and
+  <code>geest/resources/geoe3-banner.png</code> (QGIS's own "Embedded" picture
+  save mode) - byte-for-byte duplicates (confirmed via SHA256) of files
+  the plugin already ships separately, inflating the template from ~20KB
+  to ~3.9MB for no reason. The template's <code>file=</code> attributes now hold
+  placeholder tokens (<code>PLUGIN_RESOURCE:...</code>) that
+  <code>BaseReport.load_template()</code> (<code>geest/core/reports/base_report.py</code>)
+  substitutes for the real resolved resource path before parsing, so the
+  template file itself never needs to hardcode an absolute,
+  install-location-specific path.</li>
+<li>The four largest shipped background PNGs
+  (<code>geoe3-bg.png</code>, <code>geoe3-page-header-bg.png</code>, <code>geoe3-page-footer-bg.png</code>,
+  <code>geoe3-page-no-bg.png</code>) are flat-colour illustration with a subtle
+  grain texture, not photographic content, so they compress far better
+  as a restricted 256-colour palette than as 8-bit-per-channel truecolor</li>
+<li>re-saved as 256-colour palette PNGs (same filenames/format, no code
+  changes needed) for a combined 3.75MB -&gt; 1.14MB (~70% smaller), with
+  RMSE under 0.7% against the originals (visually indistinguishable).</li>
+<li>Safety Perception's nighttime lights indicator can now download its own
+  raster directly in-app at local/national scale (worldbank/GeoE3#452),
+  following the same button/<code>QgsTask</code> pattern as the existing S2S
+  downloaders. The source is the annual VIIRS nighttime lights composite
+  (OpenGeoHub/Hengl mirror on Zenodo, CC-BY 4.0, 2000-2024, no login
+  required - the authoritative EOG source now gates all downloads behind
+  free account registration, which this avoids). The global composite
+  (~60 MB) is downloaded with <code>QgsNetworkAccessManager</code>'s blocking GET
+  (the same pattern <code>S2SClient</code> already uses) rather than GDAL's
+  <code>/vsicurl/</code> driver reading it remotely - some network/proxy environments
+  block the HTTP Range requests <code>/vsicurl/</code> needs, so a plain synchronous
+  download is more portable even though it means fetching the whole file;
+  cropping to the study area then happens locally. <code>SafetyRasterWorkflow</code>
+  needed no changes: the download writes to the same
+  <code>nighttime_lights_raster</code> attribute the manual file picker already
+  populated.</li>
+<li>All five environmental hazard indicators (fire, flood, landslide, cyclone,
+  drought) can now download their own raster directly in-app at
+  local/national scale, the same button/<code>QgsTask</code> pattern as the nighttime
+  lights downloader above - previously only a manual "visit the source page
+  and download it yourself" link was offered. Each hazard's source is its
+  direct, no-login World Bank Data Catalog (DDH) file
+  (<code>ENV_HAZARD_DOWNLOAD_URLS</code> in <code>geest/core/constants.py</code>), downloaded in
+  full via <code>QgsNetworkAccessManager</code>'s blocking GET and then cropped locally
+  to the study area. The download/crop logic shared with the nighttime
+  lights downloader was extracted into <code>geest.core.tasks.raster_download_utils</code>
+  rather than duplicated. Source files range from ~3 MB (fire, cyclone) to
+  ~1 GB (drought); the button warns and asks for confirmation before
+  starting any download at or above 100 MB.</li>
+<li>New "Download all resources" option on the Run button's dropdown menu:
+  walks every indicator, and for any backed by a downloadable external
+  resource, checks for an existing cached file under
+  <code>working_directory/study_area/</code> and downloads it only if missing, then
+  sets it as that indicator's configured source - the same attribute each
+  resource's own in-app "Download ..." button would write. Covers
+  nighttime lights and environmental hazard rasters, and OSM-matched
+  buffer-point indicators (schools, health facilities, pharmacies, grocery
+  stores, financial services, kindergartens, green spaces, water points,
+  public transport - the same keyword-matched categories the in-dialog
+  "Download from OSM" button already offers, now extracted into
+  <code>geest.core.osm_downloaders.resolve_point_osm_download_type</code> as a single
+  source of truth shared by both). Unlike the raster resources, an OSM
+  indicator's configured source is an actual QGIS project layer, not a
+  file path - the downloaded GeoPackage is loaded and added to the
+  project, then wired up via the same <code>{widget_key}_layer_*</code> attributes
+  <code>VectorDataSourceWidget.update_attributes()</code> itself writes. It also
+  covers environmental hazard indicators left at "Do Not Use" (the
+  unconfigured default) but checked on in their factor's aggregation
+  dialog - status "Required and not configured" - rather than only ones
+  that already had a datasource mode explicitly picked: if such an
+  indicator's id matches a known hazard type, downloading its data also
+  switches its mode to "Environmental Hazard" at the same time, so it
+  comes out "ready to run" instead of staying stuck on "required". While a
+  download is in progress, its indicator's row shows the same animated
+  throbber a normal single-indicator run already shows, and the tree view
+  is refreshed via <code>layoutChanged</code> (not a full model reset) once
+  downloads/wiring finish, so newly-configured indicators immediately show
+  their updated status without collapsing every expanded node or losing
+  the current selection/scroll position. Deliberately not covered yet
+  (documented in <code>geest/core/download_all_resources.py</code>'s module
+  docstring): GHSL/Ookla, transport/generic polyline/point modes, and the
+  regional S2S-backed equivalents of nighttime lights/environmental
+  hazards.</li>
+<li><code>pyarrow</code> added to the nix dev shell (devShell tooling and the
+  QGIS-bundled Python both). A benchmark comparing GeoPackage, Shapefile,
+  FlatGeobuf and GeoParquet writes/reads found the file format made
+  almost no difference to speed - the bottleneck was GDAL/OGR's
+  per-feature Python API (<code>CreateFeature()</code>/feature iteration), not the
+  on-disk format - so rather than migrate formats, the plugin's biggest
+  bulk vector writes now try GDAL's columnar Arrow-batch API
+  (<code>Layer.WritePyArrow()</code>) first, which got ~1.75x faster writes on the
+  SAME GeoPackage files. New <code>geest/core/arrow_batch_writer.py</code> helper:
+  if pyarrow isn't importable (not every QGIS install bundles it, though
+  OSGeo4W's Windows installer does by default), it returns <code>False</code> and
+  every call site falls straight back to its original per-feature
+  <code>CreateFeature()</code> loop - no format change, no hard dependency. Wired
+  into <code>UnifiedWriterThread._write_grid_batch</code>/<code>_write_geometry_batch</code>
+  (<code>study_area_processing_task.py</code>) - the base study-area grid write, the
+  biggest cell counts every study area creation produces.</li>
+<li>Separately, H3 grid generation's <code>bbox_to_wgs84()</code>/
+  <code>transform_wgs84_to_target()</code> (<code>geest/core/h3_utils.py</code>) were rebuilding
+  a fresh <code>osr.CoordinateTransformation</code> on every single call - and both
+  run once per grid cell, tens to hundreds of thousands of times per
+  study area. Benchmarked ~20-30x slower than reusing one for the same
+  EPSG pair; now cached thread-locally (keyed by source/target EPSG),
+  cutting H3 grid generation time roughly 4x in testing.</li>
+<li>Every sparkline bar in the analysis report now labels itself with its
+  rounded share of the total (e.g. <code>52%</code>) directly beneath the bar - bars
+  rounding to 0% are left unlabelled, avoiding a wall of meaningless
+  labels on the 15-class by-population chart, where most classes are
+  usually empty. New <code>_draw_sparkline()</code> <code>show_percentages</code> parameter
+  (<code>base_report.py</code>, default <code>True</code>).</li>
+<li>The analysis report's title now carries the project's admin0 (country)
+  name as a subtitle (e.g. "GeoE3 Analysis Report — Tunisia"), read from
+  <code>study_area/boundaries_dissolved.gpkg</code> - the field the user chose
+  during project setup to dissolve the study area boundary by. Picked out
+  by field TYPE (first String field) rather than name or position, since
+  GeoPackage surfaces its own integer <code>fid</code> primary key as field 0 ahead
+  of whatever name column the user picked. New
+  <code>AnalysisReport._admin0_name()</code>.</li>
+<li>The analysis report now includes a page for each of the four
+  subnational aggregation vector products (GeoE3 score, GHSL-masked, by
+  population, by population GHSL-masked) - the majority score within
+  each administrative zone the user configured during project setup,
+  previously computed but never shown in the report. New
+  <code>AnalysisReport._add_vector_map_page()</code>/<code>_load_vector()</code>/
+  <code>_read_vector_field_values()</code>, reusing the existing sparkline machinery
+  against the layer's own <code>_majority</code> field instead of a
+  <code>study_area_grid</code> column (these products are per zone, not per cell).
+  The study area outline is deliberately not overlaid on these pages: the
+  zone polygons already tile the whole study area, and the aggregation
+  boundary can sit in a different CRS than the analysis grid - <code>make_map()</code>
+  combines layer extents without reprojecting, which silently collapses
+  the map to a near-empty page when the two CRSes differ. Each
+  subnational map's outline is also drawn much thinner than the style's
+  normal 0.26mm (<code>AnalysisReport._thin_vector_outlines()</code>, report
+  rendering only - the interactive map's own style is untouched): at
+  that width, hundreds of zones packed onto one page were obscuring
+  their own fill colour.</li>
+<li>A second legend page explains the 15-class "by population" bivariate
+  scale (5 enablement classes x 3 population tercile classes) as a
+  colour matrix, inserted before any map that uses it - a different
+  scheme entirely from the plain 0-5 scale the first legend page covers.
+  New <code>AnalysisReport.make_by_population_legend_page()</code>.</li>
+<li>A new closing "Study Area" page summarises the analysis grid: admin0
+  name, analysis scale, cell count, cell size, total analysis area, and
+  CRS, read directly from <code>study_area_grid</code> and <code>model.json</code>. New
+  <code>AnalysisReport.make_study_area_summary_page()</code>/<code>_study_area_stats()</code>.</li>
+<li>The Processing Times page now shows a highlighted "Total analysis time"
+  block below the per-indicator chart - the wall-clock span from the
+  earliest to the latest recorded timestamp across every
+  dimension/factor/indicator, not a sum of each step's own duration,
+  which would overstate the real elapsed time for anything that ran
+  concurrently - styled like the legend page's "How the scores are
+  calculated" note. New
+  <code>AnalysisReport._total_analysis_duration_minutes()</code>/
+  <code>_draw_total_duration_block()</code>; <code>create_execution_time_layout()</code> now
+  returns the Y position it finished at so the block can be placed
+  without overlapping a variable-length chart.</li>
+<li>Four new "Insights" pages, inserted after the dimension/factor/
+  subnational pages, surface patterns in the analysis grid beyond the
+  final score - all computed directly from <code>study_area_grid</code>/
+  <code>model.json</code>, no new geoprocessing:</li>
+<li><strong>Factor Score Patterns</strong>: every factor's own score distribution
+    (reuses the existing sparkline machinery, just without the map), so
+    a spread or heavy low tail hiding inside one factor is visible even
+    when the blended score looks fine.</li>
+<li><strong>Where Low Scores Come From</strong>: which dimension most often has the
+    lowest value among cells scoring 2 or below (the single biggest
+    lever for moving the most low-scoring cells up a class), and the
+    enablement-class breakdown of cells flagged as an economic
+    opportunity (opportunity cells that also score low are the
+    highest-priority investment targets).</li>
+<li><strong>Settlement and Hazard Patterns</strong>: average score across the whole
+    study area vs within GHSL-identified settlements only (how much of
+    an apparently "good" score comes from uninhabited land), and average
+    score by environmental hazard exposure tercile (does hazard exposure
+    correlate with lower enablement).</li>
+<li><strong>Factor Correlations</strong>: a diverging-colour heatmap of every
+    factor-pair's Pearson correlation - computed PAIRWISE (only
+    requiring the two factors in a given pair to both be valid for a
+    cell), not across every factor simultaneously, since factors cover
+    very different shares of the study area and requiring all of them
+    valid at once could leave zero usable cells even with plenty of
+    pairwise overlap; pairs below a minimum cell-overlap threshold are
+    left blank rather than showing a correlation computed from a
+    handful of coincidentally-aligned cells.
+  New <code>AnalysisReport._limiting_dimension_counts()</code>/
+  <code>_ghsl_settlement_gap_stats()</code>/<code>_opportunities_mask_score_histogram()</code>/
+  <code>_factor_correlation_matrix()</code>/<code>_hazard_exposure_tercile_scores()</code>/
+  <code>_read_grid_columns()</code>/<code>_read_grid_columns_with_gaps()</code>, plus the
+  matching page/chart builders and <code>create_insights_pages()</code>.</li>
+<li><code>SubnationalAggregationProcessingTask</code> now also computes, for every
+  subnational zone, the AVERAGE of every used dimension/factor/the
+  overall GeoE3 total across the <code>study_area_grid</code> cells that fall
+  within that zone - not the majority-class raster statistic the
+  existing 4 products use (appropriate for a map legend's discrete
+  classes, not for a continuous per-zone score). Computed by spatially
+  matching every grid cell to the zone(s) it intersects (a cell
+  routinely intersects more than one zone against fine administrative
+  boundaries, regardless of the grid's configured cell size -
+  confirmed against real data: ~22% of cell/zone matches were shared),
+  then a single grouped SQL AVG()
+  per zone - not one zonal-statistics raster pass per factor/dimension.
+  Idempotent and legacy-safe: only backfills <code>avg_&lt;column&gt;</code> columns not
+  already present in <code>geoe3_score_subnational_aggregation.gpkg</code>, so a
+  project whose aggregates predate this feature gets them added on the
+  next full analysis run without redoing the existing 4 products. Also
+  retains a best-guess zone name field (the aggregation boundary's
+  first String-type field - there's no explicit "pick the name column"
+  step for it, unlike the admin0 dissolve field) as a new <code>zone_name</code>
+  column; previously every original attribute except an internal <code>fid</code>
+  was dropped before computing the existing products. New
+  <code>aggregate_factor_dimension_totals()</code>/<code>_detect_name_field()</code>/
+  <code>_factor_dimension_total_columns()</code>/<code>_assign_grid_cells_to_zones()</code>/
+  <code>_average_grid_columns_per_zone()</code>/<code>_write_zone_results()</code>/
+  <code>_existing_sqlite_columns()</code>.</li>
+<li>The analysis report's new closing section shows this as a
+  "Subnational Score Matrix": one row per administrative zone, one
+  colour-coded cell per used dimension/factor/the overall total
+  (numbered columns, explained in a key at the end), paginated across
+  as many pages as the boundary has zones - there is no cap. Each
+  page is rendered as a single raster image rather than one layout
+  item per cell: a few thousand individual <code>QgsLayoutItem</code>s (routine
+  for a fine-grained boundary) brought QGIS's layout engine to a
+  crawl in testing against a real 2084-zone boundary; one embedded
+  picture per page does not. New
+  <code>AnalysisReport.make_subnational_score_matrix_pages()</code>/
+  <code>_subnational_score_matrix_columns()</code>/<code>_subnational_score_matrix_rows()</code>/
+  <code>_score_class_color()</code>/<code>_render_score_matrix_page_image()</code>.</li>
+<li>A new "Methodology" section near the end of the report explains, in
+  plain language for a non-GIS reader, how each indicator's score was
+  actually worked out. The 18 <code>analysis_mode</code> values an indicator can be
+  configured with mechanically reduce to 7 real-world techniques (e.g.
+  counting features in a cell, tracing road-network travel time,
+  reading a ready-made hazard map) - the report shows one page per
+  technique ACTUALLY used in this project (never the full list of 7
+  regardless of relevance), each with a small SVG illustration, a
+  descriptive explanation, and the list of this project's own indicators
+  that use it, with a one-sentence nuance where a mode differs from its
+  technique siblings (e.g. Ookla/GHSL-masked index scores, ACLED's
+  per-event-type buffers). A following "Scoring Weights" page lists
+  every used dimension's share of the overall analysis and every used
+  factor's share of its own dimension, read straight from <code>model.json</code> -
+  a factor contributing zero weight (e.g. a fallback-only factor) is
+  deliberately shown rather than hidden, since the point is transparency
+  about what was actually used, not a tidier-looking list. New
+  <code>geest/core/reports/methodology.py</code> reference module (technique
+  registry, <code>analysis_mode</code> -&gt; technique mapping, nuance notes) and 7
+  versioned SVG illustrations under <code>geest/resources/methodology/</code>; new
+  <code>AnalysisReport._methodology_entries()</code>/<code>make_methodology_pages()</code>/
+  <code>_dimension_factor_weightings()</code>/<code>make_scoring_weights_page()</code>/
+  <code>_place_picture()</code> (a small picture-embedding primitive extracted
+  into its own method so tests can mock it instead of constructing a
+  real <code>QgsLayoutItemPicture</code>).</li>
+<li><strong>National-scale Active Transport now scores a cell with a score-
+  weighted average across every intersecting road/cycle path instead
+  of "highest score wins"</strong> (worldbank/GeoE3#397): regional and local
+  scale were unaffected by the issue and remain completely unchanged.
+  Each feature's own score doubles as its weight
+  (<code>cell_score = sum(score^2) / sum(score)</code>), so a cell dominated by
+  good infrastructure still scores close to the top, a single
+  excellent route no longer carries a cell that's otherwise poor, and
+  a cell with only poor infrastructure stays low even if one short,
+  better-rated segment clips its edge. New
+  <code>select_grid_cells_and_assign_weighted_transport_score()</code> in
+  <code>geest/core/algorithms/features_per_cell_processor.py</code> and
+  <code>OsmTransportPolylineWeightedPerCellWorkflow</code>, dispatched instead of
+  the existing max-based workflow only when <code>analysis_scale ==
+  "national"</code>. Described in both the analysis report's Methodology
+  section and the live item info panel's methodology slide-over via a
+  new "A Score Weighted Toward the Best Infrastructure" technique and
+  a scale-aware <code>technique_for_indicator()</code> (the technique lookup was
+  previously a pure function of <code>analysis_mode</code> alone, which can't
+  tell national/regional/local Active Transport apart since they share
+  the same <code>analysis_mode</code> string); new
+  <code>geest/resources/methodology/weighted_feature_average.svg</code>.</li>
+</ul>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Settings toggled in Settings &gt; GeoE3 (e.g. "Include Subnational
+  Score Matrix") could silently revert after restarting QGIS</strong>, even
+  when correctly unchecked and confirmed with OK every time.
+  <code>set_general_setting()</code> wrote the new value into a QSettings object
+  but never called <code>sync()</code>, relying instead on that object's
+  destructor - triggered by Python garbage collection, not guaranteed
+  to run before QGIS's own shutdown sequence tears down the interpreter</li>
+<li>to actually flush the write to disk. Every setting the plugin
+  stores was equally at risk; this one was just the most noticeable
+  since it's toggled against its own default. Now syncs explicitly on
+  every write and delete.</li>
+<li><strong>"Include Subnational Score Matrix" (and in principle any other
+  boolean setting in Settings &gt; GeoE3) could still show checked
+  immediately after being unchecked and saved</strong>, even with the sync
+  fix above in place - a second, separate bug on the read side.
+  <code>QSettings.value()</code>'s implicit Python-type coercion when no explicit
+  <code>type=</code> is given turned out to be binding/platform-dependent: on a
+  real QGIS 4 install it returned the literal ini string <code>"false"</code>
+  rather than a native bool, and <code>bool("false")</code> is <code>True</code> in Python
+  (any non-empty string is truthy), so every <code>bool(setting(...))</code> call
+  site read a freshly-saved "off" value straight back as "on".
+  <code>general_setting()</code> now infers the expected type from the caller's
+  own <code>default</code> (bool/int/float/str) when <code>expected_type</code> isn't given
+  explicitly, so <code>QSettings</code> does the conversion itself instead of
+  leaving it to chance - fixes every setting read this way, not just
+  this one checkbox.</li>
+<li>The item info panel's progress page (status text + the two progress
+  bars, shown while a run is active) didn't survive collapsing and
+  re-expanding the panel mid-run, or selecting a different tree item -
+  either silently dropped back to "Selected item" even though the run
+  was still going. <code>set_expanded(True)</code> now re-forces the progress page
+  whenever a run is active, and <code>show_item()</code>/<code>clear()</code> (triggered by
+  tree selection changes) no longer switch the stack away from it while
+  one is - both still update their own content underneath, ready for
+  when the run actually finishes and <code>hide_progress()</code> is called.</li>
+<li><strong>"Clear Item" on the Analysis tree node was noticeably slower than on
+  any other role.</strong> Its own outputs span 5 separate <code>study_area_grid</code>
+  columns (<code>geoe3</code>, <code>geoe3_by_population</code>, <code>geoe3_masked</code>,
+  <code>geoe3_by_population_masked</code>, <code>opportunities_mask</code>), and clearing them
+  one at a time paid a full GeoPackage open/transaction/WAL-TRUNCATE-
+  checkpoint round trip 5 times in a row, serialized under a process-wide
+  write lock - every other role only ever touches one column. New
+  <code>geest.core.grid_column_utils.clear_grid_columns()</code> clears several
+  columns in a single pass instead; <code>TreePanel._clear_single_item_outputs()</code>
+  uses it for the Analysis role. <code>clear_grid_column()</code> (singular) is
+  unchanged for its other ~10 existing single-column callers.</li>
+<li>Tightened the wording of roughly twenty report headings/subtitles/body
+  paragraphs across the legend, by-population, analysis overview,
+  subnational, insights, subnational score matrix, methodology and
+  scoring weights pages - reviewed string by string against the live
+  report and rewritten for plainer, less repetitive phrasing. No
+  behaviour change.</li>
+<li><strong>Subnational Score Matrix row/column labels were too small to read.</strong>
+  <code>_render_score_matrix_page_image()</code>'s font bumped from 5.5pt to
+  15pt in two steps (row height 5mm-&gt;12mm, header height 7mm-&gt;16mm
+  to match), and the "Subnational Score Matrix — Key" page now comes
+  BEFORE the table pages instead of after them, so the column numbers
+  are already known by the time a reader reaches the first table page.</li>
+<li>The Subnational Score Matrix is now OFF by default - a new "Include
+  Subnational Score Matrix in the analysis report" checkbox under
+  Settings &gt; GeoE3 &gt; Analysis Options opts back in. It can add a very
+  large number of pages for a project with many administrative zones,
+  so it shouldn't appear unasked-for in every report. New
+  <code>include_subnational_score_matrix</code> setting (default <code>False</code>) and
+  <code>AnalysisReport._subnational_score_matrix_enabled()</code>.
+  <code>SubnationalAggregationProcessingTask.run()</code> now also checks the same
+  setting before computing the underlying <code>avg_&lt;column&gt;</code> zone averages
+  at all - no point paying for the spatial join plus a SQL <code>AVG()</code> pass
+  per zone when the setting is off and no report will ever read them.</li>
+<li><strong>The running-item spinner now animates in place of the status icon
+  (column 1) instead of inserting a separate widget there.</strong> Inserting/
+  removing a widget via <code>treeView.setIndexWidget()</code> every time a
+  workflow started or finished was a source of unwanted tree-panel
+  resizing. <code>JsonTreeItem.getStatusIcon()</code> now shows the current
+  animation frame (<code>set_spinner_pixmap()</code>/<code>clear_spinner_pixmap()</code>)
+  while a workflow runs, refreshed via <code>dataChanged</code> on that one cell -
+  the same self-sizing column, no widget insertion. As a side effect,
+  the spinner's size is no longer derived from <code>QTreeView.rowHeight()</code>,
+  removing the whole class of "invalid/unresolvable row height"
+  corruption this relied on working around.</li>
+<li><strong>"GHSL Settlements" reported "Layer added to map" but nothing ever
+  rendered.</strong> Unlike <code>add_to_map()</code>/<code>add_grid_layer_to_map()</code>,
+  <code>add_ghsl_settlements_to_map()</code> never re-enabled visibility on the
+  layer or its parent groups after adding it - if "GeoE3 Study Area"
+  (or an ancestor) was ever unchecked for any reason, the layer stayed
+  invisible with no self-healing re-check, even though it loaded
+  successfully.</li>
+<li><strong>"Clear Item" on the Analysis node silently deleted nothing.</strong>
+  <code>item.getPaths()</code> only knows how to build a path for
+  indicator/factor/dimension hierarchies and returns <code>[]</code> for the
+  analysis item itself, so <code>_clear_single_item_outputs()</code> resolved its
+  output directory down to the whole project folder instead of
+  anywhere any of its outputs actually live. A later "Run Item
+  Workflow" then found stale per-area rasters from an earlier run
+  still on disk and skipped reprocessing those areas as "already
+  done", silently leaving an inconsistent mix of stale and freshly
+  regenerated areas with no error ever raised. Clearing the analysis
+  item now clears all six of its real output directories
+  (<code>geoe3_score</code>, <code>geoe3_by_population_score</code>,
+  <code>geoe3_score_ghsl_masked</code>, <code>geoe3_score_by_population_ghsl_masked</code>,
+  <code>opportunity_masks</code>, <code>subnational_aggregation</code>) and all five of its
+  own <code>study_area_grid</code> columns. <code>item.gridColumnName()</code> had the same
+  gap - the analysis item has no <code>id</code> attribute, so it fell through to
+  <code>""</code> and reached <code>clear_grid_column()</code> with a blank name, failing
+  with a SQLite "no such column" error; <code>clear_grid_column()</code> now also
+  refuses a blank column name outright as defense in depth.</li>
+<li><strong>"GeoE3 x Opportunities Mask" (and its by-population variant) always
+  showed blank in the tree and report, even on a fully successful run.</strong>
+  <code>OpportunitiesByWeeScoreProcessingTask</code>/<code>...PopulationProcessingTask</code>
+  correctly compute the masked score and write
+  <code>geoe3_score_ghsl_masked_result(_file)</code> /
+  <code>geoe3_score_by_population_ghsl_masked_result(_file)</code> onto the analysis
+  item, but <code>JsonTreeModel.loadJsonData()</code> rebuilds that item's attributes
+  from an explicit, hardcoded whitelist whenever the model is reloaded
+  from saved JSON - these two keys were missing from it, so the result
+  was silently dropped on the next reload despite the underlying raster
+  being computed correctly. Added them to the whitelist, and removed two
+  report rows ("Score × opportunities", "Population × opportunities")
+  that read an older, superseded key name no processor has written in a
+  long time - they duplicated the already-correct "GHSL masked" rows.</li>
+<li><strong>Scoring a study area's grid against network-analysis isochrones could
+  take over an hour for a single, densely-populated area,</strong> versus seconds
+  for a sparser one. <code>write_buffer_values_to_grid()</code> tested every grid cell
+  against every distance band with a plain, unprepared
+  <code>QgsGeometry.intersects()</code> call - fine for a handful of tests, but a
+  dissolved isochrone band from thousands of points can carry hundreds of
+  thousands of vertices, and the same few band polygons get tested against
+  every one of potentially hundreds of thousands of grid cells. Each band
+  now gets a prepared <code>QgsGeometryEngine</code> (built once, reused for every
+  cell), and for <code>MAX</code> aggregation - the only mode any caller actually
+  uses - bands are tested score-descending with matched cells dropped from
+  consideration, so a cell already at its best possible score is never
+  tested against a lower-scoring band again.</li>
+<li><strong><code>scripts/start_qgis.sh</code>/<code>start_qgis_ltr.sh</code> logged to <code>~/GEOE3.log</code>,</strong>
+  away from wherever validation tests are actually run from. Logs now
+  write to <code>GEOE3.log</code> in the project folder instead, so they can be
+  tailed from the same place (<code>tail -f GEOE3.log</code>).</li>
+<li><strong>Multi-buffer network analysis clipped the road network to the whole
+  study-area polygon instead of the points actually being analysed,</strong>
+  wasting graph-build and traversal time on network nowhere near any
+  point whenever points were sparse relative to the area (the common
+  case). <code>_clip_network_to_area()</code> now clips to a dissolved buffer around
+  the points themselves - the isochrone computation only ever needed
+  network within <code>max(distances)</code> of an actual point, so this changes
+  nothing about the result, only how much irrelevant network gets
+  clipped and traversed to produce it.</li>
+<li><strong>The animated throbber on a running tree item could silently freeze on
+  its last frame while the item was still computing.</strong> <code>self.child_movie</code>/
+  <code>self.parent_movie</code> were a single shared pair of attributes rather than
+  tracked per item - with two items' start/stop events overlapping
+  (<code>concurrent_tasks</code> &gt; 1, or just two sequential items racing),
+  <code>_stop_item_spinner()</code> could stop a <em>different</em>, still-running item's
+  movie instead of the one that actually finished. Spinners are now
+  tracked per item (keyed by guid), so starting/stopping one item's
+  animation can never affect another's.</li>
+<li><strong>No spinner ever showed at all for a single-indicator factor</strong> (e.g.
+  "Access to Public Transport", where its one indicator is promoted to
+  display in the hidden factor's place). <code>JsonTreeModel._findIndexByGuid()</code>
+  can locate a hidden item's own <em>children</em> but never the hidden item
+  itself, so looking up the hidden parent's own index always failed.
+  <code>on_workflow_started()</code> then unconditionally used that invalid index's
+  <code>rowHeight()</code> (a degenerate 0/-1) to scale the <em>child's own</em> spinner,
+  silently shrinking it to an invisible size even though it was genuinely
+  running. The lookup is now guarded so an unresolvable parent leaves the
+  child's own (already-correct) row height untouched.</li>
+<li><strong>The tree panel kept resizing during analysis execution.</strong> Its status
+  label (e.g. "Processing area 16/16") sat at a fixed 200px width inside
+  the same row as the two fixed-200px progress bars and several buttons
+  that hide/show as a run starts and stops - the row's required minimum
+  width jumped between "idle" and "running" states as those widgets
+  toggled visibility. The status label now has its own row, spanning the
+  full panel width, directly above the progress-bar row.</li>
+<li><strong>Re-running or clearing a single indicator left its factor, dimension, and
+  analysis still showing a stale "Completed successfully" with the old
+  aggregate value.</strong> Nothing ever told an ancestor its cached aggregate was
+  computed from a now-changed child. <code>JsonTreeItem.invalidateAncestors()</code>
+  clears every ancestor's <code>result</code>/<code>result_file</code> on a successful workflow
+  run and when an item is cleared via "Clear Item", so the tree honestly
+  falls back to "Configured, not run" until the aggregate is recomputed.</li>
+<li><strong><code>study_area_grid</code> could silently gain a permanent, unnamed, all-NULL
+  column.</strong> An item with an empty/missing <code>id</code> attribute reached the grid
+  column creation code with a blank column name. <code>_ensure_column_exists()</code>
+  and <code>add_model_columns_to_grid()</code> now refuse to create a blank-named
+  column.</li>
+<li><strong>Three dead aggregate columns (<code>contextual_score</code>, <code>accessibility_score</code>,
+  <code>place_characterization_score</code>) were added to every study area's grid.</strong>
+  Confirmed via git history that these were reserved alongside
+  <code>wee_score</code>/<code>wee_by_population</code> (since renamed to <code>geoe3</code>/
+  <code>geoe3_by_population</code>) but never implemented - removed from
+  <code>get_aggregate_column_names()</code>.</li>
+<li><strong>Logging never reached <code>~/GEOE3.log</code>.</strong> A module-level diagnostic
+  banner in <code>grid_column_utils.py</code> could fire before <code>geest/__init__.py</code>'s
+  own <code>logging.basicConfig()</code> call, implicitly self-configuring the root
+  logger first and making our call a silent no-op (console showed the
+  bare <code>WARNING:root:...</code> fallback format instead). <code>basicConfig()</code> now
+  passes <code>force=True</code> so our file handler always wins.</li>
+<li><strong>Analysis-level processing required a population raster even though it's
+  optional.</strong> Leaving it unset errored with "Select a valid population
+  raster before running the analysis" and aborted the whole analysis
+  post-processing step. The GeoE3 x Population Score is now skipped
+  (like the opportunities mask already was) when no population raster or
+  S2S demographics are configured, and everything else still runs.</li>
+<li><strong>GHSL-filtered (unpopulated) areas were reprocessed on every single run.</strong>
+  Study area creation already skips grid generation for an area with no
+  GHSL settlements, but <code>AreaIterator</code> never checked for that - every
+  indicator workflow ran its full per-area pipeline on these areas anyway,
+  every run, only to find nothing to write. <code>AreaIterator</code> now skips any
+  area with zero <code>study_area_grid</code> cells up front, determined directly
+  from the grid itself so it works immediately on existing projects too.</li>
+<li><strong>Running multiple indicators concurrently (the "concurrent tasks"
+  setting) could silently lose grid writes - an indicator reported
+  "Completed" with no error, yet its own <code>study_area_grid</code> column stayed
+  NULL (or an aggregating factor/dimension read it as 0).</strong> Confirmed
+  against a real project: three Contextual-dimension indicators started
+  within 6ms of each other (genuinely concurrent, not sequential), and only
+  one of the three actually persisted its value. Reproduced reliably with a
+  new test (<code>test_grid_column_concurrent_writes.py</code>) that fires several
+  threads at the same GeoPackage the way concurrent indicator workflows do</li>
+<li>each opens its own independent <code>ogr.Open(gpkg_path, 1)</code> connection and
+  writes a different column with a raw SQL <code>UPDATE</code>; under true
+  concurrency, most of those writes failed outright even though each one's
+  own <code>StartTransaction()</code>/<code>CommitTransaction()</code> reported success -
+  SQLite's own locking does not fully protect independent GDAL/OGR dataset
+  handles writing to the same file from different threads in the same
+  process. Fixed by funnelling every <code>study_area_grid</code> write (11 functions
+  in <code>grid_column_utils.py</code>: the uniform-value writer index-score
+  indicators use, the aggregation writer factors/dimensions use, spatial
+  joins, buffers, percentage scores, etc.) through one process-wide lock
+  (<code>@_serialize_grid_writes</code>) - only the actual database write is
+  serialized; the slow, genuinely parallelizable work (loading features,
+  generating rasters) is unaffected.</li>
+<li><strong>Windows crash running a whole dimension (#447, #448):</strong> every indicator's
+  workflow opened its own <code>AreaIterator</code> (three fresh <code>QgsVectorLayer</code> reads)
+  against <code>study_area.gpkg</code> while <code>grid_column_utils</code> concurrently wrote to
+  the same file - safe in isolation, but running many indicators back-to-back
+  (a whole dimension/factor/analysis) raised the odds of hitting a GDAL/OGR
+  SQLite handle corruption window, surfacing on Windows as an access
+  violation inside <code>getFeatures()</code>. The SQLite write-safety hardening (WAL
+  journal + <code>SQLITE_USE_OGR_VFS=NO</code>) that already fixed this exact class of
+  corruption for study-area <em>creation</em> was explicitly scoped out of the later
+  analysis/workflow <em>execution</em> phase - closed that gap by applying the same
+  hardening around <code>WorkflowQueueManager</code>'s run lifecycle (extracted into a
+  shared <code>geest.utilities</code> helper so both call sites share one
+  implementation).</li>
+<li><strong>One bad area no longer aborts the whole indicator.</strong> <code>WorkflowBase</code>'s
+  per-area loop wrapped all ~27 areas in a single <code>try/except</code>, so any
+  unhandled exception from one area (a degenerate geometry, a transient
+  data-source hiccup, ...) discarded every area already processed and
+  skipped every area still to come - the "hard to reproduce, whole run just
+  fails" shape of several field reports. Each area is now isolated in its
+  own <code>try/except</code>: a failure is logged clearly against that specific area
+  and the run continues; the final result records which areas (if any) were
+  skipped. If literally every area fails, that's still reported as a real
+  failure, not a false "Completed". Also: a user-cancelled run previously
+  kept processing all remaining areas regardless (the cancellation flag was
+  checked but never acted on) - it now stops promptly.</li>
+<li><strong>Local-scale (100m grid) analysis could take 7.5+ hours and still not
+  finish, versus 7 minutes at national (1000m) scale on the same country
+  (#445) - roughly 100x more grid cells causing a much-worse-than-linear
+  slowdown.</strong> Root cause: <code>write_spatial_join_to_grid</code> (environmental
+  hazards, GHSL/Ookla masking, vector-fallback nighttime lights) re-queried
+  the features layer with <code>SetSpatialFilter</code> for <em>every</em> grid cell instead
+  of indexing once; <code>write_percentage_scores_to_grid</code> (multi-buffer
+  accessibility scoring, the WTP dimension from #448) ran a full exact GEOS
+  intersection against the dissolved buffer polygon for <em>every</em> grid cell
+  with no cheap bounding-box reject first. Both now build/check a spatial
+  index once and do indexed lookups per cell, matching the pattern
+  <code>write_buffer_values_to_grid</code> already used correctly. Also found and fixed
+  the same anti-pattern in dead code (<code>write_point_count_to_grid</code>, unused -
+  removed rather than fixed, per YAGNI).</li>
+<li><code>multi_buffer_distances_native_workflow.py</code> (the WTP/accessibility
+  workflow) reopened the road network file and re-ran a full-layer CRS
+  reprojection from scratch for every area (up to 27x per indicator, times
+  every indicator in the dimension), even though the network and its CRS
+  don't change between areas. Now loaded and reprojected once and cached.</li>
+<li>Five workflows (<code>polyline_per_cell</code>, <code>polygon_per_cell</code>,
+  <code>osm_transport_polyline_per_cell</code>, <code>classified_polygon</code>, <code>safety_polygon</code>)
+  loaded their input layer without checking <code>.isValid()</code>, unlike every other
+  per-cell workflow - a corrupt or no-longer-reachable source file didn't
+  fail loudly; it surfaced as "0 features in every area", silently absorbed
+  by the empty-features fallback into an all-zero result with nothing
+  pointing at the real cause. Now raises a clear <code>WorkflowNotConfiguredError</code>
+  naming the broken path, matching the existing <code>point_per_cell</code> pattern.</li>
+<li>The S2S Education-proxy grid update (<code>polygon_per_cell_workflow.py</code>) used
+  a raw <code>ogr.Open</code>/<code>ExecuteSQL</code> call with no retry on a transient "database
+  is locked" error, unlike every other grid-writing function in this
+  codebase. Now goes through the same <code>_open_gpkg_for_write</code>/
+  <code>_execute_sql_with_retry</code> helpers as everything else.</li>
+<li>OSM point and mixed-to-point downloads (health facilities, schools,
+  pharmacies, financial services, kindergartens, grocery stores, green
+  spaces, public transport, water points) now retain the OSM <code>name</code> tag
+  as an entity name attribute, instead of only the feature <code>id</code>. Polygon
+  downloads gain the same <code>name</code> attribute (#453).</li>
+<li>S2S download is no longer offered for flood hazards at local or
+  national analysis scale. Flood now follows the same regional-only S2S
+  gating as every other environmental hazard (#449).</li>
+<li>A broken/missing road network layer reference could linger silently in
+  <code>model.json</code> forever: when the Road Network panel detected the file was
+  gone it tried to clear the stored path, but the clear signal's value was
+  discarded by the receiving slot (which re-fetched the combo box selection
+  instead) and the slot also silently ignored empty/<code>None</code> values, so the
+  stale path was never actually removed. Setting the road network layer now
+  validates the file exists before storing it (showing a clear error if
+  not), clearing is no longer a no-op, and a missing file detected on
+  restore now also surfaces a message-bar warning instead of only a log
+  line.</li>
+<li>Contextual index-score indicators (e.g. workplace discrimination) could
+  fail with "VRT Layer generation failed" when a study area contained a
+  sliver/island fragment too small to have been assigned any
+  <code>study_area_grid</code> cells. <code>rasterize_grid_column</code> silently fell back to
+  rasterizing the whole study area's extent for such an area (burning
+  nothing, since no grid rows matched), producing a degenerate raster that
+  broke downstream masking and VRT combination - either aborting the whole
+  indicator or corrupting its combined output depending on exact pixel
+  rounding. <code>rasterize_grid_column</code> now detects the zero-matching-cells
+  case up front and refuses to rasterize, and
+  <code>ContextualIndexScoreWorkflow</code> treats that as "no features for this
+  area" and falls back to a neutral (zero) raster for just that one area,
+  matching the existing fallback behaviour used elsewhere for areas with
+  no input features. A single, un-partitioned study area can legitimately
+  leave <code>area_name</code> NULL on every <code>study_area_grid</code> row while still naming
+  the area itself - that case is distinguished from a genuinely missing
+  sliver (grid cells exist for other areas, just not this one) so it still
+  rasterizes normally instead of being skipped.</li>
+<li>Masking a raster to a geometrically thin area (a narrow coastal strip or
+  sliver islet, not necessarily a small one) could fail entirely:
+  <code>gdal:cliprasterbymasklayer</code> with <code>CROP_TO_CUTLINE</code> snaps the crop window
+  to pixel boundaries, which can round down to zero rows or columns even
+  when the source raster is perfectly valid, so <code>gdalwarp</code> refused to
+  create a 0-sized dataset and no masked file was written. <code>_mask_raster</code>
+  silently returned that nonexistent path anyway, so the area vanished from
+  the combined VRT with no error reported (seen as <code>entrepreneurship_index</code>
+  dropping several Cabo Verde islands while still reporting success).
+  <code>_mask_raster</code> now detects a failed/degenerate crop and retries without
+  <code>CROP_TO_CUTLINE</code>, keeping the source raster's own (already-valid) extent
+  and masking only the pixel values - and raises clearly if that still
+  doesn't produce a valid raster, instead of returning a bogus path.</li>
+<li><code>factor_aggregation</code> and <code>dimension_aggregation</code> (the workflows behind
+  every factor/dimension/analysis rollup, e.g. workplace discrimination's
+  factor score) aborted the <em>entire</em> indicator with "produced no raster
+  output for area cv_part20" whenever one area had no matching
+  <code>study_area_grid</code> cells - the same sliver-area condition fixed above,
+  but <code>AggregationWorkflowBase</code> lacked the <code>supports_empty_features_fallback</code>
+  flag that lets a single ungridded area fall back to a neutral raster
+  instead of failing the whole run. It now sets that flag like the other
+  grid-first workflows, so one gridless sliver no longer blocks the
+  factor/dimension/analysis score for the other 26 areas.</li>
+<li><strong>The <code>supports_empty_features_fallback</code> safety net above had a second,
+  much more damaging side effect: it could silently wipe an indicator's,
+  factor's or dimension's entire <code>study_area_grid</code> column back to NULL
+  after a real, successful write</strong> - seen as values present in the log
+  ("Executing: UPDATE study_area_grid SET workplace_index = 2") and gone
+  moments later ("Clearing column: UPDATE study_area_grid SET
+  workplace_index = NULL"), with every downstream indicator/factor/
+  dimension layer rendering as empty/red. <code>_apply_grid_column_zero_fallback()</code>
+  fires for <em>any</em> area with zero matching grid cells or zero input
+  features (not just slivers - an area simply having no OSM points/hazard
+  polygons/etc. for this particular indicator is routine), and the first
+  time it runs per workflow instance it unconditionally issued
+  <code>UPDATE study_area_grid SET col = NULL</code> with no <code>WHERE</code> clause - every
+  row, every area. Nine grid-first workflows each tracked their own
+  separate "have I cleared this column yet" flag (<code>_column_cleared</code> on
+  <code>PointPerCellWorkflow</code>/<code>PolygonPerCellWorkflow</code>/<code>PolylinePerCellWorkflow</code>/
+  <code>SinglePointBufferWorkflow</code>/<code>MultiBufferDistancesNativeWorkflow</code>;
+  <code>_grid_value_written</code>/<code>_grid_aggregated</code> on
+  <code>ContextualIndexScoreWorkflow</code>/<code>IndexScoreWorkflow</code>/
+  <code>AggregationWorkflowBase</code>) that was never synchronised with the base
+  class's own <code>_grid_column_cleared</code> flag the fallback actually checks -
+  so whichever area first had no features/cells (commonly <em>after</em> several
+  other areas had already written real data) triggered the fallback's
+  clear regardless of whether the column had, in fact, already been fully
+  and correctly written. All nine now set <code>self._grid_column_cleared =
+  True</code> immediately after their own successful write, so the fallback
+  correctly limits itself to filling in the one empty area instead of
+  wiping every other area's result.</li>
+<li>Every grid-write function in <code>grid_column_utils.py</code> now wraps its SQL
+  <code>UPDATE</code>(s) in an explicit <code>StartTransaction()</code>/<code>CommitTransaction()</code>
+  pair, checking the commit's return code and raising loudly if it fails,
+  instead of relying on an unchecked <code>PRAGMA wal_checkpoint</code> + dataset
+  close to persist the write (<code>gpkg_doctor.checkpoint_dataset()</code> swallows
+  all exceptions by design, on the assumption that <code>GDALClose()</code> would
+  still flush on its own - this codebase has already hit cases where that
+  assumption doesn't hold, see the Windows GDALClose/access-violation fix
+  above). Not the root cause of the data-loss symptom described above,
+  but a real gap worth closing defensively.</li>
+<li><strong>Clearing a single indicator/factor/dimension left its on-disk outputs,
+  <code>study_area_grid</code> column, and map layer behind.</strong> <code>clear_item()</code> only
+  reset the item's own status/result attributes - its masked rasters stayed
+  on disk, its grid column kept its last value, and its layer stayed in the
+  legend. Now also deletes the files directly inside the item's own
+  workflow directory (never recursing into child subdirectories, so
+  clearing a factor doesn't touch its indicators' outputs or vice versa),
+  blanks the item's own grid column (new <code>JsonTreeItem.gridColumnName()</code>,
+  matching the sanitisation <code>add_model_columns_to_grid()</code> used to create
+  it), and removes the item's own layer(s) from the legend/registry via a
+  new <code>geest.core.utilities.remove_from_map()</code> - which leaves the subgroup
+  holding the item's children's layers/groups completely untouched.</li>
+<li><strong>Clearing a single-indicator factor's row cleared the indicator but left
+  the factor itself untouched</strong> - found against a real project (Cabo
+  Verde): clearing the Contextual dimension correctly blanked
+  <code>dim_contextual</code>, but each of its three single-indicator factors kept
+  their stale "Completed" <code>fac_*</code> column/result/rasters after being
+  "cleared". Root cause: <code>JsonTreeModel.data()</code> hides a factor with exactly
+  one child indicator from the tree entirely, promoting that indicator's
+  row to display in the factor's place labeled with the factor's name - so
+  the one row a user sees and right-clicks ("Workplace Discrimination")
+  really represents two tree items (the factor and its indicator) sharing
+  a single visible row, and <code>index.internalPointer()</code> for that row returns
+  the indicator, not the factor. <code>clear_item()</code> now also clears the hidden
+  parent factor whenever the selected item is an indicator behind one
+  (recursion still stops there - a factor with multiple, independently
+  selectable children is untouched by clearing one of them, as before).</li>
+<li><strong>Rasterized output was entirely empty for every single-area (un-
+  partitioned) project, even though the underlying <code>study_area_grid</code>
+  column held the correct values</strong> - found via a new end-to-end test
+  driving the real clear/edit/run flow and sampling the actual raster
+  pixels, not just checking the result file existed.
+  <code>rasterize_grid_column()</code> builds a <code>WHERE area_name = '...'</code> clause, then
+  has fallback logic for projects that never populate <code>area_name</code> on their
+  grid rows at all (a single, un-partitioned area): it correctly detects
+  that case and drops the attribute filter used to compute the raster's
+  <em>extent</em>, but never dropped the same <code>where_clause</code> string handed to the
+  actual GDAL burn - which still matched zero rows, so <code>gdal.Rasterize()</code>
+  wrote nothing but its <code>nodata</code> fill value everywhere. The grid column
+  (written directly over SQL, unaffected) was always correct; only the
+  rasterized/combined-VRT output was empty. Both now derive from the same
+  decision.</li>
+<li><strong>A plain Run (no Shift) on a dimension/factor silently kept using an
+  indicator's OLD index score after it was edited</strong>, when that indicator
+  is hidden behind its single-child factor row and so can never be cleared
+  directly from the tree: <code>queue_workflow_task()</code>'s "skip if already
+  complete" check only looks at the item's own <code>result_file</code>, which
+  editing <code>index_score</code> alone never touched. Fixed in
+  <code>FixedValueDataSourceWidget.update_attributes()</code> - changing the value now
+  blanks the indicator's own <code>result</code>/<code>result_file</code>, so the normal
+  skip-if-already-complete check correctly recognises it needs to run
+  again, without the user needing to know to hold Shift.</li>
+<li><strong>Writing the per-zone dimension/factor/total averages
+  (<code>SubnationalAggregationProcessingTask._write_zone_results()</code>) failed on a
+  real Nix-based QGIS install</strong> with "mod_spatialite.so: cannot open shared
+  object file", even though it worked fine against the qgis/qgis Docker
+  image this was first verified against: a bare <code>sqlite3</code> connection needs
+  <code>mod_spatialite</code> loaded by name to satisfy the aggregates GeoPackage's own
+  RTree-trigger <code>WHEN</code> clauses, and Nix has no standard library search path
+  for a bare <code>.so</code> name to resolve against (hard-coding a nix store path
+  would be unique to the machine that built it). Now writes through
+  GDAL/OGR's <code>ExecuteSQL()</code> instead (<code>grid_column_utils.py</code>'s
+  <code>_open_gpkg_for_write()</code>/<code>_execute_sql_with_retry()</code>/<code>_commit_or_raise()</code>),
+  which already has those functions built in - the same reason every other
+  GeoPackage write in this codebase goes through OGR rather than a bare
+  <code>sqlite3</code> connection.</li>
+</ul>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">¶</a></h3>
+<ul>
+<li>Grid-first workflows (<code>ContextualIndexScoreWorkflow</code>, <code>AggregationWorkflowBase</code></li>
+<li>index scores, factor/dimension/analysis aggregation) wrote their value
+  to <code>study_area_grid</code> with one whole-table SQL <code>UPDATE</code> per area, even
+  though that SQL has no area filter and produces an identical result every
+  time - for a 27-area study area that meant running the same multi-second
+  <code>UPDATE</code> 27 times over. It now runs once per workflow; per-area
+  rasterizing, masking, and VRT-combining (needed to keep the output raster
+  sparse rather than one dense bounding-box raster) are unchanged.</li>
+</ul>
+<h2 id="206-2026-10-13">[2.0.6] - 2026-10-13<a class="headerlink" href="#206-2026-10-13" title="Permanent link">¶</a></h2>
+<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">¶</a></h3>
+<ul>
+<li>Reverse-engineered Software Requirements Specification under <code>srs/</code>
+  (branded Word + PDF deliverables, 18 UML diagrams as SVG, one-shot
+  <code>srs/build.sh</code> pipeline writing directly into the Kartoza Word template).</li>
+<li>SRS build toolchain in the dev shell (plantuml, python-docx, pillow,
+  libreoffice, Lato).</li>
+<li>GeoPackage corruption causal analysis
+  (<code>docs/gpkg-corruption-causal-analysis.md</code>).</li>
+<li>SRS chapter 8 "Shipped model catalogue", generated from
+  <code>geest/resources/model.json</code> at build time
+  (<code>srs/scripts/gen_model_catalogue.py</code>): a page per dimension and per
+  factor, every indicator with its defaults, brand-styled WBS tree diagrams
+  per dimension, and an indicator × processor capability matrix rendered as
+  SVG/PNG.</li>
+<li>QGIS launcher scripts now symlink the working-tree plugin into the GEOE3
+  profile's <code>python/plugins</code> folder before launching
+  (<code>scripts/ensure_plugin_link.sh</code>).</li>
+<li>Launcher scripts pin QGIS to a light palette even when the desktop is in
+  dark mode (<code>scripts/qgis_light_theme_startup.py</code> via <code>PYQGIS_STARTUP</code>;
+  Qt 6.8+ colour-scheme override with a light-Fusion-palette fallback).</li>
+<li>GeoPackage write-path hardening (causal analysis §5, all four items):
+  chunk tiles now go through the single unified writer connection, every
+  WAL checkpoint in the process is serialised behind one lock, all layers
+  (including <code>chunks</code>) are pre-created before worker threads start, and
+  map refreshes are deferred while the writer is active.</li>
+<li><code>admin.py generate-zip</code> now runs pre-flight checks before packaging:
+  aborts if the version in <code>config.json</code> is already published on
+  plugins.qgis.org, or if the checked-in <code>geest/metadata.txt</code> has drifted
+  from <code>config.json</code> (<code>--skip-checks</code> to bypass for local iteration).</li>
+<li>Categorised <code>nix develop</code> command reference covering the full plugin
+  lifecycle (<code>scripts/dev-help.sh</code>), replacing the old ad-hoc banner text.</li>
+</ul>
+<h3 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">¶</a></h3>
+<ul>
+<li>The analysis report has been completely redesigned: a flat, World Bank-
+  appropriate visual language (navy/cyan bands, hairline footers, page
+  numbers), a proper horizontal bar chart for processing times, clean map
+  neatlines with outside-frame coordinate annotations, and minimap grids —
+  the overview page shows the overall score plus dimension minimaps, each
+  dimension page its factor minimaps, and each factor page its indicator
+  minimaps. Funding/attribution moved to a styled closing page, blank pages
+  are impossible (layer validity is checked first), the cover typo is fixed,
+  and report maps no longer depend on the project CRS (which also hung
+  report generation when no project CRS was set). <code>export_pdf</code> gained an
+  optional dpi override for fast draft exports.</li>
+<li>The flake now sources QGIS from nixpkgs: <code>qgis</code> 4.x (latest) and
+  <code>qgis-ltr</code> 3.44.x; the geospatial-nix and qgis-source inputs were removed
+  and <code>flake.lock</code> updated accordingly. nixpkgs is pinned to the last
+  revision with binary-cached QGIS builds.</li>
+<li>Dev shell Qt tooling moved from Qt 5 to Qt 6 (<code>kdePackages.*</code>) to match
+  QGIS 4.x — nixpkgs rejects mixed Qt shells; each QGIS variant now gets the
+  matching PyQt WebEngine binding (PyQt6 for 4.x, PyQt5 for LTR).</li>
+<li>The dev shell recreates <code>.venv</code> automatically when the nix python
+  interpreter changes (a stale venv made pip write into the read-only
+  store).</li>
+<li>All pre-commit hook tooling (<code>black</code>, <code>flake8</code> + <code>flake8-docstrings</code> +
+  <code>pydocstyle</code>, <code>isort</code>, and the <code>pre-commit-hooks</code> basics) is now
+  provisioned by the nix flake instead of pre-commit fetching its own
+  copies from PyPI/GitHub on every machine; the dev shell reinstalls the
+  git hook on every <code>nix develop</code> so a nixpkgs pin bump can no longer leave
+  a hook with a dangling store-path shebang.</li>
+</ul>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">¶</a></h3>
+<ul>
+<li>GeoE3 by population yields no result in national-scale analyses (#455).</li>
+<li>A disabled factor no longer re-enables itself unexpectedly (#450).</li>
+<li>The indicator description window now updates dynamically when switching
+  indicators (#446).</li>
+<li>A broken or missing data source on one indicator no longer aborts a
+  multi-indicator run with a raw Python traceback: workflow start-up
+  errors are trapped at the queue boundary, the indicator's status icon
+  flips to failed with an accessible explanation in its tooltip, and the
+  rest of the queue continues. The known config-validation raises
+  (multi-buffer, point-per-cell, OSM transport) now produce plain-language
+  messages.</li>
+<li>GHSL tile download failures now raise a descriptive <code>GhslDownloadError</code>
+  instead of surfacing later as a bare <code>FileNotFoundError</code> from zipfile;
+  corrupt cached zips are removed so the next attempt re-downloads. The
+  GHSL integration tests skip (rather than error) when the JRC service is
+  unreachable, so CI no longer fails on network flakiness.</li>
+<li>SRS PDF conversion silently substituted DejaVu for the brand fonts and
+  dropped bold: <code>srs/build.sh</code> now provisions Lato and JetBrains Mono via a
+  throwaway fontconfig so PlantUML and LibreOffice embed the correct faces.</li>
+<li>GeoPackage self-healing hardening: locked/busy check results are now
+  classified as "could not assess" instead of corruption, so the healer can
+  never rebuild-and-swap a healthy database that is merely held by an active
+  writer (regression tests added).</li>
+<li>QGIS 4 / PyQt6 crash in the open-project panel: <code>event.Resize</code> instance
+  enum access replaced with <code>QEvent.Type.Resize</code> (works on PyQt5 too).</li>
+<li>QGIS 4 / PyQt6 plugin-load failures: all remaining unscoped Qt enum
+  accesses (<code>QTreeView.InternalMove</code>/<code>NoEditTriggers</code>,
+  <code>QFileDialog.ExistingFile</code>/<code>AcceptSave</code>, <code>QDockWidget.DockWidget*</code>,
+  <code>QScrollArea.NoFrame</code>, <code>QAbstractScrollArea.AdjustToContents</code>,
+  <code>QAbstractSpinBox.UpDownArrows</code>) replaced with their scoped forms — every
+  Qt attribute reference in the package is now mechanically verified against
+  both PyQt5 and PyQt6 by a new regression test
+  (<code>test/test_qt_enum_compliance.py</code>), so this bug class is caught by the
+  suite instead of at plugin load.</li>
+<li>QGIS 4 / PyQt6 crash when resizing data-source widgets: three widgets
+  read <code>PM_DefaultFrameWidth</code> off a style <em>instance</em> — replaced with
+  <code>QStyle.PixelMetric.PM_DefaultFrameWidth</code>, and the enum compliance test
+  now also bans instance enum-member access (<code>style().PM_*</code>, <code>event.X</code>).</li>
+<li>Active Transport skipped as "unconfigured" although a layer was set: the
+  polyline workflow now accepts the layer under any of its sibling mode
+  keys (<code>osm_transport_polyline_per_cell_*</code>, <code>road_network_layer_path</code>),
+  so switching analysis mode no longer orphans a configured layer; the
+  decline log lists exactly which data-source keys are present. A new
+  end-to-end suite (<code>test/test_workflow_job_e2e.py</code>) runs a real indicator
+  through the production queue → job → factory → workflow chain on both
+  QGIS images, covering the run path unit tests missed.</li>
+<li>Crash when running an indicator with no data source configured: six
+  workflow <code>__init__</code> methods did <code>return False</code> on missing/invalid
+  sources, which Python rejects with <code>TypeError: __init__() should return
+  None</code>. They now raise <code>WorkflowNotConfiguredError</code>; the queue manager
+  skips the job with a log entry and the tree panel shows a message-bar
+  hint naming the unconfigured indicator. An AST regression test
+  (<code>test/test_workflow_init_hygiene.py</code>) bans value-returns in workflow
+  <code>__init__</code> methods.</li>
+<li>Plugin reloads no longer stack duplicate dock widgets: <code>unload()</code>
+  reparents the dock before the queued deletion, and <code>initGui()</code> sweeps
+  stale <code>GeoE3DockWidget</code> instances left by a crashed previous load.</li>
+<li>Plugin reloads no longer stack duplicate toolbar buttons ("GeoE3
+  Settings" et al.): every unload phase is individually guarded so one
+  failing step cannot abort the cleanup, all toolbar actions carry
+  objectNames, and <code>initGui()</code> sweeps stale instances before creating new
+  ones.</li>
+<li>QGIS 4 / PyQt6 plugin-load failure: the dock area persisted in QSettings
+  is an int, which PyQt6 no longer auto-converts to <code>Qt.DockWidgetArea</code> —
+  now normalised through <code>_to_dock_widget_area()</code> (invalid values fall back
+  to the right dock) at every <code>addDockWidget</code> call, and the enum-vs-int
+  dock-area comparison that silently broke tabifying is fixed. A new test
+  (<code>test/test_geoe3_dock_construction.py</code>) builds the complete dock — all
+  panels — on both PyQt5 and PyQt6 images so constructor-time porting
+  regressions fail the suite instead of plugin load.</li>
+</ul>
+<h2 id="205-2026-09-01">[2.0.5] - 2026-09-01<a class="headerlink" href="#205-2026-09-01" title="Permanent link">¶</a></h2>
+<h3 id="added_2">Added<a class="headerlink" href="#added_2" title="Permanent link">¶</a></h3>
+<ul>
+<li>Environmental-hazard indicators now expose a clickable link to the source
+  dataset in the World Bank Data Catalog for the selected hazard (fire,
+  flood, landslide, cyclone, drought) (#398).</li>
+<li>Regional analyses now pull population demographics automatically from S2S
+  when the population source is S2S — new population-vector processing task
+  plus a population-source UI in the analysis aggregation dialog (#431).</li>
+<li>Nighttime Lights supports NOAA threshold classification (fixed Black
+  Marble value ranges, 5 classes) alongside Jenks Natural Breaks; the binary
+  option was replaced by the NOAA thresholds option (#396).</li>
+</ul>
+<h3 id="changed_2">Changed<a class="headerlink" href="#changed_2" title="Permanent link">¶</a></h3>
+<ul>
+<li>Flood data sources now work at both analysis scales: the raster (DDH
+  0–900) path is available in regional analyses and the S2S path in
+  national/local ones, with the S2S join using intersection-MAX; the source
+  is auto-derived from the indicator configuration (#423).</li>
+<li>Tree headings are now consistently Title Case (acronym/apostrophe-safe),
+  normalised at render time so existing projects' stored model.json is
+  unaffected.</li>
+</ul>
+<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">¶</a></h3>
+<ul>
+<li>GHSL masking (#420, #421): the GHSL options mask now uses the
+  <code>ghsl_settlements</code> layer already stored in the study-area GeoPackage
+  (clipped and reprojected at project setup) instead of depending on the
+  <code>ghsl_settlements_layer.parquet</code> download path, so masked scoring no
+  longer fails when that file is missing or empty.</li>
+<li>Landslide environmental-hazard scoring in regional analyses was reversed
+  and is now corrected (#428).</li>
+<li>Regional S2S Nighttime Lights scoring was inaccurate: NTL classification
+  now derives six dynamic classes from the data's own min–max range instead
+  of Jenks breaks, so every cell value maps to a class and nothing renders
+  unclassified (#424).</li>
+<li>Indicator dropdowns in the factor and dimension aggregation dialogs no
+  longer shift left when toggling between indicators (vertical scrollbar
+  pinned).</li>
+<li>Environmental-hazards datasource rows are better balanced: the source link
+  sits beside the file selector, the layer combo is width-capped, and rows
+  no longer hug the table border.</li>
+<li>Clicking the GeoE3 Score node now re-shows the last run result — the masked
+  score when a mask is active — instead of always reverting to the raw
+  score.</li>
+</ul>
+<h2 id="210-2026-07-13">[2.1.0] - 2026-07-13<a class="headerlink" href="#210-2026-07-13" title="Permanent link">¶</a></h2>
+<h3 id="added_3">Added<a class="headerlink" href="#added_3" title="Permanent link">¶</a></h3>
+<ul>
+<li>GeoPackage self-healing module (<code>geest.core.gpkg_doctor</code>) that detects and
+  repairs, in place, the corruption classes seen in the field: stale WAL
+  journals, duplicated schema objects (<code>trigger ... already exists</code> /
+  malformed database schema errors caused by historic write races), and
+  structural btree damage (repaired via a rebuild, keeping the corrupt
+  original as a <code>.corrupt-&lt;timestamp&gt;.bak</code> file).</li>
+<li>Automatic GeoPackage health checks (run in a background task so the UI
+  never blocks): on project open, after every workflow run completes, and at
+  the end of study area creation.</li>
+<li>Self-heal-and-retry in workflow CRS resolution, so an analysis run against
+  a corrupted study area GeoPackage repairs it and continues instead of
+  failing with "Could not determine CRS for study area".</li>
+<li>Unit tests for the self-healing module (<code>test/test_gpkg_doctor.py</code>).</li>
+</ul>
+<h3 id="fixed_3">Fixed<a class="headerlink" href="#fixed_3" title="Permanent link">¶</a></h3>
+<ul>
+<li>Root cause of study area GeoPackage corruption: <code>SQLITE_USE_OGR_VFS=YES</code>
+  was set process-wide during study area creation. The OGR VSI file layer
+  does not implement SQLite file locking, so concurrent write connections
+  could interleave page writes unprotected, producing duplicated
+  <code>sqlite_master</code> pages ("trigger rtree_..._delete already exists"). The
+  option is now forced off.</li>
+</ul>
+<h2 id="204-earlier">[2.0.4] - earlier<a class="headerlink" href="#204-earlier" title="Permanent link">¶</a></h2>
+<ul>
+<li>See git history for changes prior to the introduction of this changelog.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../license/" class="md-footer__link md-footer__link--prev" aria-label="Previous: License">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                License
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © World Bank Group — Made with 💗 by <a href="https://kartoza.com">Kartoza</a> · <a href="https://github.com/sponsors/kartoza">Donate</a> · <a href="https://github.com/worldbank/GeoE3">GitHub</a>
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/worldbank/GeoE3" target="_blank" rel="noopener" title="GitHub repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/sponsors/kartoza" target="_blank" rel="noopener" title="Sponsor Kartoza on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="m241 87.1 15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1v2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7v-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1"></path></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

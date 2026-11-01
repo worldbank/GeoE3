@@ -1,0 +1,3572 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Geospatial Enabling Environments for Employment — a QGIS plugin implementing the World Bank's Geospatial Women's Employment Analytical Framework (GeoWEAF).
+">
+      
+      
+        <meta name="author" content="Kartoza">
+      
+      
+        <link rel="canonical" href="https://worldbank.github.io/GeoE3/about/legacy-detailed-reference/">
+      
+      
+        <link rel="prev" href="../media/">
+      
+      
+        <link rel="next" href="../license/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Legacy Detailed Reference - GeoE3</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Nunito";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/tokens.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#legacy-detailed-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="GeoE3" class="md-header__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            GeoE3
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Legacy Detailed Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard="" data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../training/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Training Walkthrough
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  About
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="GeoE3" class="md-nav__button md-logo" aria-label="GeoE3" data-md-component="logo">
+      
+  <img src="../../images/logo.png" alt="logo">
+
+    </a>
+    GeoE3
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/worldbank/GeoE3" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    worldbank/GeoE3
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../training/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Training Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Training Walkthrough
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/interface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/the-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/processor-types/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processor Types
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/datacollection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/configuring-items/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuring Items
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/contextual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contextual Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/accessibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accessibility Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/placecharacterization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Place Characterization Dimension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/running-the-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running the Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/insights/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Analysis Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../training/sharing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sharing Your Results
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked="">
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    About
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../background/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Background &amp; Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../acknowledgements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Acknowledgements
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../media/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Media &amp; Publications
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Detailed Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy Detailed Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#user-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Manual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-qgis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install QGIS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-open-route-service-ors-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Open Route Service (ORS) plugin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-plugin-on-local-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Plugin on local device
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the Plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contextual-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contextual Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contextual Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workplace-discrimination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workplace Discrimination
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regulatory-frameworks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regulatory Frameworks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Financial Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessibility-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessibility Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessibility Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#women-s-travel-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Women's Travel Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-public-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Public Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-education-and-training-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Education and Training Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-health-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Health Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-financial-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Financial Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ad-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#place-characterization-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Place Characterization Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Place Characterization Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#active-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-hazards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Hazards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#education" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Education
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fragility-conflict-and-violence-fcv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fragility, conflict, and violence (FCV)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#water-sanitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Water Sanitation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pd-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dimension-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimension Aggregation Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#about-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        About Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insights-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insights Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insights Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enablement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-classify-into-discrete-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Classify into discrete classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-combine-score-and-population-classifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Combine score and population classifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Aggregation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#re-zone-raster-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RE Zone Raster Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#re-point-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RE Point Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessibilty-permissions-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessibility Tabs Permissions Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distorted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QGIS Plugin/Interface Widgets and Text Are Distorted and Scaled Incorrectly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raster-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raster Outputs Not Being Loaded and Displaying Correctly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Output Directory Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#country-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Country Boundary Polygon Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Co-ordinate Reference System (CRS) Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Way to Refresh the Plugin if It Freezes or Does Not Run as Expected
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-crss-for-sids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List of CRSs for SIDS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#user-manual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Manual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-qgis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install QGIS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-open-route-service-ors-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install Open Route Service (ORS) plugin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installing-plugin-on-local-device" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Plugin on local device
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-the-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using the Plugin
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Using the Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contextual-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contextual Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contextual Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workplace-discrimination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workplace Discrimination
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regulatory-frameworks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regulatory Frameworks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#financial-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Financial Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessibility-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessibility Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Accessibility Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#women-s-travel-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Women's Travel Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-public-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Public Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-education-and-training-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Education and Training Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-health-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Health Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-to-financial-facilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access to Financial Facilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ad-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#place-characterization-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Place Characterization Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Place Characterization Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#active-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Transport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#digital-inclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digital Inclusion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-hazards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environmental Hazards
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#education" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Education
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fragility-conflict-and-violence-fcv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fragility, conflict, and violence (FCV)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#water-sanitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Water Sanitation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pd-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dimension-aggregation-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimension Aggregation Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#about-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        About Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#insights-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Insights Tab
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Insights Tab">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enablement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enablement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-classify-into-discrete-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Classify into discrete classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-combine-score-and-population-classifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Combine score and population classifications
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-aggregation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Aggregation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#re-zone-raster-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RE Zone Raster Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#re-point-locations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RE Point Locations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessibilty-permissions-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessibility Tabs Permissions Error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#distorted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        QGIS Plugin/Interface Widgets and Text Are Distorted and Scaled Incorrectly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raster-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raster Outputs Not Being Loaded and Displaying Correctly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Output Directory Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#country-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Country Boundary Polygon Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: Co-ordinate Reference System (CRS) Not Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternative" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternative Way to Refresh the Plugin if It Freezes or Does Not Run as Expected
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list-of-crss-for-sids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List of CRSs for SIDS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation">
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    About
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/worldbank/GeoE3/edit/new_docs/docs/about/legacy-detailed-reference.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/worldbank/GeoE3/raw/new_docs/docs/about/legacy-detailed-reference.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 1 3 3 3 3 0 0 1-3 3 3 3 0 0 1-3-3 3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0 9.821 9.821 0 0 0-17.64 0"></path></svg>
+    </a>
+  
+
+
+<h1 id="legacy-detailed-reference">Legacy Detailed Reference<a class="headerlink" href="#legacy-detailed-reference" title="Permanent link">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is the original, factor-by-factor user manual that predates the
+<a href="../../training/">Training Walkthrough</a>. It's kept here for
+reference since it documents some individual factors (e.g. Workplace
+Discrimination, Regulatory Frameworks, Women's Travel Patterns) in more
+granular detail than the current walkthrough. Start with the
+<a href="../../training/">Training Walkthrough</a> first.</p>
+</div>
+<p>This tool employs a multicriteria evaluation (MCE) framework to spatially describe womens' access to formal employment and business opportunities in the renewable energy sector in Small Island Developing States (SIDS). The MCE framework allows for the incorporation and assessment of dimensions, factors, and indicators to identify where the enabling environments (or lack thereof) are located for women to secure employment opportunities in SIDS.</p>
+<p>(The spatial GDBs for all SIDS and the methodology report are linked from <a href="../../training/datacollection/#pre-built-geodatabases-for-sids-countries">Getting Data</a> and <a href="../#the-theory-behind">About</a> respectively.)</p>
+<h2 id="user-manual">User Manual<a class="headerlink" href="#user-manual" title="Permanent link">¶</a></h2>
+<p><strong>Gender Enabling Environments Spatial Tool (GEOE3) User Manual</strong></p>
+<ol>
+<li><a href="#install-qgis">Install QGIS</a></li>
+<li><a href="#install-open-route-service-ors-plugin">Install Open Route Service (ORS) plugin</a></li>
+<li><a href="#installing-plugin-on-local-device">Installing Plugin on local device</a></li>
+<li><a href="#using-the-plugin">Using the Plugin</a><ul>
+<li>4.1. <a href="#setup-tab">Setup Tab</a></li>
+<li>4.2. <a href="#contextual-tab">Contextual Tab</a><ul>
+<li>4.2.1. <a href="#workplace-discrimination">Workplace Discrimination</a></li>
+<li>4.2.2. <a href="#regulatory-frameworks">Regulatory Frameworks</a></li>
+<li>4.2.3. <a href="#financial-inclusion">Financial Inclusion</a></li>
+<li>4.2.4. <a href="#aggregate">Aggregate</a></li>
+</ul>
+</li>
+<li>4.3. <a href="#accessibility-tab">Accessibility Tab</a><ul>
+<li>4.3.1. <a href="#women-s-travel-patterns">Women's Travel Patterns</a></li>
+<li>4.3.2. <a href="#access-to-public-transport">Access to Public Transport</a></li>
+<li>4.3.3. <a href="#access-to-education-and-training-facilities">Access to Education and Training Facilities</a></li>
+<li>4.3.4. <a href="#access-to-health-facilities">Access to Health Facilities</a></li>
+<li>4.3.5. <a href="#access-to-financial-facilities">Access to Financial Facilities</a></li>
+<li>4.3.6. <a href="#ad-aggregation-tab">Aggregate</a></li>
+</ul>
+</li>
+<li>4.4. <a href="#place-characterization-tab">Place Characterization Tab</a><ul>
+<li>4.4.1. <a href="#active-transport">Active Transport</a></li>
+<li>4.4.2. <a href="#safety">Safety</a></li>
+<li>4.4.3. <a href="#digital-inclusion">Digital Inclusion</a></li>
+<li>4.4.4. <a href="#environmental-hazards">Environmental Hazards</a></li>
+<li>4.4.5. <a href="#education">Education</a></li>
+<li>4.4.6. <a href="#fragility-conflict-and-violence-fcv">Fragility, conflict, and violence (FCV)</a></li>
+<li>4.4.7. <a href="#water-sanitation">Water Sanitation</a></li>
+<li>4.4.8. <a href="#pd-aggregation-tab">Aggregate</a></li>
+</ul>
+</li>
+<li>4.5. <a href="#dimension-aggregation-tab">Dimension Aggregation Tab</a></li>
+<li>4.6. <a href="#about-tab">About Tab</a></li>
+<li>4.7. <a href="#insights-tab">Insights Tab</a><ul>
+<li>4.7.1. <a href="#enablement">Enablement</a></li>
+<li>4.7.2. <a href="#re-zone-raster-locations">RE Zone Raster Locations</a></li>
+<li>4.7.3. <a href="#re-point-locations">RE Point Locations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#troubleshooting">Troubleshooting</a><ul>
+<li>5.1. <a href="#accessibilty-permissions-error">Accessibility Tabs Permissions Error</a></li>
+<li>5.2. <a href="#distorted">QGIS Plugin/Interface Widgets and Text Are Distorted and Scaled Incorrectly</a></li>
+<li>5.3. <a href="#raster-outputs">Raster Outputs Not Being Loaded and Displaying Correctly</a></li>
+<li>5.4. <a href="#output-directory">Error: Output Directory Not Set</a></li>
+<li>5.5. <a href="#country-boundary">Error: Country Boundary Polygon Not Set</a></li>
+<li>5.6. <a href="#crs">Error: Co-ordinate Reference System (CRS) Not Set</a></li>
+<li>5.7. <a href="#alternative">Alternative Way to Refresh the Plugin if It Freezes or Does Not Run as Expected</a></li>
+</ul>
+</li>
+<li><a href="#list-of-crss-for-sids">List of CRSs for SIDS</a></li>
+<li><a href="#license">License</a></li>
+</ol>
+<h2 id="install-qgis">Install QGIS<a class="headerlink" href="#install-qgis" title="Permanent link">¶</a></h2>
+<ol>
+<li>The link below will take you to the QGIS website where you will be able to download the QGIS installation file. Note that it is possible to use older versions of QGIS, e.g. Version 3.32 - Lima.</li>
+</ol>
+<p>QGIS website: <a href="https://www.qgis.org/en/site/">https://www.qgis.org/en/site/</a></p>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/installQGIS.jpg" data-desc-position="bottom"><img src="../pictures/installQGIS.jpg" alt="Install QGIS"></a>
+</p>
+
+<ol>
+<li>
+<p>Once the installation file is downloaded run the installation file.</p>
+</li>
+<li>
+<p>A pop-up window as seen in the image below should show up. Follow the prompts and leave all settings on default.</p>
+</li>
+</ol>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/qgis-setup.jpg" data-desc-position="bottom"><img src="../pictures/qgis-setup.jpg" alt="QGIS Setup"></a>
+</p>
+
+<h2 id="install-open-route-service-ors-plugin">Install Open Route Service (ORS) plugin<a class="headerlink" href="#install-open-route-service-ors-plugin" title="Permanent link">¶</a></h2>
+<ol>
+<li>Open QGIS, navigate to the "Plugins" tab and select the "Manage and Install Plugins…" option from the drop-down menu.</li>
+</ol>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/installORS.jpg" data-desc-position="bottom"><img src="../pictures/installORS.jpg" alt="install ORS"></a>
+</p>
+
+<ol>
+<li>
+<p>The "Plugins" pop-up window should appear as seen in the image below.</p>
+</li>
+<li>
+<p>In the search bar type "ORS", select the "ORS Tool" from the list of plugins, and select the install button to install the plugin.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/6274c002-9b56-4374-8fd4-9278d2246afb" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/6274c002-9b56-4374-8fd4-9278d2246afb"></a></p>
+<ol>
+<li>You will now have to set up an account on the Open Route Service website which can be accessed by clicking the link below.</li>
+</ol>
+<p>ORS website: <a href="https://openrouteservice.org/">https://openrouteservice.org/</a></p>
+<p>ORS Sign up: <a href="https://openrouteservice.org/dev/#/signup">https://openrouteservice.org/dev/#/signup</a></p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/79728902-e5ba-49c1-a262-32cd9df628a6" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/79728902-e5ba-49c1-a262-32cd9df628a6"></a></p>
+<ol>
+<li>
+<p>Fill in all the necessary fields to sign up and then log into your account.</p>
+</li>
+<li>
+<p>Request a standard token and provide a name for the Token.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/72eb8f24-84b5-42e9-8da7-e19bf96d410a" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/72eb8f24-84b5-42e9-8da7-e19bf96d410a"></a></p>
+<ol>
+<li>Once the token has been created, navigate to the Dashboard tab and click on the API key as seen in the image below. The API key should now be copied to the clipboard.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/26564e04-4520-4022-9930-4b791df8e63f" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/26564e04-4520-4022-9930-4b791df8e63f"></a></p>
+<ol>
+<li>In the QGIS window navigate the ORS tool and select "Provider Settings".</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/45a45354-8478-45df-b212-c477a99b2c9a" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/45a45354-8478-45df-b212-c477a99b2c9a"></a></p>
+<ol>
+<li>
+<p>The provider settings pop-up window should now appear as seen in the image below.</p>
+</li>
+<li>
+<p>Past the API key that has been copied to the clipboard into the API Key field and press "OK".</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/b255a792-4d46-42ef-a0ff-79edb1e2fd19" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/b255a792-4d46-42ef-a0ff-79edb1e2fd19"></a></p>
+<p><strong>N.B.</strong> Additional credits can be requested on the ORS site by applying for the collaborative plan as described <a href="https://openrouteservice.org/plans/">here</a>. You will have to provide a brief motivation, however, if your application is in a humanitarian, academic, governmental, or not-for-profit organization, you should be eligible for the collaborative plan.</p>
+<p>This email address can also be used for further assistance:</p>
+<p>support@openrouteservice.heigit.org</p>
+<h2 id="installing-plugin-on-local-device">Installing Plugin on local device<a class="headerlink" href="#installing-plugin-on-local-device" title="Permanent link">¶</a></h2>
+<ol>
+<li>Click on the green "Code" button and select the "Download ZIP" option.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/af517d0b-8b32-43b6-a664-0bb250a1d620" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/af517d0b-8b32-43b6-a664-0bb250a1d620"></a></p>
+<ol>
+<li>
+<p>Once the download has been completed extract the contents of the ZIP file.</p>
+</li>
+<li>
+<p>Navigate to your extracted ZIP folder and copy the <em>requirements.txt</em> file.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/6adea1a2-e63c-4067-9052-346811697828" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/6adea1a2-e63c-4067-9052-346811697828"></a></p>
+<ol>
+<li>
+<p>Navigate to the QGIS program folder and paste the <em>requirements.txt</em> file into it. The file path would be similar to this: <em>C:\Program Files\QGIS 3.32.0</em> as seen in the image under <strong>step 5</strong>.</p>
+</li>
+<li>
+<p>Run the <em>OSGeo4W</em> batch file.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/9a8376bb-dc50-41fa-a3fd-f3e0757a3850" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/9a8376bb-dc50-41fa-a3fd-f3e0757a3850"></a></p>
+<ol>
+<li>
+<p>A command line pop-up window will appear as seen in the image below.</p>
+</li>
+<li>
+<p>Type the following into it and press Enter.
+<code>pip install -r requirements.txt</code></p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/ed373467-0f80-4b75-8931-9c9e2d03d013" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/ed373467-0f80-4b75-8931-9c9e2d03d013"></a></p>
+<ol>
+<li>
+<p>All the Python libraries that the Plugin is dependent on will now be installed. This can take a few minutes to install.</p>
+</li>
+<li>
+<p>Once the installations are complete you can close the command line pop-up window.</p>
+</li>
+<li>
+<p>Open QGIS, navigate to the "Plugins" tab and select the "Manage and Install Plugins…" option from the drop-down menu.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/39e233a5-15de-4471-9560-028cd8cde839" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/39e233a5-15de-4471-9560-028cd8cde839"></a></p>
+<ol>
+<li>In the plugin pop-up window navigate to the "Install from ZIP" tab.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/9ed559bc-5672-4631-a33d-714710440819" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/9ed559bc-5672-4631-a33d-714710440819"></a></p>
+<ol>
+<li>From the "Install from ZIP" tab navigate back to your extracted ZIP folder and select the "gender_indicator_tool" compressed (zipped) folder as seen in the image below.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/f2e81343-1bb4-4dc1-b593-38c26726f767" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/f2e81343-1bb4-4dc1-b593-38c26726f767"></a></p>
+<ol>
+<li>
+<p>Once the ZIP file has been selected click on "Install Plugin".</p>
+</li>
+<li>
+<p>Once the plugin has been installed navigate to the "All" tab.</p>
+</li>
+<li>
+<p>In the search bar type "GEOE3" and click the check box next to the "Gender Enabling Environments Spatial Tool (GEOE3)" to install the plugin.</p>
+</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/aac4db6e-3585-40dc-9e73-d0eb3a8bc247" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/aac4db6e-3585-40dc-9e73-d0eb3a8bc247"></a></p>
+<ol>
+<li>The plugin is now installed and you should now be able to access it in your toolbar or under the Plugin's tab as seen in the image below.</li>
+</ol>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/eceaf443-ff8b-4be0-9282-a1236a03bb86" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/eceaf443-ff8b-4be0-9282-a1236a03bb86"></a></p>
+<h2 id="using-the-plugin">Using the Plugin<a class="headerlink" href="#using-the-plugin" title="Permanent link">¶</a></h2>
+<p>Examples of files that can be used as input at a particular step as per the Pilot Country Database will be indicated at the end of the step.</p>
+<h3 id="setup-tab">Setup Tab<a class="headerlink" href="#setup-tab" title="Permanent link">¶</a></h3>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/setupTab.jpg" data-desc-position="bottom"><img src="../pictures/setupTab.jpg" alt="Setup Tab"></a>
+</p>
+
+<ol>
+<li>
+<p>Create a project folder that will be used to store all tool outputs.</p>
+</li>
+<li>
+<p>Set the output directory to the project folder created in the previous step.</p>
+</li>
+<li>
+<p>Set the country boundary layer by navigating to and selecting the <strong>Admin0</strong> country boundary polygon shapefile for the country you want to analyze.</p>
+</li>
+</ol>
+<p><strong>Input File: AdminBoundaries/Admin0.shp</strong></p>
+<ol>
+<li>
+<p>Select the appropriate coordinate reference system (CRS) from the QGIS CRS database. Appendix A lists all the CRS to be used for the SIDS countries.</p>
+</li>
+<li>
+<p>Copy and paste the EPSG code for your specific country and paste it in the Filter bar as seen in the image below.</p>
+</li>
+</ol>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/CRS.jpg" data-desc-position="bottom"><img src="../pictures/CRS.jpg" alt="CRS"></a>
+</p>
+
+<ol>
+<li>
+<p>Select the CRS from the list and click “OK”.</p>
+</li>
+<li>
+<p>Set your preferred output raster output resolution in meters squared.</p>
+</li>
+</ol>
+<h3 id="contextual-tab">Contextual Tab<a class="headerlink" href="#contextual-tab" title="Permanent link">¶</a></h3>
+<h4 id="workplace-discrimination">Workplace Discrimination<a class="headerlink" href="#workplace-discrimination" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/WD.jpg" data-desc-position="bottom"><img src="../pictures/WD.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to the WBL (Women, Business and the Law) report and input the WBL index score representing the value from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. This indicator is composed by the Workplace Index score of the WBL. The data is already formatted on a scale from 1 to 100.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Contextual” folder. (Project_Folder/Contextual/WD.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="regulatory-frameworks">Regulatory Frameworks<a class="headerlink" href="#regulatory-frameworks" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/RF.jpg" data-desc-position="bottom"><img src="../pictures/RF.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to the WBL (Women, Business and the Law) report and input the WBL Pay and Parenthood index scores, values ranging from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. This indicator is composed by aggregating the Parenthood and Pay Index scores of the WBL. The data is already formatted on a scale from 1 to 100.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Contextual” folder (Project_Folder/Contextual/RF.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="financial-inclusion">Financial Inclusion<a class="headerlink" href="#financial-inclusion" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/FI.jpg" data-desc-position="bottom"><img src="../pictures/FI.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to the WBL (Women, Business and the Law) report and input the WBL Entrepreneurship index score, value ranging from 0 to 100. This value represents data at the national level and must be standardized on a scale ranging from 0 to 5. The data is already formatted on a scale from 1 to 100. It comes from the Entrepreneurship rating of the WBL Index.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Contextual” folder (Project_Folder/Contextual/FIN.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="aggregate">Aggregate<a class="headerlink" href="#aggregate" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/WDAG.jpg" data-desc-position="bottom"><img src="../pictures/WDAG.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Load the raster outputs generated in each of the previous factor tabs for the Contextual Dimension.
+If a factor was executed in the same work session, its file path will automatically be populated after execution.</p>
+</li>
+<li>
+<p>If factors are missing adjust the weighting percentage accordingly and ensure it totals to 100%.</p>
+</li>
+<li>
+<p>If a factor is missing it needs to be given a weighting of 0%. All factors should have equal weights.</p>
+</li>
+<li>
+<p>Enter an alternate aggregated raster output file name if desired. The standard output file name is Contextual_score.tif</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The aggregated layer will be loaded to the QGIS and appear in the table of contents.</p>
+</li>
+<li>
+<p>The aggregated output raster file will be stored in the project folder specified in the “Setup” tab, under the “Contextual” folder. (Project_Folder/Contextual/ Contextual_score.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h3 id="accessibility-tab">Accessibility Tab<a class="headerlink" href="#accessibility-tab" title="Permanent link">¶</a></h3>
+<h4 id="women-s-travel-patterns">Women's Travel Patterns<a class="headerlink" href="#women-s-travel-patterns" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/WTP.jpg" data-desc-position="bottom"><img src="../pictures/WTP.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile input of facilities related to women’s role as caregivers. This includes green spaces, grocery stores, pharmacies, kindergartens and schools.</p>
+</li>
+<li>
+<p>Select the mode of travel (Walking OR Driving).</p>
+</li>
+<li>
+<p>Select the method of measurement (Distance OR Time).</p>
+</li>
+<li>
+<p>Specify travel distance or time increments in meters or time respectively using comma delimitation.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>Each output factor will be stored in the project folder specified in the “Setup” tab, in the “WTP” folder under the “Accessibility” folder and have the following names WTP_Walking_Green_spaces.tif, WTP_Walking_Groceries.tif, WTP_Walking_Pharmacies.tif and WTP_Walking_Kindergartens_and_Schools.tif. The user can rename the output file to preferred filename.</p>
+</li>
+<li>
+<p>Click the “Aggregate” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Accessibility” folder. (Project_Folder/Accessibility/WTP.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="access-to-public-transport">Access to Public Transport<a class="headerlink" href="#access-to-public-transport" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/APT.jpg" data-desc-position="bottom"><img src="../pictures/APT.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile input for public transport stops, including both land and maritime stops.</p>
+</li>
+<li>
+<p>Select the mode of travel (Walking OR Driving).</p>
+</li>
+<li>
+<p>Select the method of measurement (Distance OR Time).</p>
+</li>
+<li>
+<p>Specify travel distance or time increments in meters or time respectively using comma delimitation.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder set in the “Setup” tab, under the “Accessibility” folder (Project_Folder/Accessibility/PBT.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="access-to-education-and-training-facilities">Access to Education and Training Facilities<a class="headerlink" href="#access-to-education-and-training-facilities" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/ETF.jpg" data-desc-position="bottom"><img src="../pictures/ETF.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile input of education and training facilities (colleges, training facilities and universities).</p>
+</li>
+<li>
+<p>Select the mode of travel (Walking OR Driving).</p>
+</li>
+<li>
+<p>Select the method of measurement (Distance OR Time).</p>
+</li>
+<li>
+<p>Specify travel distance or time increments in meters or time respectively using comma delimitation.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Accessibility” folder (Project_Folder/Accessibility/ETF.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="access-to-health-facilities">Access to Health Facilities<a class="headerlink" href="#access-to-health-facilities" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/HEF.jpg" data-desc-position="bottom"><img src="../pictures/HEF.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile input of health facilities (hospitals and clinics as the points of interest).</p>
+</li>
+<li>
+<p>Select the mode of travel (Walking OR Driving).</p>
+</li>
+<li>
+<p>Select the method of measurement (Distance OR Time).</p>
+</li>
+<li>
+<p>Specify travel distance or time increments in meters or time respectively using comma delamination.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Accessibility” folder (Project_Folder/Accessibility/HEF.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="access-to-financial-facilities">Access to Financial Facilities<a class="headerlink" href="#access-to-financial-facilities" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/FIF.jpg" data-desc-position="bottom"><img src="../pictures/FIF.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile input of financial facilities (location of banks and other financial facilities except for ATMs).</p>
+</li>
+<li>
+<p>Select the mode of travel (Walking OR Driving).</p>
+</li>
+<li>
+<p>Select the method of measurement (Distance OR Time).</p>
+</li>
+<li>
+<p>Specify travel distance or time increments in meters or time respectively using comma delimitation.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Accessibility” folder. (Project_Folder/Accessibility/FIF.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="ad-aggregation-tab">Aggregate<a class="headerlink" href="#ad-aggregation-tab" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/AGGACC.jpg" data-desc-position="bottom"><img src="../pictures/AGGACC.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Load the raster outputs generated in each of the previous factor tabs for the Accessibility Dimension.
+<em>If a factor was executed in the same work session, the file path will automatically be populated after execution.</em></p>
+</li>
+<li>
+<p>If factors are missing, adjust the weighting percentage accordingly and ensure it totals to 100%.
+<em>If a factor is missing it needs to be given a weighting of 0%. All factors should have equal weighting within a dimension.</em></p>
+</li>
+<li>
+<p>Enter alternate aggregated raster output file name if desired.</p>
+</li>
+<li>
+<p>Enter an alternate aggregated raster output file name if desired. The standard output file name is Accessibility_score.tif.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The aggregated layer will be loaded to the QGIS and appear in the table of contents.</p>
+</li>
+<li>
+<p>The aggregated output raster file will be stored in the project folder specified in the “Setup” tab, under the “Accessibility” folder (Project_Folder/Accessibility/Accessibility_score.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h3 id="place-characterization-tab">Place Characterization Tab<a class="headerlink" href="#place-characterization-tab" title="Permanent link">¶</a></h3>
+<h4 id="active-transport">Active Transport<a class="headerlink" href="#active-transport" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/AT.jpg" data-desc-position="bottom"><img src="../pictures/AT.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile for crosswalks, polyline shapefiles for cycle paths and for footpaths and polygon shapefile for block lengths.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>Each output factor will be stored in the project folder specified in the “Setup” tab, in the “AT” folder under the “Place Characterization” folder and have the following names AT_street_crossings.tif, AT_cycle_paths.tif, AT_footway.tif and AT_blocks.tif. The user can rename the output file to preferred filename.</p>
+</li>
+<li>
+<p>Click the “Aggregate” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/Activetransport.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="safety">Safety<a class="headerlink" href="#safety" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/SAF.jpg" data-desc-position="bottom"><img src="../pictures/SAF.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>Navigate to and select</li>
+<li><strong>streetlight locations</strong> (point shapefile)</li>
+<li>or, if unavailable, <strong>VIIRS Nighttime Lights dataset (.tif)</strong> may be used as proxy data for streetlight locations</li>
+<li>
+<p>alternatively, <strong>Perceived Safety data (polygon shapefile)</strong> can be used if other data is unavailable; select the field containing the numeric value representing data on women's perceived safety at the municipal, district, state, or any other required level. The tool would then standardize these scores, percentages, or statistics on a scale from 0 to 5, where 5 indicates the lowest level of violence or the highest level of perceived safety. Example:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Score 5 (Safest): 0 to 1 homicide per 100,000 people
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Score 4: 1.1 to 3 homicides per 100,000 people
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Score 3: 3.1 to 6 homicides per 100,000 people
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Score 2: 6.1 to 10 homicides per 100,000 people
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Score 1: 10.1 to 15 homicides per 100,000 people
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Score 0 (Least Safe): More than 15 homicides per 100,000 people
+</span></code></pre></div>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder set in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/PlaceCharacterization/SAF.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="digital-inclusion">Digital Inclusion<a class="headerlink" href="#digital-inclusion" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/DIG.jpg" data-desc-position="bottom"><img src="../pictures/DIG.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select</p>
+<ul>
+<li>the polygon input shapefile containing a field indicating the percentage of houses with internet access with disaggregated scores at, for example, the municipal or district level; select the field containing the          numeric value representing data on houses with internet access.</li>
+<li>or a score at the country level as “Internet Access Value”</li>
+</ul>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/DIG.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="environmental-hazards">Environmental Hazards<a class="headerlink" href="#environmental-hazards" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/ENV.jpg" data-desc-position="bottom"><img src="../pictures/ENV.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>Navigate to and select raster hazard event.</li>
+<li><strong>Forest Fire</strong>: Active Fires Density</li>
+<li><strong>Flood</strong>: Flood Hazard</li>
+<li><strong>Landslide</strong>: Landslide Susceptibility</li>
+<li><strong>Tropical Cyclone</strong>: Frequency of Tropical Cyclones</li>
+<li><strong>Drought</strong>: Global Drought Hazard based on the Standardized Precipitation Evapotranspiration Index (SPEI)</li>
+</ol>
+<p>Users should be able to select between 1 to 5 of these hazards that are most relevant to their specific context. For each selected hazard, the tool will generate raster cells of 100m x 100m and assign a score ranging from 0 to 5, standardized according to the hazard's scale. A score of 5 represents no hazard, while a score of 0 indicates areas at the highest risk. The final score will be the average of the scores from the selected hazards.</p>
+<ol>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>Each output factor will be stored in the project folder specified in the “Setup” tab, in the “ENV” folder under the “Place Characterization” folder and have the following names Hazard_Landslide.tif, Hazard_Fires.tif, Hazard_Floods_100_yrp.tif, Hazard_Tropical_Cyclone.tif, and Hazard_Drought.tif. The user can rename the output file to preferred filename.</p>
+</li>
+<li>
+<p>Click the “Aggregate” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/ENV.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="education">Education<a class="headerlink" href="#education" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/EDU.jpg" data-desc-position="bottom"><img src="../pictures/EDU.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select</p>
+</li>
+<li>
+<p>the polygon input shapefile containing a field indicating the percentage of women who have achieved a post-secondary education with disaggregated scores at, for example, the municipal or district level; select the field containing the numeric value representing the above percentage.</p>
+</li>
+<li>
+<p>or a score at the country level as “percentage of the labor force comprising women with university degrees in specified field” in Education Level Value.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/EDU.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="fragility-conflict-and-violence-fcv">Fragility, conflict, and violence (FCV)<a class="headerlink" href="#fragility-conflict-and-violence-fcv" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/FCV.jpg" data-desc-position="bottom"><img src="../pictures/FCV.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select the csv data for Fragility, conflict and violence (FCV-ACLED data).</p>
+</li>
+<li>
+<p>The default radius of 5km circular buffer can be changed from “Impact Radius in Meters (Optional)” if the impact radius of an event is known.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/FCV.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="water-sanitation">Water Sanitation<a class="headerlink" href="#water-sanitation" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/WAS.jpg" data-desc-position="bottom"><img src="../pictures/WAS.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select point shapefile for water points, catch basins, water valves and fire hydrants.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/WAS.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h4 id="pd-aggregation-tab">Aggregate<a class="headerlink" href="#pd-aggregation-tab" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/AGGPD.jpg" data-desc-position="bottom"><img src="../pictures/AGGPD.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Load the raster outputs generated in each of the previous factor tabs for the Place Characterization Dimension.
+If a factor was executed in the same work session, the file path will automatically be populated after execution.</p>
+</li>
+<li>
+<p>If factors are missing, adjust the weighting percentage accordingly and ensure it totals to 100%.
+If a factor is missing it needs to be given a weighting of 0%. All factors should have equal weighting within a dimension. The Auto button will automatically adjust the weights to ensure they sum to 100.</p>
+</li>
+<li>
+<p>Enter alternate aggregated raster output file name if desired.</p>
+</li>
+<li>
+<p>Enter an alternate aggregated raster output file name if desired. The standard output file name is Place_score.tif.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The aggregated layer will be loaded to the QGIS and appear in the table of contents.</p>
+</li>
+<li>
+<p>The aggregated output raster file will be stored in the project folder specified in the “Setup” tab, under the “Place Characterization” folder (Project_Folder/Place Characterization/Place_score.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h3 id="dimension-aggregation-tab">Dimension Aggregation Tab<a class="headerlink" href="#dimension-aggregation-tab" title="Permanent link">¶</a></h3>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/AGGALL.jpg" data-desc-position="bottom"><img src="../pictures/AGGALL.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>Load each dimension’s aggregated raster outputs of previous domains (Contextual, Accessibility and Place Characterization).</li>
+</ol>
+<p>If a dimension’s factor aggregation was executed in the same work session, its file path will automatically be populated after execution.</p>
+<ol>
+<li>
+<p>If dimensions are missing, adjust the weighting percentage accordingly and ensure it totals up to 100%.
+If a dimension is missing it needs to be given a weighting of 0%. All domains should have equal weighting within the aggregation tab.</p>
+</li>
+<li>
+<p>Enter aggregated dimensions raster output file name.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>Status text next to the “Execute” button will appear and let you know once processing is complete.</p>
+</li>
+<li>
+<p>The aggregated dimensional layer will be loaded to the QGIS and appear in the table of contents.</p>
+</li>
+<li>
+<p>The aggregated output raster file will be stored in the project folder specified in the “Setup” tab, under the “Final_output” folder (*Project_Folder/Final_Output/WEE.tif). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h3 id="about-tab">About Tab<a class="headerlink" href="#about-tab" title="Permanent link">¶</a></h3>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/abou.jpg" data-desc-position="bottom"><img src="../pictures/abou.jpg" alt="picture"></a>
+</p>
+
+<p>Information on the tool, its framework, scoring system, and how results should or can be interpreted.</p>
+<h3 id="insights-tab">Insights Tab<a class="headerlink" href="#insights-tab" title="Permanent link">¶</a></h3>
+<h4 id="enablement">Enablement<a class="headerlink" href="#enablement" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/ENA.jpg" data-desc-position="bottom"><img src="../pictures/ENA.jpg" alt="picture"></a>
+</p>
+
+<h3 id="step-1-classify-into-discrete-classes">Step 1: Classify into discrete classes<a class="headerlink" href="#step-1-classify-into-discrete-classes" title="Permanent link">¶</a></h3>
+<p>1.1 Navigate to and select the enablement score input raster file. This can be the final aggregate score (WEE.tif), a dimension aggregate score, or even a single factor output layer.</p>
+<p>1.2 Click the “Classify” button under the “Enablement Score Input layer” field to run the algorithm.</p>
+<p>1.3 The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Insights/1) Level of Enablement Classification” folder. (Project_Folder/Insights/1) Level of Enablement Classification/WEE_score.tif). The user can rename the output file to the preferred filename.</p>
+<p>1.4 Navigate to and select the population input raster file.
+   - E.g., Input File: Population/Female_population_35_39.tif (Any of the age ranges can be used as input).</p>
+<p>1.5 Click the “Classify” button under the “Population Input layer” field to run the algorithm.</p>
+<p>1.6 The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Insights/2) Relative Population Count Classification” folder. (Project_Folder/Insights/2) Relative Population Count Classification/Population.tif). The user can rename the output file to the preferred filename.</p>
+<h3 id="step-2-combine-score-and-population-classifications">Step 2: Combine score and population classifications<a class="headerlink" href="#step-2-combine-score-and-population-classifications" title="Permanent link">¶</a></h3>
+<p>2.1 Navigate to and select the “Level of Enablement” output raster file produced in step 1.2 (WEE_score.tif). This file path will be automatically populated if step 1.2 was executed in the same work session.</p>
+<p>2.2 Navigate to and select the “Relative Population Count” output raster file produced in step 1.5 (Population.tif). This file path will be automatically populated if step 1.5 was executed in the same work session.</p>
+<p>2.3 Click the “Combine Classification” button to run the algorithm combining the “Level of Enablement” and “Relative Population Count” raster layers.</p>
+<p>2.4 The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Insights/3) Combined Level of Enablement &amp; Relative Population Count Classification” folder. (Project_Folder/Insights/3) Combined Level of Enablement &amp; Relative Population Count Classification/WEE_pop_score.tif). The user can rename the output file to the preferred filename.</p>
+<h3 id="step-3-aggregation">Step 3: Aggregation<a class="headerlink" href="#step-3-aggregation" title="Permanent link">¶</a></h3>
+<p>3.1 Navigate to and select the “Combine Classification” output raster file produced in step 2.3. This file path will be automatically populated if step 2.3 was executed in the same work session.</p>
+<p>3.2 Navigate to and select the aggregation input shapefile. This can be any polygon layer representing boundaries of interest for aggregation (e.g., municipal boundary layer).
+   - E.G., Input File: AdminBoundaries/Admin2.shp (Any admin level can be used as input)</p>
+<p>3.3 Click the “Execute” button to run the algorithm.</p>
+<p>3.4 The output raster file will be stored in the project folder specified in the “Setup” tab, under the “Insights/4) Aggregation” folder. (Project_Folder/Insights/4) Aggregation/WEE_pop_adm_score.shp). The user can rename the output file to the preferred filename.</p>
+<h4 id="re-zone-raster-locations">RE Zone Raster Locations<a class="headerlink" href="#re-zone-raster-locations" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/REzone.jpg" data-desc-position="bottom"><img src="../pictures/REzone.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select the combined classification input file produced in step 2.3 of the “Enablement” tab (WEE_pop_score.tif). This file path will be automatically populated if step 2.3 of the “Enablement” tab was executed in the same work session.</p>
+</li>
+<li>
+<p>Navigate to and select the aggregated combined classification input file produced in step 3.3 of the “Enablement” tab (WEE_pop_adm_score.shp). This file path will be automatically populated if step 3.3 of the “Enablement” tab was executed in the same work session.</p>
+</li>
+<li>
+<p>Navigate to and select the potential RE zones input raster file. (Zones in the region that have no RE potential need to be represented with “no data” or “inf” values in the raster file).</p>
+</li>
+<li>E.G. Input File: RE/WBG_REZoning_DOM_score_wind.tif</li>
+<li>
+<p>E.G. Input File: RE/WBG_REZoning_DOM_score_solar.tif</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>The 2 output files will be stored in the project folder specified in the “Setup” tab, under Raster Locations/AOI_WEE_score.tif &amp; Project_Folder/Insights/5) RE Zone Raster Locations/AOI_WEE_score.shp). The user can rename the output file to the preferred filename.</p>
+</li>
+</ol>
+<h4 id="re-point-locations">RE Point Locations<a class="headerlink" href="#re-point-locations" title="Permanent link">¶</a></h4>
+<p align="center">
+  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../pictures/REpoint.jpg" data-desc-position="bottom"><img src="../pictures/REpoint.jpg" alt="picture"></a>
+</p>
+
+<ol>
+<li>
+<p>Navigate to and select the combined classification input file produced in step 2.3 of the “Enablement” tab (WEE_pop_score.tif). This file path will be automatically populated if step 2.3 of the “Enablement” tab was executed in the same work session.</p>
+</li>
+<li>
+<p>Navigate to and select the aggregated combined classification input file produced in step 3.3 of the “Enablement” tab (WEE_pop_adm_score.shp). This file path will be automatically populated if step 3.3 of the “Enablement” tab was executed in the same work session.</p>
+</li>
+<li>
+<p>Navigate to and select the RE point locations input shapefile of interest. (These could be existing RE job locations or other points of interest)</p>
+</li>
+<li>
+<p>Set radial buffer distance in meters.</p>
+</li>
+<li>
+<p>Click the “Execute” button to run the algorithm.</p>
+</li>
+<li>
+<p>The 2 output shapefiles will be stored in the project folder specified in the “Setup” tab, Locations/POI_WEE_score.shp &amp; Project_Folder/Insights/6) RE Point Locations/POI_WEE_score.shp). The user can rename the output file to preferred filename.</p>
+</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">¶</a></h2>
+<h3 id="accessibilty-permissions-error">Accessibility Tabs Permissions Error<a class="headerlink" href="#accessibilty-permissions-error" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/63edfc18-8294-478c-bcc5-1a4f28c07711" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/63edfc18-8294-478c-bcc5-1a4f28c07711"></a></p>
+<p>This error occurs when some of the shapefiles produced in the temp folder of the working directory are trying to be overwritten or deleted but can't because it's still being stored in QGIS's memory. This can occurs even when the layer is removed from the QGIS table of contents.</p>
+<p><strong>This error may also occur when the tool runs correctly so first check if the desired output file was produced in the working directory.</strong></p>
+<p>If the file is not produced you can try the following:
+- Delete the <em>temp</em> folder in the working directory
+- If you cannot delete the <em>temp</em> folder you will have to close QGIS and open it again, complete the setup tab, go back to the tab where the error occurred and re-run the tab again.</p>
+<h3 id="distorted">QGIS Plugin/Interface Widgets and Text Are Distorted and Scaled Incorrectly<a class="headerlink" href="#distorted" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/e195416b-ee86-4998-9ca5-a4784f7c724e" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/e195416b-ee86-4998-9ca5-a4784f7c724e"></a></p>
+<p>This is a problem linked to display settings caused by the connection of multiple monitors and/or varying display scales and resolutions, rather than a QGIS or plugin-related issue. This is backed by a Microsoft support post, linked <a href="https://support.microsoft.com/en-gb/topic/windows-scaling-issues-for-high-dpi-devices-508483cd-7c59-0d08-12b0-960b99aa347d">here</a>, highlighting the issues that may be experienced when using a high-DPI device, such as a 4k monitor. Additionally, in the scaling display setting, Microsoft indicates that entering a custom scaling size between 100% - 500% is not recommended as "...it can cause text and apps to become unreadable."</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/248fde5c-dd1a-41d0-94ad-2ace20a74f95" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/248fde5c-dd1a-41d0-94ad-2ace20a74f95"></a></p>
+<p>Possible solutions to this are:
+- Adjust the scale for all monitors to 100%.
+- Ensure that the display resolution is the same for both monitors. i.e. If the smallest monitor is set to 1920 x 1080 set the 4k monitor to this display resolution as well.</p>
+<h3 id="raster-outputs">Raster Outputs Not Being Loaded and Displaying Correctly<a class="headerlink" href="#raster-outputs" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/10de6c72-f8f6-47b8-adb3-930f5c625f66" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/10de6c72-f8f6-47b8-adb3-930f5c625f66"></a></p>
+<p>Occasionally, some of the outputs automatically loaded to the QGIS table of contents do not display correctly. To correct this, try removing the layer that is displayed incorrectly and add it again to QGIS.</p>
+<h3 id="output-directory">Error: Output Directory Not Set<a class="headerlink" href="#output-directory" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/b2f2959e-85c4-4e89-8493-dac2b9a20f07" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/b2f2959e-85c4-4e89-8493-dac2b9a20f07"></a></p>
+<p>If you see the following error message, please check if your output directory has been set in the "Setup" tab.</p>
+<h3 id="country-boundary">Error: Country Boundary Polygon Not Set<a class="headerlink" href="#country-boundary" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/75882e9d-a9af-43fc-9f68-0293c75b49b3" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/75882e9d-a9af-43fc-9f68-0293c75b49b3"></a></p>
+<p>If you see the following error message, please check if you're country boundary polygon layer has been set in the "Setup" tab.</p>
+<h3 id="crs">Error: Co-ordinate Reference System (CRS) Not Set<a class="headerlink" href="#crs" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/120c0cf9-e526-4d8b-adff-de3a9d2f7fb8" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/120c0cf9-e526-4d8b-adff-de3a9d2f7fb8"></a></p>
+<p>If you see the following error message, please check if you're CRS has been set in the "Setup" tab.</p>
+<h3 id="alternative">Alternative Way to Refresh the Plugin if It Freezes or Does Not Run as Expected<a class="headerlink" href="#alternative" title="Permanent link">¶</a></h3>
+<ol>
+<li>Install the "Plugin Reloader" plugin.</li>
+</ol>
+<p>1.1 Navigate to and open “Manage and Install Plugins…” under the plugins tab in QGIS.</p>
+<p>1.2 In the search bar type “plugin reloader”.</p>
+<p>1.3 Select the “Plugin Reloader” plugin and click on the install button.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/801db189-92ca-4755-a79f-8898b2e43a2f" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/801db189-92ca-4755-a79f-8898b2e43a2f"></a></p>
+<p>1.4 Navigate to the "Plugin Reloader" configuration window under the Plugins tab.</p>
+<p><em>Plugins</em> → <em>Plugin Reloader</em> → <em>Configure</em></p>
+<p>1.5 From the drop-down list select the "gender_indicator_tool" plugin and press "OK".</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/3dc21c04-2ebe-4b33-92bc-1020746ee9e3" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/3dc21c04-2ebe-4b33-92bc-1020746ee9e3"></a></p>
+<p>1.6 If you encounter an unexpected error in the tool that has not been mentioned in any of the previous troubleshooting sections you can try runing the "plugin reload" tool</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="https://github.com/worldbank/GEOE3/assets/120469484/80e1ae57-8608-4392-8df2-46e5b5d4789e" data-desc-position="bottom"><img alt="image" src="https://github.com/worldbank/GEOE3/assets/120469484/80e1ae57-8608-4392-8df2-46e5b5d4789e"></a></p>
+<p><strong>OR</strong></p>
+<p><strong>If the "Plugin Reloader" does not resolve the error close QGIS, restart it again, and re-run the process you were trying to execute.</strong></p>
+<h2 id="list-of-crss-for-sids">List of CRSs for SIDS<a class="headerlink" href="#list-of-crss-for-sids" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th><strong>Country</strong></th>
+<th><strong>WGS84 / UTM CRS</strong></th>
+<th><strong>EPSG</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antigua and Barbuda</td>
+<td>WGS 84 / UTM zone 20N</td>
+<td>32620</td>
+</tr>
+<tr>
+<td>Belize</td>
+<td>WGS 84 / UTM zone 16N</td>
+<td>32616</td>
+</tr>
+<tr>
+<td>Cabo Verde</td>
+<td>WGS 84 / UTM zone 26N</td>
+<td>32626</td>
+</tr>
+<tr>
+<td>Comoros</td>
+<td>WGS 84 / UTM zone 38S</td>
+<td>32738</td>
+</tr>
+<tr>
+<td>Dominica</td>
+<td>WGS 84 / UTM zone 20N</td>
+<td>32620</td>
+</tr>
+<tr>
+<td>Dominican Republic</td>
+<td>WGS 84 / UTM zone 19N</td>
+<td>32619</td>
+</tr>
+<tr>
+<td>Fiji</td>
+<td>WGS 84 / UTM zone 60S</td>
+<td>32760</td>
+</tr>
+<tr>
+<td>Grenada</td>
+<td>WGS 84 / UTM zone 20N</td>
+<td>32620</td>
+</tr>
+<tr>
+<td>Guinea-Bissau</td>
+<td>WGS 84 / UTM zone 28N</td>
+<td>32628</td>
+</tr>
+<tr>
+<td>Guyana</td>
+<td>WGS 84 / UTM zone 21N</td>
+<td>32621</td>
+</tr>
+<tr>
+<td>Haiti</td>
+<td>WGS 84 / UTM zone 18N</td>
+<td>32618</td>
+</tr>
+<tr>
+<td>Jamaica</td>
+<td>WGS 84 / UTM zone 17N</td>
+<td>32617</td>
+</tr>
+<tr>
+<td>Kiribati</td>
+<td>WGS 84 / UTM zone 1N</td>
+<td>32601</td>
+</tr>
+<tr>
+<td>Maldives</td>
+<td>WGS 84 / UTM zone 43N</td>
+<td>32643</td>
+</tr>
+<tr>
+<td>Marshall Islands</td>
+<td>WGS 84 / UTM zone 58N</td>
+<td>32658</td>
+</tr>
+<tr>
+<td>Mauritius</td>
+<td>WGS 84 / UTM zone 40S</td>
+<td>32740</td>
+</tr>
+<tr>
+<td>Micronesia (Federated States of)</td>
+<td>WGS 84 / UTM zone 57N</td>
+<td>32657</td>
+</tr>
+<tr>
+<td>Nauru</td>
+<td>WGS 84 / UTM zone 58N</td>
+<td>32658</td>
+</tr>
+<tr>
+<td>Niue</td>
+<td>WGS 84 / UTM zone 1S</td>
+<td>32701</td>
+</tr>
+<tr>
+<td>Palau</td>
+<td>WGS 84 / UTM zone 53N</td>
+<td>32653</td>
+</tr>
+<tr>
+<td>Papua New Guinea</td>
+<td>WGS 84 / UTM zone 55S</td>
+<td>32755</td>
+</tr>
+<tr>
+<td>Samoa</td>
+<td>WGS 84 / UTM zone 2S</td>
+<td>32702</td>
+</tr>
+<tr>
+<td>Sao Tomé and Principe</td>
+<td>WGS 84 / UTM zone 32N</td>
+<td>32632</td>
+</tr>
+<tr>
+<td>Solomon Islands</td>
+<td>WGS 84 / UTM zone 57S</td>
+<td>32757</td>
+</tr>
+<tr>
+<td>St. Lucia</td>
+<td>WGS 84 / UTM zone 20N</td>
+<td>32620</td>
+</tr>
+<tr>
+<td>St. Vincent and the Grenadines</td>
+<td>WGS 84 / UTM zone 20N</td>
+<td>32620</td>
+</tr>
+<tr>
+<td>Suriname</td>
+<td>WGS 84 / UTM zone 21N</td>
+<td>32621</td>
+</tr>
+<tr>
+<td>Timor-Leste</td>
+<td>WGS 84 / UTM zone 52S</td>
+<td>32752</td>
+</tr>
+<tr>
+<td>Tonga</td>
+<td>WGS 84 / UTM zone 60S</td>
+<td>32760</td>
+</tr>
+<tr>
+<td>Tuvalu</td>
+<td>WGS 84 / UTM zone 60S</td>
+<td>32760</td>
+</tr>
+<tr>
+<td>Vanuatu</td>
+<td>WGS 84 / UTM zone 59S</td>
+<td>32759</td>
+</tr>
+</tbody>
+</table>
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">¶</a></h2>
+<p>This project is licensed under the MIT License - see the <a href="https://github.com/worldbank/GeoE3/blob/main/LICENSE.md">LICENSE</a> file for details</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer">
+        
+          
+          <a href="../media/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Media &amp;amp; Publications">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Media &amp; Publications
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../license/" class="md-footer__link md-footer__link--next" aria-label="Next: License">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                License
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      © World Bank Group — Made with 💗 by <a href="https://kartoza.com">Kartoza</a> · <a href="https://github.com/sponsors/kartoza">Donate</a> · <a href="https://github.com/worldbank/GeoE3">GitHub</a>
+
+    </div>
+  
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/worldbank/GeoE3" target="_blank" rel="noopener" title="GitHub repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/sponsors/kartoza" target="_blank" rel="noopener" title="Sponsor Kartoza on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="m241 87.1 15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1v2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7v-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1"></path></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.action.view", "content.code.annotate", "content.code.copy", "content.tabs.link", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

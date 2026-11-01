@@ -1,0 +1,24 @@
+/* SPDX-FileCopyrightText: Kartoza
+   SPDX-License-Identifier: MIT
+
+   Design tokens for the GeoE3 documentation theme. Single source of truth
+   for colour and type — extra.css consumes these as CSS custom properties,
+   it never hardcodes a hex value. Palette is NOT an approximation — these
+   are the exact constants the GeoE3 plugin itself uses for its PDF reports
+   and info panel (geest/core/reports/base_report.py: NAVY, CYAN, CHARCOAL,
+   GREY, MIST, RULE), so every diagram, screenshot and chrome colour in
+   these docs comes from the same source as the application. */
+:root{
+  --brand-blue:#009FDA; /* CYAN  — accent: rules, chart bars, links */
+  --brand-amber:#EEB348; --brand-grey:#8A8B8B;
+  --text-default:#002244; /* NAVY — header band, emphasis, body text */
+  --text-muted:#6E7B85;   /* GREY — secondary text, captions */
+  --rule-line:#D6DEE4;    /* RULE — hairlines */
+  --surface-cloud:#EEF4F8; /* MIST — subtle row/panel tint */
+  --surface-white:#FFFFFF;
+  --font-sans:'Nunito','Helvetica Neue',Arial,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --status-success:#3C7D54; --status-success-tint:#EAF3EC;
+  --status-warn:#EEB348;    --status-warn-tint:#FCF3E0;
+  --status-error:#B0473C;   --status-error-tint:#FBEFEF;
+}
