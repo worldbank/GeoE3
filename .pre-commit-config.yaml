@@ -20,7 +20,10 @@ repos:
         exclude: ^(geoe3/tests/data/)
       - id: check-yaml
         name: "✅ check-yaml"
-        entry: check-yaml
+        # --unsafe: mkdocs.yml uses mkdocs-material's !!python/name:... tags
+        # (e.g. for the emoji extension), which the default safe loader
+        # can't construct. --unsafe still catches real YAML syntax errors.
+        entry: check-yaml --unsafe
         language: system
         types: [yaml]
       - id: check-json

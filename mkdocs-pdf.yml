@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: Kartoza
+# SPDX-License-Identifier: MIT
+#
+# Single combined PDF of the whole site — a separate config, not a
+# plugin block in mkdocs.yml, deliberately: mkdocs-with-pdf imports
+# weasyprint at module load time regardless of whether it's actually
+# enabled, so merely listing it in mkdocs.yml would mean a plain
+# `mkdocs serve`/`build` could never start without weasyprint on
+# PYTHONPATH. Keeping it in its own INHERIT-ing config means the main
+# site build never touches this plugin (or weasyprint) at all.
+#
+# Its internal "missing link" check also piggybacks on mkdocs' own
+# --strict flag (not a with-pdf setting) and misfires on glightbox's
+# lightbox anchors (<a href="the-image.jpg">, added for click-to-zoom)
+# — it expects every relative href to resolve to a heading in the
+# combined document, which an image obviously never will. Built without
+# --strict (see scripts/docs.sh pdf); the plain `mkdocs build --strict`
+# used everywhere else still catches real broken links.
+INHERIT: mkdocs.yml
+
+plugins:
+  - search:
+      lang: en
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      zoomable: true
+      draggable: true
+  - with-pdf:
+      output_path: pdf/GeoE3-Documentation.pdf
+      cover: true
+      back_cover: false
+      cover_title: GeoE3 Documentation
+      cover_subtitle: >-
+        Geospatial Enabling Environments for Employment — User & Training
+        Guide
+      cover_logo: images/logo.png
+      author: World Bank Group
+      copyright: Made with 💗 by Kartoza — kartoza.com
+      toc_title: Table of Contents
+      heading_shift: true
+      toc_level: 2
+      ordered_chapter_level: 1
+      exclude_pages:
+        - about/changelog/
+        # Legacy reference content carried over from the old Jupyter-Book
+        # site: 25 of its screenshots are linked as bare GitHub PR/issue
+        # attachment URLs (github.com/.../assets/<id>/<uuid>, no
+        # descriptive filename), so there's no local copy to resolve them
+        # to and no way to fetch them for a build that must stay fully
+        # offline. Supplementary content, not part of the core training
+        # walkthrough — stays on the website, just not in the PDF.
+        - about/legacy-detailed-reference/

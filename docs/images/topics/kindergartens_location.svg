@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Kindergartens: a simple building with a toy block / sun motif -->
+  <path d="M4 20V10l8-5 8 5v10" stroke="#002244" stroke-width="1.8" stroke-linejoin="round"/>
+  <line x1="2" y1="20" x2="22" y2="20" stroke="#002244" stroke-width="1.8" stroke-linecap="round"/>
+  <rect x="9.5" y="13" width="5" height="5" rx="0.8" stroke="#009FDA" stroke-width="1.8"/>
+</svg>

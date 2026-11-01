@@ -1,49 +1,174 @@
-site_name: QGIS Templates and Symbology Plugin
-
-repo_url:
-repo_name: GitHub
-
-site_description:
-
+# SPDX-FileCopyrightText: Kartoza
+# SPDX-License-Identifier: MIT
+site_name: GeoE3
+site_description: >
+  Geospatial Enabling Environments for Employment — a QGIS plugin implementing
+  the World Bank's Geospatial Women's Employment Analytical Framework (GeoWEAF).
+site_url: https://worldbank.github.io/GeoE3/
 site_author: Kartoza
 
-nav:
-  - Home: 'index.md'
-  - Installation: "installation.md"
-  - User Guide: "user-guide.md"
-  - Development: "development.md"
-  - About: "about.md"
-  - Changelog: "changelog.md"
+copyright: >
+  &copy; World Bank Group — Made with 💗 by
+  <a href="https://kartoza.com">Kartoza</a>
+  &middot; <a href="https://github.com/sponsors/kartoza">Donate</a>
+  &middot; <a href="https://github.com/worldbank/GeoE3">GitHub</a>
 
-plugins:
-  - search
-  - git-revision-date-localized
-  - mkdocs-video
+repo_url: https://github.com/worldbank/GeoE3
+repo_name: worldbank/GeoE3
+edit_uri: edit/new_docs/docs/
 
-markdown_extensions:
-  - pymdownx.snippets:
-      base_path: .
-  - meta:
+docs_dir: docs
+site_dir: site
 
-extra_css:
-  - stylesheets/extra.css
+# Internal/dev-facing files that live under docs/ for convenience but
+# aren't part of the published site: investigation notes, a one-off
+# conversion log, the separate conference-presentations subsystem (its
+# own README/PRESENTER-NOTES, built independently), and the raw
+# docx-export this project's content was originally drafted from (now
+# superseded by about/legacy-detailed-reference.md and
+# about/CODE_OF_CONDUCT.md — the customized one lives at the repo root).
+exclude_docs: |
+  CODE_OF_CONDUCT.md
+  Gender_Enabling_Environments_Spatial_Tool_v1.md
+  Gender Enabling Environments Spatial Tool_v1.pdf
+  ICON_EXTRACTION_SUMMARY.md
+  active_transport_workflow.md
+  active_transport_workflow.html
+  workflow_analysis.md
+  gpkg-corruption-causal-analysis.md
+  presentations/
 
 theme:
   name: material
-  custom_dir: docs
+  logo: images/logo.png
+  favicon: images/favicon.ico
+  font:
+    text: Nunito
+    code: JetBrains Mono
+  language: en
   palette:
-  - scheme: templates_symbology
-    toggle:
-        icon: material/toggle-switch-off-outline
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
         name: Switch to dark mode
-  - scheme: slate
-    toggle:
-          icon: material/toggle-switch
-          name: Switch to light mode
-    accent: cyan
-  logo: assets/logo.png
-  favicon: assets/favicon.png
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
     - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/file-edit-outline
+    view: material/eye-outline
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/worldbank/GeoE3
+      name: GitHub repository
+    - icon: fontawesome/solid/heart
+      link: https://github.com/sponsors/kartoza
+      name: Sponsor Kartoza on GitHub
+  generator: false
+
+extra_css:
+  - stylesheets/tokens.css
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path: .
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      lang: en
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      zoomable: true
+      draggable: true
+
+nav:
+  - Home: index.md
+  - Training Walkthrough:
+    - training/index.md
+    - Installation: training/installation.md
+    - The Interface: training/interface.md
+    - The Model: training/the-model.md
+    - Processor Types: training/processor-types.md
+    - Getting Data: training/datacollection.md
+    - Configuring Items: training/configuring-items.md
+    - Contextual Dimension: training/contextual.md
+    - Accessibility Dimension: training/accessibility.md
+    - Place Characterization Dimension: training/placecharacterization.md
+    - Running the Analysis: training/running-the-analysis.md
+    - Viewing Your Results: training/insights.md
+    - The Analysis Report: training/report.md
+    - Sharing Your Results: training/sharing.md
+  - About:
+    - about/index.md
+    - Background &amp; Framework: about/background.md
+    - Acknowledgements: about/acknowledgements.md
+    - Citation: about/citation.md
+    - Media &amp; Publications: about/media.md
+    - Legacy Detailed Reference: about/legacy-detailed-reference.md
+    - License: about/license.md
+    - Changelog: about/changelog.md

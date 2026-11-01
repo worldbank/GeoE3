@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <!-- Groceries: a shopping basket -->
+  <path d="M4 9h16l-1.6 9.3a1.5 1.5 0 0 1-1.5 1.2H7.1a1.5 1.5 0 0 1-1.5-1.2Z" stroke="#002244" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M8 9 9.5 4M16 9 14.5 4" stroke="#002244" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="8.5" y1="12.5" x2="9" y2="17" stroke="#009FDA" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="15.5" y1="12.5" x2="15" y2="17" stroke="#009FDA" stroke-width="1.7" stroke-linecap="round"/>
+</svg>

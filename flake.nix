@@ -60,6 +60,20 @@
           type = "app";
           program = "${wrapper}/bin/geoe3-docker-tests-${variant}";
         };
+      # Wrappers around scripts/docs.sh (mkdocs site lifecycle). All logic
+      # lives in the dotfile script; these just expose it as `nix run .#foo`.
+      mkDocsApp =
+        subcommand:
+        let
+          wrapper = pkgs.writeShellApplication {
+            name = "geoe3-docs-${subcommand}";
+            text = ''exec "$PWD/scripts/docs.sh" ${subcommand} "$@"'';
+          };
+        in
+        {
+          type = "app";
+          program = "${wrapper}/bin/geoe3-docs-${subcommand}";
+        };
     in
     {
       packages.${system} = {
@@ -99,6 +113,13 @@
         test-qgis4 = mkDockerTestApp "4"; # QGIS 4.x master (Qt6)
         test-qgis = mkDockerTestApp "all"; # both
 
+        # mkdocs site lifecycle (see scripts/docs.sh) — run from inside
+        # `nix develop` so mkdocs (from requirements-dev.txt) is on PATH.
+        docs-serve = mkDocsApp "serve"; # start mkdocs serve in the background
+        docs-stop = mkDocsApp "stop"; # stop the background mkdocs serve
+        docs-status = mkDocsApp "status"; # is mkdocs serve running?
+        docs-build = mkDocsApp "build"; # mkdocs build --strict -> site/
+        docs-pdf = mkDocsApp "pdf"; # single combined PDF -> site/pdf/
       };
 
       devShells.${system}.default = pkgs.mkShell {

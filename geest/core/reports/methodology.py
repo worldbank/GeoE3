@@ -22,7 +22,7 @@ from typing import Optional
 #: background, not by developers.
 TECHNIQUES = {
     "index_score": {
-        "name": "A Single Published Number",
+        "name": "National Index Score",
         "svg": "index_score.svg",
         "description": (
             "Some of what this analysis measures doesn't change from one part of the "
@@ -39,7 +39,7 @@ TECHNIQUES = {
         ),
     },
     "feature_count": {
-        "name": "Counting What's Nearby",
+        "name": "Feature Count",
         "svg": "feature_count.svg",
         "description": (
             "For some indicators, what matters is simply how much of something sits "
@@ -54,37 +54,38 @@ TECHNIQUES = {
         ),
     },
     "distance_buffer": {
-        "name": "How Close the Nearest One Is",
+        "name": "Straight-Line Distance",
         "svg": "distance_buffer.svg",
         "description": (
             "Other indicators are less about density and more about proximity. Can a "
             "woman reach a water point without travelling far, or has a violent "
             "incident happened nearby? This technique draws a fixed-radius circle around "
-            "every relevant point and scores a grid cell by whether it falls inside that "
-            "circle or outside it. Being inside the circle is good news for a water point "
-            "or a bank branch, and bad news for a reported violent event. Whether "
+            "every relevant point, measured as the crow flies rather than along any real "
+            "path, and scores a grid cell by whether it falls inside that circle or "
+            "outside it. Being inside the circle is good news for a water point or a "
+            "bank branch, and bad news for a reported violent event. Whether "
             "“inside” means a high score or a low one depends on what's being "
             "measured, not on the technique itself."
         ),
     },
     "network_isochrone": {
-        "name": "How Far By Road, Not By Air",
+        "name": "Distance by Road",
         "svg": "network_isochrone.svg",
         "description": (
             "For indicators about reaching a service, such as a school, a hospital, or "
             "a bus stop, a straight-line circle overstates how accessible a place really "
             "is: rivers, dead-end streets and missing roads all make a destination "
-            "further away in practice than it looks on a map. This technique instead "
-            "traces the actual road network outward from each facility in several steps "
-            "(for example a 5-, 10- and 15-minute walk) and scores a grid cell by which "
-            "travel-time ring it falls inside. The resulting shape hugs the street layout "
-            "rather than forming a tidy circle. For example, a facility beside the only "
-            "bridge over a river reaches much further along the road than it does across "
-            "the water."
+            "further away in practice than it looks on a map. Rather than measuring as "
+            "the crow flies, this technique traces the actual road network outward from "
+            "each facility in several steps (for example a 5-, 10- and 15-minute walk) "
+            "and scores a grid cell by which travel-time ring it falls inside. The "
+            "resulting shape hugs the street layout rather than forming a tidy circle. "
+            "For example, a facility beside the only bridge over a river reaches much "
+            "further along the road than it does across the water."
         ),
     },
     "raster_lookup": {
-        "name": "Reading a Ready-Made Map",
+        "name": "Map Value Lookup",
         "svg": "raster_lookup.svg",
         "description": (
             "Some of the data this analysis draws on arrives as a finished map rather "
@@ -99,7 +100,7 @@ TECHNIQUES = {
         ),
     },
     "zone_classification": {
-        "name": "Which Zone You're Standing In",
+        "name": "Zone Lookup",
         "svg": "zone_classification.svg",
         "description": (
             "A small number of indicators come from boundary data rather than points, "
@@ -114,7 +115,7 @@ TECHNIQUES = {
         ),
     },
     "population_share": {
-        "name": "A Ready-Made Demographic Split",
+        "name": "Population Share",
         "svg": "population_share.svg",
         "description": (
             "Occasionally the figure an indicator needs has already been calculated by "
@@ -127,7 +128,7 @@ TECHNIQUES = {
         ),
     },
     "weighted_feature_average": {
-        "name": "A Score Weighted Toward the Best Infrastructure",
+        "name": "Weighted Infrastructure Score",
         "svg": "weighted_feature_average.svg",
         "description": (
             "National-scale Active Transport scores a cell differently from every other "

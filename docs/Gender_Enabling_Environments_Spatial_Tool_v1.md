@@ -944,8 +944,8 @@ WGS 84 / UTM zone 59S
 
 This project is licensed under ………… \- see the LICENSE file for details
 
-[Previous](https://worldbank.github.io/GEOE3/README.html)
+[Previous](index.md)
 
-- [__Geospatial Assessment of__](https://worldbank.github.io/GEOE3/README.html) [__Women Employment and__](https://worldbank.github.io/GEOE3/README.html)
+- [__Geospatial Assessment of__](index.md) [__Women Employment and__](index.md)
 
-[__Business Opportunities in the Renewable Energy Sector__](https://worldbank.github.io/GEOE3/README.html)
+[__Business Opportunities in the Renewable Energy Sector__](index.md)
