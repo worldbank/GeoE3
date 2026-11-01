@@ -9,6 +9,7 @@ from osgeo import gdal, ogr
 
 from geest.core.country_pack import INDEX_SCORE_TABLE_NAME, PROJECT_MODEL_TABLE_NAME, build_country_pack
 from geest.core.country_pack_import import (
+    _ensure_empty_gpkg,
     _indicator_import_targets,
     _project_level_import_targets,
     _result_import_targets,
@@ -426,6 +427,76 @@ class TestImportCountryPack(unittest.TestCase):
                 import_country_pack(not_a_pack, self.import_dir)
         finally:
             os.remove(not_a_pack)
+
+
+class TestEnsureEmptyGpkg(unittest.TestCase):
+    def test_creates_a_valid_empty_gpkg(self):
+        # A zero-layer GPKG is a valid file (all the gpkg_* metadata
+        # tables are present) but GDAL refuses to ogr.Open() it until it
+        # has at least one layer - checked at the sqlite level instead;
+        # see test_append_into_a_pre_created_empty_gpkg_matches_... below
+        # for confirmation that VectorTranslate's append path still
+        # works against exactly this kind of file.
+        import sqlite3
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "nested", "inputs.gpkg")
+            _ensure_empty_gpkg(path)
+            self.assertTrue(os.path.exists(path))
+            con = sqlite3.connect(path)
+            tables = {row[0] for row in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            con.close()
+            self.assertIn("gpkg_contents", tables)
+            self.assertIn("gpkg_geometry_columns", tables)
+
+    def test_leaves_an_existing_file_untouched(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "inputs.gpkg")
+            driver = ogr.GetDriverByName("GPKG")
+            dataset = driver.CreateDataSource(path)
+            dataset.CreateLayer("already_here", geom_type=ogr.wkbPoint)
+            dataset = None
+            _ensure_empty_gpkg(path)
+            dataset = ogr.Open(path)
+            self.assertEqual(dataset.GetLayerCount(), 1)
+            dataset = None
+
+    def test_append_into_a_pre_created_empty_gpkg_matches_appending_into_a_populated_one(self):
+        """A regression test for a cross-platform import failure.
+
+        _extract_vector_into() decides append-vs-create purely from
+        os.path.exists(out_gpkg) - confirmed live, the very first write
+        into a brand-new destination GeoPackage failed on one Windows/
+        GDAL build ("Error retrieving the source layer definition") for
+        three unrelated tables that shared nothing except being first
+        into inputs.gpkg/study_area.gpkg/results.gpkg respectively.
+        Pre-creating the destination (as import_country_pack() now does)
+        means every real write always takes the append branch - this
+        confirms that branch, against an empty-but-already-existing
+        destination, produces the exact same result as appending into
+        one that already has data.
+        """
+        pack_path = os.path.join(TEST_DATA, "_test_pack_for_ensure_empty_gpkg.gpkg")
+        driver = ogr.GetDriverByName("GPKG")
+        pack = driver.CreateDataSource(pack_path)
+        layer = pack.CreateLayer("some_table", geom_type=ogr.wkbPoint)
+        layer.CreateFeature(ogr.Feature(layer.GetLayerDefn()))
+        pack = None
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out_gpkg = os.path.join(tmp, "inputs.gpkg")
+                _ensure_empty_gpkg(out_gpkg)
+                options = gdal.VectorTranslateOptions(
+                    format="GPKG", layerName="some_table", accessMode="append", options=["some_table"]
+                )
+                result = gdal.VectorTranslate(out_gpkg, pack_path, options=options)
+                self.assertIsNotNone(result)
+                result = None
+                dataset = ogr.Open(out_gpkg)
+                self.assertEqual(dataset.GetLayerByName("some_table").GetFeatureCount(), 1)
+                dataset = None
+        finally:
+            os.remove(pack_path)
 
 
 if __name__ == "__main__":

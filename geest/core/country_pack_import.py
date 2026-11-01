@@ -39,7 +39,7 @@ import json
 import os
 from typing import Callable, Dict, List, Optional
 
-from osgeo import gdal
+from osgeo import gdal, ogr
 
 from geest.core.country_pack import (
     INDEX_SCORE_TABLE_NAME,
@@ -495,6 +495,36 @@ def _extract_csv(pack_path: str, table_name: str, out_dir: str) -> str:
     return out_path
 
 
+def _ensure_empty_gpkg(path: str) -> None:
+    """Pre-create an empty, valid destination GeoPackage if it doesn't exist yet.
+
+    _extract_vector_into() below decides "append" vs "create" purely by
+    os.path.exists(out_gpkg) - the very first vector write into a given
+    destination is the one case where GDAL has to create that GPKG from
+    scratch while simultaneously reading pack_path. Confirmed live: on
+    one Windows/GDAL build, that exact combination ("Error retrieving
+    the source layer definition") failed for the first table into each
+    of inputs.gpkg/study_area.gpkg/results.gpkg - three different
+    destinations, same failure, every time it was the first write into
+    a brand-new file - while every subsequent append into an
+    already-existing destination succeeded. Pre-creating the (empty)
+    destination up front means every real extraction is always an
+    append, never a create, removing that one differing codepath
+    entirely rather than chasing the exact GDAL/OS quirk behind it.
+
+    Args:
+        path: Destination GeoPackage path.
+    """
+    if os.path.exists(path):
+        return
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    driver = ogr.GetDriverByName("GPKG")
+    data_source = driver.CreateDataSource(path)
+    if data_source is None:
+        raise RuntimeError(f"Failed to create '{path}': {gdal.GetLastErrorMsg()}")
+    data_source = None  # noqa: F841 - closes/flushes the dataset
+
+
 def _extract_vector_into(pack_path: str, table_name: str, out_gpkg: str) -> str:
     """Pull one vector table out of the pack and append it into a local GeoPackage.
 
@@ -585,6 +615,10 @@ def import_country_pack(
     results_gpkg = os.path.join(imports_dir, "results.gpkg")
     study_area_dir = os.path.join(working_directory, "study_area")
     study_area_gpkg = os.path.join(study_area_dir, "study_area.gpkg")
+
+    _ensure_empty_gpkg(inputs_gpkg)
+    _ensure_empty_gpkg(results_gpkg)
+    _ensure_empty_gpkg(study_area_gpkg)
 
     imported: List[str] = []
     skipped: List[str] = []
