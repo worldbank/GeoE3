@@ -47,7 +47,7 @@ from qgis.PyQt.QtWidgets import (
 from qgis.PyQt.QtXml import QDomDocument
 from qgis.utils import iface
 
-from geest.core import JsonTreeItem, WorkflowQueueManager
+from geest.core import JsonTreeItem, WorkflowQueueManager, sparkline_data
 from geest.core.algorithms import (
     OpportunitiesByWeeScorePopulationProcessingTask,
     OpportunitiesByWeeScoreProcessingTask,
@@ -57,7 +57,8 @@ from geest.core.algorithms import (
     SubnationalAggregationProcessingTask,
     WEEByPopulationScoreProcessingTask,
 )
-from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD, MAX_FEATURES_FOR_VECTOR
+from geest.core.analysis_outputs import ANALYSIS_OUTPUT_STOPS
+from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD
 from geest.core.country_pack import all_sources
 from geest.core.i18n import tr
 from geest.core.reports import AnalysisReport, StudyAreaReport
@@ -280,6 +281,12 @@ class TreePanel(QWidget):
         self.status_label = self.item_info_panel.status_label
         self.overall_progress_bar = self.item_info_panel.overall_progress_bar
         self.workflow_progress_bar = self.item_info_panel.workflow_progress_bar
+        # The item currently shown in item_info_panel - needed so the
+        # carousel's outputChanged signal (which only carries the stop's
+        # key, not the item) knows which analysis item to load a layer for.
+        self._current_item = None
+        self.item_info_panel.outputChanged.connect(self._on_analysis_output_changed)
+        self.item_info_panel.sparklineRequested.connect(self._on_sparkline_requested)
 
         button_bar = QHBoxLayout()
 
@@ -386,8 +393,7 @@ class TreePanel(QWidget):
             elif item.role == "indicator":
                 column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
             elif item.role == "analysis":
-                use_masked, analysis_raster_key = self._analysis_display(item)
-                column_name = "geoe3_masked" if use_masked else "geoe3"  # Analysis aggregation uses geoe3 column
+                column_name = "geoe3"  # Analysis aggregation uses geoe3 column
             else:
                 column_name = None
 
@@ -398,32 +404,369 @@ class TreePanel(QWidget):
                     add_to_map(item)
             else:
                 add_grid_layer_to_map(item, column_name, self.working_directory)
+        self._current_item = item
         self.item_info_panel.show_item(item)
+        self.item_info_panel.set_analysis_outputs(
+            self._build_analysis_output_stops(item) if item.role == "analysis" else None
+        )
         show_pie = setting(key="show_pie_overlay", default=False)
         if show_pie:
             # TODO - calculate the pie data
             QSettings().setValue("geoe3/pie_data", item.data(0))
 
-    def _analysis_display(self, item):
-        """Return how the analysis result should be displayed.
+    def _grid_column_exists(self, column_name: str) -> bool:
+        """Whether a column exists in study_area_grid, with no warning logged if not.
 
-        Mirror the decision taken when a workflow completes so that clicking
-        the analysis item re-shows the same layer that was last added to the
-        map.
+        Args:
+            column_name: The column to look for.
+
+        Returns:
+            True if study_area_grid can be opened and has this column.
+        """
+        if not self.working_directory:
+            return False
+        gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
+        layer = QgsVectorLayer(f"{gpkg_path}|layername=study_area_grid", "study_area_grid", "ogr")
+        if not layer.isValid():
+            return False
+        return column_name in [field.name() for field in layer.fields()]
+
+    def _ghsl_settlements_available(self) -> bool:
+        """Whether the GHSL settlements layer exists in study_area.gpkg.
+
+        Mirrors add_ghsl_settlements_to_map()'s own existence checks,
+        without the message-bar feedback that method shows on failure -
+        this is only used to decide the carousel's dimmed/not-dimmed state.
+
+        Returns:
+            True if the layer can be found.
+        """
+        if not self.working_directory:
+            return False
+        gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
+        if not os.path.exists(gpkg_path):
+            return False
+        from osgeo import ogr
+
+        ds = ogr.Open(gpkg_path, 0)
+        if ds is None:
+            return False
+        exists = ds.GetLayerByName("ghsl_settlements") is not None
+        ds = None
+        return exists
+
+    def _build_analysis_output_stops(self, item) -> list:
+        """Attach an "available" flag to each ANALYSIS_OUTPUT_STOPS entry for this item.
+
+        Checks the exact same things the existing menu handlers already
+        silently check before giving up (a non-empty model.json raster
+        attribute, or the matching study_area_grid column) - whichever
+        the current render strategy would actually load.
 
         Args:
             item: The analysis tree item.
 
         Returns:
-            tuple: (use_masked, raster_key) where raster_key is the attribute
-                holding the GeoE3 score raster, preferring the masked VRT when
-                a mask mode is active and the masked product exists.
+            A list of stop dicts (copies of ANALYSIS_OUTPUT_STOPS entries,
+            each with "available" added).
         """
-        mask_mode = item.attribute("mask_mode", "None")
-        masked_vrt = item.attribute("geoe3_score_ghsl_masked_result_file", "")
-        use_masked = mask_mode not in ("", "None", "none") and bool(masked_vrt)
-        raster_key = "geoe3_score_ghsl_masked_result_file" if use_masked else "result_file"
-        return use_masked, raster_key
+        raster = self._get_render_strategy() == "raster"
+        availability = {
+            # Always the plain (unmasked) product, never auto-switched to
+            # the masked variant just because mask_mode is active -
+            # "Masked Scores" is its own explicit stop/toggle now, so the
+            # plain "GeoE3 Score"/"GeoE3 by Population" stops silently
+            # also going masked made that separate concept take over this
+            # one too, surprising users expecting the non-masked product
+            # (confirmed live).
+            "score": bool(item.attribute("result_file", "")) if raster else self._grid_column_exists("geoe3"),
+            "by_population": (
+                bool(item.attribute("geoe3_by_population", ""))
+                if raster
+                else self._grid_column_exists("geoe3_by_population")
+            ),
+            "aggregate": any(
+                item.attribute(field, "")
+                for field in (
+                    "geoe3_score_subnational_aggregation",
+                    "geoe3_by_population_subnational_aggregation",
+                    "geoe3_score_ghsl_masked_subnational_aggregation",
+                    "geoe3_score_by_population_ghsl_masked_subnational_aggregation",
+                )
+            ),
+            "masked": (
+                bool(item.attribute("geoe3_score_ghsl_masked_result_file", ""))
+                or bool(item.attribute("geoe3_score_by_population_ghsl_masked_result_file", ""))
+                if raster
+                else (
+                    self._grid_column_exists("geoe3_masked") or self._grid_column_exists("geoe3_by_population_masked")
+                )
+            ),
+            "opportunities_mask": (
+                bool(item.attribute("opportunities_mask_result_file", ""))
+                if raster
+                else self._grid_column_exists("opportunities_mask")
+            ),
+            "ghsl_settlements": self._ghsl_settlements_available(),
+        }
+        return [{**stop, "available": availability.get(stop["key"], False)} for stop in ANALYSIS_OUTPUT_STOPS]
+
+    def _find_layer_tree_node(self, item=None, group: str = "GeoE3", match_uri: str = None, match_name: str = None):
+        """Find an already-added layer's tree node under a group, by source URI or display name.
+
+        Mirrors add_to_map()/add_grid_layer_to_map()'s own group-nesting
+        resolution (item.getPaths(), truncating the item's own leaf) and
+        dedup keys (source URI for add_to_map(), display name for
+        add_grid_layer_to_map()) - this just stops short of actually
+        adding/reloading anything, so a caller can decide to merely
+        reveal what's already there instead.
+
+        Args:
+            item: The tree item whose subgroup under `group` to search,
+                or None to search `group` itself directly (no per-item
+                subgroup nesting - e.g. add_ghsl_settlements_to_map()'s
+                flat "GeoE3 Study Area" group).
+            group: The top-level layer-tree group name.
+            match_uri: The layer source URI to look for, or None.
+            match_name: The layer's display name to look for, or None.
+
+        Returns:
+            The matching QgsLayerTreeLayer node, or None if no group or
+            no match exists yet.
+        """
+        root = QgsProject.instance().layerTreeRoot()
+        parent_group = root.findGroup(group)
+        if parent_group is None:
+            return None
+        for path in item.getPaths()[:-1] if item is not None else []:
+            parent_group = parent_group.findGroup(path)
+            if parent_group is None:
+                return None
+        for child in parent_group.children():
+            if isinstance(child, QgsLayerTreeGroup):
+                continue
+            layer = child.layer()
+            if layer is None:
+                continue
+            if (match_uri is not None and layer.source() == match_uri) or (
+                match_name is not None and layer.name() == match_name
+            ):
+                return child
+        return None
+
+    def _reveal_or_load(
+        self, item, loader, group: str = "GeoE3", match_uri: str = None, match_name: str = None
+    ) -> None:
+        """Show an already-added carousel layer, or load it fresh if it isn't there yet.
+
+        Cycling back to a carousel stop already visited this session
+        should just reveal what's already loaded - toggling visibility,
+        which the group's own mutual exclusivity (set when the group is
+        first created, see add_to_map()) already turns the previous
+        stop's layer off for - rather than re-running add_to_map()'s/
+        add_grid_layer_to_map()'s full reload/restyle pipeline on every
+        single carousel click once a layer has been seen once.
+
+        Args:
+            item: The analysis tree item, or None for a flat (non-
+                per-item-subgrouped) group - see _find_layer_tree_node().
+            loader: Zero-arg callable that adds the layer the normal way
+                (an add_to_map()/add_grid_layer_to_map() call, or any
+                equivalent custom loader) - only invoked if no existing
+                match is found.
+            group: The top-level layer-tree group name.
+            match_uri: The layer source URI to look for, or None.
+            match_name: The layer's display name to look for, or None.
+        """
+        existing = self._find_layer_tree_node(item, group=group, match_uri=match_uri, match_name=match_name)
+        if existing is None:
+            loader()
+            return
+        current_group = existing.parent()
+        while current_group is not None:
+            current_group.setExpanded(True)
+            current_group.setItemVisibilityChecked(True)
+            current_group = current_group.parent()
+        existing.setItemVisibilityChecked(True)
+
+    def _load_analysis_output(self, item, stop_key: str) -> None:
+        """Load the layer(s) for one analysis-output carousel stop.
+
+        One dispatcher shared by the carousel (ItemInfoPanel.outputChanged,
+        connected in _build_ui()) and the "Add GeoE3 Score to Map" context-
+        menu action - the only one of the six outputs that still has a
+        dedicated menu entry (see open_context_menu()).
+
+        Args:
+            item: The analysis tree item.
+            stop_key: One of ANALYSIS_OUTPUT_STOPS' "key" values.
+        """
+        raster = self._get_render_strategy() == "raster"
+        if stop_key == "score":
+            if raster:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_to_map(item, key="result_file", layer_name="GeoE3 Score", group="GeoE3"),
+                    match_uri=item.attribute("result_file", ""),
+                )
+            else:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_grid_layer_to_map(
+                        item, "geoe3", self.working_directory, layer_name="GeoE3 Score (Grid)"
+                    ),
+                    match_name="GeoE3 Score (Grid)",
+                )
+        elif stop_key == "by_population":
+            if raster:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_to_map(
+                        item, key="geoe3_by_population", layer_name="GeoE3 by Population", group="GeoE3"
+                    ),
+                    match_uri=item.attribute("geoe3_by_population", ""),
+                )
+            else:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_grid_layer_to_map(
+                        item,
+                        column_name="geoe3_by_population",
+                        working_directory=self.working_directory,
+                        layer_name="GeoE3 by Population (Grid)",
+                        group="GeoE3",
+                    ),
+                    match_name="GeoE3 by Population (Grid)",
+                )
+        elif stop_key == "aggregate":
+            self.add_aggregates_to_map(item)
+        elif stop_key == "masked":
+            if raster:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_to_map(
+                        item,
+                        key="geoe3_score_ghsl_masked_result_file",
+                        layer_name="Masked GeoE3 Score",
+                        group="GeoE3",
+                    ),
+                    match_uri=item.attribute("geoe3_score_ghsl_masked_result_file", ""),
+                )
+                self._reveal_or_load(
+                    item,
+                    lambda: add_to_map(
+                        item,
+                        key="geoe3_score_by_population_ghsl_masked_result_file",
+                        layer_name="Masked GeoE3 by Population Score",
+                        group="GeoE3",
+                    ),
+                    match_uri=item.attribute("geoe3_score_by_population_ghsl_masked_result_file", ""),
+                )
+            else:
+                self.add_masked_scores_to_map(item)
+        elif stop_key == "opportunities_mask":
+            if raster:
+                self._reveal_or_load(
+                    item,
+                    lambda: add_to_map(
+                        item,
+                        key="opportunities_mask_result_file",
+                        layer_name="Job Opportunities Mask",
+                        group="GeoE3",
+                    ),
+                    match_uri=item.attribute("opportunities_mask_result_file", ""),
+                )
+            else:
+                self.add_opportunities_mask_to_map(item)
+        elif stop_key == "ghsl_settlements":
+            self.add_ghsl_settlements_to_map()
+
+    def _on_analysis_output_changed(self, stop_key: str) -> None:
+        """⚙️ Slot for ItemInfoPanel.outputChanged - load the carousel's current stop.
+
+        Args:
+            stop_key: One of ANALYSIS_OUTPUT_STOPS' "key" values.
+        """
+        if self._current_item is not None:
+            self._load_analysis_output(self._current_item, stop_key)
+
+    def _sparkline_source_for_output(self, item, stop_key: str):
+        """⚙️ Resolve the study_area_grid column (or aggregation field) backing one analysis-output carousel stop's Sparkline.
+
+        Mirrors _load_analysis_output()'s own mask_mode-aware column
+        choice for "score"/"by_population" - a masked stop's Sparkline
+        should reflect the exact same product the map canvas is showing.
+        "masked" always reads the plain GHSL-masked score (not the by-
+        population-masked variant too - same simplification already
+        applied to "Aggregate", picking one representative dataset
+        rather than every one of several a stop happens to load).
+
+        Args:
+            item: The analysis tree item.
+            stop_key: One of ANALYSIS_OUTPUT_STOPS' "key" values.
+
+        Returns:
+            (values, palette) - values is a numpy array (empty if the
+            product isn't configured/computed yet), palette is "likert"
+            or "by_population". (None, None) if this stop has no
+            Sparkline at all (ANALYSIS_OUTPUT_STOPS already says so via
+            "sparkline": False - defensive, since the panel shouldn't
+            request one for those stops in the first place).
+        """
+        gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
+        if stop_key == "score":
+            mask_mode = item.attribute("mask_mode", "None")
+            use_masked = mask_mode not in ("", "None", "none") and bool(
+                item.attribute("geoe3_score_ghsl_masked_result_file", "")
+            )
+            column = "geoe3_masked" if use_masked else "geoe3"
+            return sparkline_data.read_grid_column_values(gpkg_path, column), "likert"
+        if stop_key == "by_population":
+            mask_mode = item.attribute("mask_mode", "None")
+            use_masked = mask_mode not in ("", "None", "none") and bool(
+                item.attribute("geoe3_score_by_population_ghsl_masked_result_file", "")
+            )
+            column = "geoe3_by_population_masked" if use_masked else "geoe3_by_population"
+            return sparkline_data.read_grid_column_values(gpkg_path, column), "by_population"
+        if stop_key == "masked":
+            return sparkline_data.read_grid_column_values(gpkg_path, "geoe3_masked"), "likert"
+        if stop_key == "aggregate":
+            layer_uri = item.attribute("geoe3_score_subnational_aggregation", "")
+            if not layer_uri:
+                return [], "likert"
+            layer = QgsVectorLayer(layer_uri, "sparkline_aggregate", "ogr")
+            if not layer.isValid():
+                return [], "likert"
+            return sparkline_data.read_vector_field_values(layer, "_majority"), "likert"
+        return None, None
+
+    def _on_sparkline_requested(self, stop_key: str) -> None:
+        """⚙️ Slot for ItemInfoPanel.sparklineRequested - resolve and push the current context's score-distribution data.
+
+        Args:
+            stop_key: One of ANALYSIS_OUTPUT_STOPS' "key" values for an
+                "analysis" item, or "" for every other role.
+        """
+        item = self._current_item
+        if item is None or not self.working_directory:
+            self.item_info_panel.set_sparkline_unavailable("No project loaded.")
+            return
+
+        if stop_key:
+            values, palette = self._sparkline_source_for_output(item, stop_key)
+            if values is None:
+                self.item_info_panel.set_sparkline_unavailable("Not available for this product.")
+                return
+        else:
+            gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
+            values = sparkline_data.read_grid_column_values(gpkg_path, item.gridColumnName())
+            palette = "likert"
+
+        if len(values) == 0:
+            self.item_info_panel.set_sparkline_unavailable("No scored cells yet.")
+            return
+        counts, colors = sparkline_data.histogram_and_colors(values, palette)
+        self.item_info_panel.set_sparkline_data(counts, colors, f"{len(values):,} grid cells scored")
 
     def on_previous_button_clicked(self):
         """⚙️ On previous button clicked."""
@@ -618,6 +961,15 @@ class TreePanel(QWidget):
             "road_network.gpkg",
             "settlements.gpkg",
         ]
+        # A country-pack-imported project keeps its configured indicator/
+        # project-level inputs here (see import_country_pack()'s inputs_dir/
+        # inputs_gpkg) - the same durability class as road_network.gpkg/
+        # settlements.gpkg above, just inside this one folder alongside
+        # "results" (already-computed outputs, which clearing workflows is
+        # supposed to wipe). Wiping the whole folder orphaned every one of
+        # those indicators' model.json fields, which still point inside it -
+        # confirmed live re-running an imported St Lucia project.
+        country_pack_imports_exceptions = ["inputs", "inputs.gpkg"]
         if self.working_directory is None:
             log_message(
                 "No working directory set, cannot clear workflows.",
@@ -627,6 +979,22 @@ class TreePanel(QWidget):
             return
         for filename in os.listdir(self.working_directory):
             file_path = os.path.join(self.working_directory, filename)
+            if filename == "country_pack_imports":
+                for sub_filename in os.listdir(file_path):
+                    if sub_filename in country_pack_imports_exceptions:
+                        continue
+                    sub_path = os.path.join(file_path, sub_filename)
+                    try:
+                        if os.path.isfile(sub_path) or os.path.islink(sub_path):
+                            os.unlink(sub_path)
+                        elif os.path.isdir(sub_path):
+                            shutil.rmtree(sub_path)
+                    except Exception as e:
+                        log_message(
+                            f"Failed to delete {sub_path}. Reason: {e}",
+                            level=Qgis.Critical,
+                        )
+                continue
             if filename not in exceptions:
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
@@ -1206,43 +1574,16 @@ class TreePanel(QWidget):
             animate_results_action.triggered.connect(self.animate_results)
             menu.addAction(animate_results_action)
 
-            add_geoe3_score = QAction("Add GeoE3 Score to Map (Raster)")
-            add_geoe3_score.triggered.connect(
-                lambda: add_to_map(item, key="result_file", layer_name="GeoE3 Score", group="GeoE3")
-            )
+            # The other five analysis outputs (GeoE3 by Pop, Aggregates,
+            # Masked Scores, Job Opportunities Mask, GHSL Settlements) are
+            # reachable through the item info panel's carousel now (see
+            # _build_analysis_output_stops()/_load_analysis_output()) -
+            # this is the one entry kept here, both Raster/Grid variants
+            # merged into one toggle-aware action (see the "Display"
+            # setting in "Edit Weights and Settings").
+            add_geoe3_score = QAction("Add GeoE3 Score to Map")
+            add_geoe3_score.triggered.connect(lambda: self._load_analysis_output(item, "score"))
             menu.addAction(add_geoe3_score)
-
-            add_geoe3_score_grid = QAction("Add GeoE3 Score to Map (Grid)")
-            add_geoe3_score_grid.triggered.connect(lambda: add_grid_layer_to_map(item, "geoe3", self.working_directory))
-            menu.addAction(add_geoe3_score_grid)
-
-            add_geoe3_by_population = QAction("Add GeoE3 by Pop to Map")
-            add_geoe3_by_population.triggered.connect(
-                lambda: add_grid_layer_to_map(
-                    item,
-                    column_name="geoe3_by_population",
-                    working_directory=self.working_directory,
-                    layer_name="GeoE3 by Population (Grid)",
-                    group="GeoE3",
-                )
-            )
-            menu.addAction(add_geoe3_by_population)
-
-            add_geoe3_by_population_aggregate = QAction("Add GeoE3 Aggregates to Map")
-            add_geoe3_by_population_aggregate.triggered.connect(lambda: self.add_aggregates_to_map(item))
-            menu.addAction(add_geoe3_by_population_aggregate)
-
-            add_masked_scores = QAction("Add Masked Scores to Map")
-            add_masked_scores.triggered.connect(lambda: self.add_masked_scores_to_map(item))
-            menu.addAction(add_masked_scores)
-
-            add_job_opportunities_mask = QAction("Add Job Opportunities Mask to Map")
-            add_job_opportunities_mask.triggered.connect(lambda: self.add_opportunities_mask_to_map(item))
-            menu.addAction(add_job_opportunities_mask)
-
-            add_ghsl_settlements = QAction("Add GHSL Settlements to Map")
-            add_ghsl_settlements.triggered.connect(self.add_ghsl_settlements_to_map)
-            menu.addAction(add_ghsl_settlements)
 
             add_study_area_layers_action = QAction("Add Study Area to Map", self)
             add_study_area_layers_action.triggered.connect(self.add_study_area_to_map)
@@ -1487,6 +1828,7 @@ class TreePanel(QWidget):
         self.overall_progress_bar.setFormat("Building country pack... %p%")
 
         self.country_pack_task = CountryPackTask(self.working_directory, model_path, output_path, style_xml_by_path)
+        self.country_pack_task.progressChanged.connect(lambda value: self.overall_progress_bar.setValue(int(value)))
         self.country_pack_task.taskCompleted.connect(self.on_country_pack_completed)
         self.country_pack_task.taskTerminated.connect(self.on_country_pack_failed)
 
@@ -1551,20 +1893,28 @@ class TreePanel(QWidget):
             item: The analysis item containing masked score data.
         """
         # Add GeoE3 masked score as grid layer
-        add_grid_layer_to_map(
+        self._reveal_or_load(
             item,
-            column_name="geoe3_masked",
-            working_directory=self.working_directory,
-            layer_name="Masked GeoE3 Score (Grid)",
-            group="GeoE3",
+            lambda: add_grid_layer_to_map(
+                item,
+                column_name="geoe3_masked",
+                working_directory=self.working_directory,
+                layer_name="Masked GeoE3 Score (Grid)",
+                group="GeoE3",
+            ),
+            match_name="Masked GeoE3 Score (Grid)",
         )
         # Add GeoE3 by population masked score as grid layer
-        add_grid_layer_to_map(
+        self._reveal_or_load(
             item,
-            column_name="geoe3_by_population_masked",
-            working_directory=self.working_directory,
-            layer_name="Masked GeoE3 by Population Score (Grid)",
-            group="GeoE3",
+            lambda: add_grid_layer_to_map(
+                item,
+                column_name="geoe3_by_population_masked",
+                working_directory=self.working_directory,
+                layer_name="Masked GeoE3 by Population Score (Grid)",
+                group="GeoE3",
+            ),
+            match_name="Masked GeoE3 by Population Score (Grid)",
         )
 
     def add_opportunities_mask_to_map(self, item):
@@ -1573,12 +1923,16 @@ class TreePanel(QWidget):
         Args:
             item: The analysis item containing opportunities mask configuration.
         """
-        add_grid_layer_to_map(
+        self._reveal_or_load(
             item,
-            column_name="opportunities_mask",
-            working_directory=self.working_directory,
-            layer_name="Opportunities Mask (Grid)",
-            group="GeoE3",
+            lambda: add_grid_layer_to_map(
+                item,
+                column_name="opportunities_mask",
+                working_directory=self.working_directory,
+                layer_name="Opportunities Mask (Grid)",
+                group="GeoE3",
+            ),
+            match_name="Opportunities Mask (Grid)",
         )
 
     def add_ghsl_settlements_to_map(self):
@@ -1605,6 +1959,20 @@ class TreePanel(QWidget):
 
         layer_name = "ghsl_settlements"
         layer_path = f"{gpkg_path}|layername={layer_name}"
+
+        # Already on the map from an earlier carousel visit - just reveal
+        # it (the group's mutual exclusivity handles hiding whatever
+        # other carousel stop was showing) rather than re-running the
+        # GeoPackage-existence/layer-validity checks and reloading below.
+        existing = self._find_layer_tree_node(group="GeoE3 Study Area", match_uri=layer_path)
+        if existing is not None:
+            current_group = existing.parent()
+            while current_group is not None:
+                current_group.setExpanded(True)
+                current_group.setItemVisibilityChecked(True)
+                current_group = current_group.parent()
+            existing.setItemVisibilityChecked(True)
+            return
 
         # Check if layer exists in the GeoPackage
         from osgeo import ogr
@@ -1678,30 +2046,20 @@ class TreePanel(QWidget):
         Args:
             item: The analysis item containing aggregate data.
         """
-        add_to_map(
-            item,
-            key="geoe3_score_subnational_aggregation",
-            layer_name="GeoE3 Score Aggregate",
-            group="GeoE3",
-        )
-        add_to_map(
-            item,
-            key="geoe3_by_population_subnational_aggregation",
-            layer_name="GeoE3 by Population Aggregate",
-            group="GeoE3",
-        )
-        add_to_map(
-            item,
-            key="geoe3_score_ghsl_masked_subnational_aggregation",
-            layer_name="GeoE3 Score GHSL Masked Aggregate",
-            group="GeoE3",
-        )
-        add_to_map(
-            item,
-            key="geoe3_score_by_population_ghsl_masked_subnational_aggregation",
-            layer_name="GeoE3 Score by Population GHSL Masked Aggregate",
-            group="GeoE3",
-        )
+        for key, layer_name in (
+            ("geoe3_score_subnational_aggregation", "GeoE3 Score Aggregate"),
+            ("geoe3_by_population_subnational_aggregation", "GeoE3 by Population Aggregate"),
+            ("geoe3_score_ghsl_masked_subnational_aggregation", "GeoE3 Score GHSL Masked Aggregate"),
+            (
+                "geoe3_score_by_population_ghsl_masked_subnational_aggregation",
+                "GeoE3 Score by Population GHSL Masked Aggregate",
+            ),
+        ):
+            self._reveal_or_load(
+                item,
+                lambda key=key, layer_name=layer_name: add_to_map(item, key=key, layer_name=layer_name, group="GeoE3"),
+                match_uri=item.attribute(key, ""),
+            )
 
     def open_working_directory(self, item: JsonTreeItem = None):
         """Open the working directory in the file explorer.
@@ -2245,48 +2603,18 @@ class TreePanel(QWidget):
         analysis_scale = self.model.get_analysis_item().attributes().get("analysis_scale", "national")
         return analysis_scale
 
-    def _get_study_area_area_km2(self) -> float:
-        """Get total study area area in km² from study_area_clip_polygons layer.
-
-        Returns:
-            float: Total area in km².
-        """
-        gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
-        layer = QgsVectorLayer(f"{gpkg_path}|layername=study_area_clip_polygons", "study_area", "ogr")
-        if not layer.isValid():
-            log_message(
-                f"Could not load study_area_clip_polygons from {gpkg_path}",
-                tag="GeoE3",
-                level=Qgis.Warning,
-            )
-            return 0.0
-        total_area = 0.0
-        for feature in layer.getFeatures():
-            geom = feature.geometry()
-            if geom:
-                total_area += geom.area()
-        return total_area / 1_000_000
-
     def _get_render_strategy(self) -> str:
-        """Determine render strategy based on analysis scale and feature count.
+        """Whether to display analysis results as raster or grid-column vector.
 
-        Uses feature count estimate to decide whether raster or vector rendering
-        is more appropriate for performance.
+        An explicit per-analysis setting (AnalysisAggregationDialog's
+        "Display" group), not a guess - defaults to "raster" for any
+        analysis that has never visited that dialog (new projects, and
+        every project saved before this setting existed).
 
         Returns:
             str: 'raster' or 'vector'
         """
-
-        analysis_scale = self.analysis_scale()
-
-        if analysis_scale == "regional":
-            return "vector"
-
-        study_area_area_km2 = self._get_study_area_area_km2()
-        cell_size_m = self.cell_size_m()
-        estimated_features = (study_area_area_km2 * 1_000_000) / (cell_size_m**2)
-
-        return "raster" if estimated_features > MAX_FEATURES_FOR_VECTOR else "vector"
+        return self.model.get_analysis_item().attributes().get("render_strategy", "raster")
 
     def road_network_layer_path(self):
         """Get the layer used for network analysis.
@@ -2685,11 +3013,10 @@ class TreePanel(QWidget):
         if item.role == "analysis" and success:
             self.calculate_analysis_insights(item)
 
-        # Add layer to map after workflow completes using auto-determined strategy
-        use_masked = False
-        analysis_raster_key = "result_file"
-        if item.role == "analysis":
-            use_masked, analysis_raster_key = self._analysis_display(item)
+        # Add layer to map after workflow completes using auto-determined
+        # strategy - always the plain (unmasked) product for "analysis",
+        # same as on_item_clicked() and the carousel's "score" stop (see
+        # _load_analysis_output()'s docstring for why).
         if item.role == "dimension":
             column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
         elif item.role == "factor":
@@ -2697,18 +3024,11 @@ class TreePanel(QWidget):
         elif item.role == "indicator":
             column_name = item.attribute("id").lower().replace(" ", "_").replace("-", "_")
         elif item.role == "analysis":
-            column_name = "geoe3_masked" if use_masked else "geoe3"  # Analysis aggregation uses geoe3 column
+            column_name = "geoe3"  # Analysis aggregation uses geoe3 column
         else:
             column_name = None
 
-        if item.role == "analysis" and use_masked and self._get_render_strategy() == "raster":
-            add_to_map(
-                item,
-                key=analysis_raster_key,
-                layer_name="GeoE3 Score",
-                group="GeoE3",
-            )
-        elif column_name is None or self._get_render_strategy() == "raster":
+        if column_name is None or self._get_render_strategy() == "raster":
             add_to_map(item)
         else:
             add_grid_layer_to_map(item, column_name, self.working_directory)

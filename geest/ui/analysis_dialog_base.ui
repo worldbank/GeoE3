@@ -402,6 +402,29 @@ padding: 4px;</string>
          </layout>
         </widget>
        </item>
+       <item row="9" column="0">
+        <widget class="QGroupBox" name="display_group">
+         <property name="title">
+          <string>Display</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="raster_display_radio_button">
+            <property name="text">
+             <string>Raster</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="grid_display_radio_button">
+            <property name="text">
+             <string>Grid (vector)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>

@@ -3,10 +3,10 @@
 
 Reverses country_pack.py: given a country pack GeoPackage (built by
 build_country_pack()) and an empty working directory, reconstructs a
-fully configured GeoE3 project there - study_area/study_area.gpkg,
-every configured input the model points at, every already-computed
-result, and model.json itself - ready to open as a project with no
-further setup.
+fully configured GeoE3 project there - study_area/study_area.gpkg, the
+study area's own raster masks and combined_mask.vrt, every configured
+input the model points at, every already-computed result, and
+model.json itself - ready to open as a project with no further setup.
 
 The pack's own PROJECT_MODEL_TABLE_NAME table is the starting point: it
 is a verbatim copy of the exporting project's model.json, including
@@ -16,9 +16,13 @@ indicator_source()/project_level_sources()/result_sources() used to
 decide what to write into the pack and under what layer name - so
 walking the model with the exact same field-mapping constants recovers,
 for each layer name in the pack, which field on which node to overwrite
-with a freshly-extracted local path. Every table name in the pack that
-doesn't match one of those three categories (and isn't one of the two
-fixed metadata tables) is assumed to be a study_area.gpkg layer,
+with a freshly-extracted local path. A table name starting with
+STUDY_AREA_MASK_TABLE_PREFIX is one of study_area_mask_sources()'s
+per-part raster masks (extracted to study_area/{area_name}.tif, then
+combined_mask.vrt is rebuilt locally from whichever of them survived -
+see _rebuild_combined_mask_vrt()). Every other table name that doesn't
+match one of the three model-driven categories (and isn't one of the
+two fixed metadata tables) is assumed to be a study_area.gpkg layer,
 bundled wholesale on export - see study_area_sources()'s docstring for
 why that's a safe assumption today.
 
@@ -35,7 +39,7 @@ import json
 import os
 from typing import Callable, Dict, List, Optional
 
-from osgeo import gdal
+from osgeo import gdal, ogr
 
 from geest.core.country_pack import (
     INDEX_SCORE_TABLE_NAME,
@@ -43,6 +47,7 @@ from geest.core.country_pack import (
     PROJECT_MODEL_TABLE_NAME,
     RESULT_SUFFIX,
     S2S_VECTOR_FIELD_BY_MODE,
+    STUDY_AREA_MASK_TABLE_PREFIX,
     TOP_LEVEL_RESULT_RASTER_FIELDS,
     TOP_LEVEL_SUBNATIONAL_AGGREGATION_FIELDS,
     _indicator_source_field,
@@ -242,7 +247,34 @@ def _read_project_model(pack_path: str) -> dict:
     return model
 
 
-def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
+def _pack_table_kind(pack_path: str, table_name: str) -> str:
+    """Whether a table actually bundled in the pack is raster- or vector-backed.
+
+    Ground truth, unlike _s2s_field_kind(): that helper opens the
+    indicator's *original*, exporting-machine source path to guess its
+    kind - which fails (now handled, see its docstring) when that path
+    doesn't exist on the importing machine. Here the pack itself is
+    opened instead, which always exists (it's the file being imported),
+    so this is immune to that whole class of problem.
+
+    Args:
+        pack_path: Path to the country pack GeoPackage.
+        table_name: Name of the table to check.
+
+    Returns:
+        "raster" if the table opens as a raster subdataset, "vector"
+        otherwise.
+    """
+    try:
+        dataset = gdal.Open(f"GPKG:{pack_path}:{table_name}")
+    except RuntimeError:
+        dataset = None
+    kind = "raster" if dataset is not None else "vector"
+    dataset = None
+    return kind
+
+
+def _indicator_import_targets(model: dict, pack_path: str) -> Dict[str, tuple]:
     """layer_name -> (indicator, field_name, kind) for every indicator's configured input.
 
     Mirrors indicator_source()'s own traversal and field resolution (via
@@ -251,6 +283,12 @@ def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
 
     Args:
         model: The parsed model.json document.
+        pack_path: Path to the country pack GeoPackage - used to confirm
+            the real kind of an S2S_VECTOR_FIELD_BY_MODE field directly
+            against the bundled table (see _pack_table_kind()), since
+            _indicator_source_field()'s own guess for that field can
+            only be based on the indicator's stale, exporting-machine
+            path.
 
     Returns:
         One entry per indicator that has a file-based input configured.
@@ -265,6 +303,8 @@ def _indicator_import_targets(model: dict) -> Dict[str, tuple]:
                 resolved = _indicator_source_field(indicator)
                 if resolved:
                     field_name, kind, _, _ = resolved
+                    if field_name in S2S_VECTOR_FIELD_BY_MODE.values():
+                        kind = _pack_table_kind(pack_path, layer_name)
                     targets[layer_name] = (indicator, field_name, kind)
     return targets
 
@@ -365,6 +405,62 @@ def _extract_raster(pack_path: str, table_name: str, out_dir: str) -> str:
     return out_path
 
 
+def _extract_study_area_mask(pack_path: str, table_name: str, study_area_dir: str) -> str:
+    """Pull one study-area mask raster table out of the pack into study_area/{area_name}.tif.
+
+    Args:
+        pack_path: Path to the country pack GeoPackage.
+        table_name: Name of the mask raster table (STUDY_AREA_MASK_TABLE_
+            PREFIX + area_name - see country_pack.py's
+            study_area_mask_sources()).
+        study_area_dir: The reconstructed project's study_area directory
+            (created if needed).
+
+    Returns:
+        Path to the written GeoTIFF.
+
+    Raises:
+        RuntimeError: If the translate fails.
+    """
+    os.makedirs(study_area_dir, exist_ok=True)
+    area_name = table_name[len(STUDY_AREA_MASK_TABLE_PREFIX) :]
+    out_path = os.path.join(study_area_dir, f"{area_name}.tif")
+    result = gdal.Translate(out_path, f"GPKG:{pack_path}:{table_name}", format="GTiff")
+    if result is None:
+        raise RuntimeError(f"Failed to extract study area mask '{table_name}': {gdal.GetLastErrorMsg()}")
+    result = None  # noqa: F841 - closes/flushes the dataset
+    return out_path
+
+
+def _rebuild_combined_mask_vrt(study_area_dir: str, mask_paths: List[str]) -> None:
+    """Rebuild study_area/combined_mask.vrt from the restored mask GeoTIFFs.
+
+    Mirrors StudyAreaProcessingTask.create_raster_vrt()'s own gdal.
+    BuildVRT call exactly. Rebuilding locally rather than bundling and
+    restoring the VRT's XML verbatim, since BuildVRT already produces a
+    portable result (relativeToVRT="1" with bare sibling filenames, no
+    absolute paths - confirmed against real generated VRTs) and
+    regenerating is simpler than keeping a separate text blob in sync
+    with however many of the original mask tables actually survived the
+    round trip.
+
+    Args:
+        study_area_dir: The reconstructed project's study_area directory.
+        mask_paths: Paths to the restored mask GeoTIFFs. A no-op if empty
+            (nothing was bundled, or every mask table was skipped).
+
+    Raises:
+        RuntimeError: If the VRT build fails.
+    """
+    if not mask_paths:
+        return
+    vrt_path = os.path.join(study_area_dir, "combined_mask.vrt")
+    result = gdal.BuildVRT(vrt_path, mask_paths, separate=False)
+    if result is None:
+        raise RuntimeError(f"Failed to rebuild combined_mask.vrt: {gdal.GetLastErrorMsg()}")
+    result = None  # noqa: F841 - closes/flushes the dataset
+
+
 def _extract_csv(pack_path: str, table_name: str, out_dir: str) -> str:
     """Pull one vector table out of the pack as a standalone CSV.
 
@@ -397,6 +493,36 @@ def _extract_csv(pack_path: str, table_name: str, out_dir: str) -> str:
         raise RuntimeError(f"Failed to extract CSV '{table_name}': {gdal.GetLastErrorMsg()}")
     result = None  # noqa: F841 - closes/flushes the dataset
     return out_path
+
+
+def _ensure_empty_gpkg(path: str) -> None:
+    """Pre-create an empty, valid destination GeoPackage if it doesn't exist yet.
+
+    _extract_vector_into() below decides "append" vs "create" purely by
+    os.path.exists(out_gpkg) - the very first vector write into a given
+    destination is the one case where GDAL has to create that GPKG from
+    scratch while simultaneously reading pack_path. Confirmed live: on
+    one Windows/GDAL build, that exact combination ("Error retrieving
+    the source layer definition") failed for the first table into each
+    of inputs.gpkg/study_area.gpkg/results.gpkg - three different
+    destinations, same failure, every time it was the first write into
+    a brand-new file - while every subsequent append into an
+    already-existing destination succeeded. Pre-creating the (empty)
+    destination up front means every real extraction is always an
+    append, never a create, removing that one differing codepath
+    entirely rather than chasing the exact GDAL/OS quirk behind it.
+
+    Args:
+        path: Destination GeoPackage path.
+    """
+    if os.path.exists(path):
+        return
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    driver = ogr.GetDriverByName("GPKG")
+    data_source = driver.CreateDataSource(path)
+    if data_source is None:
+        raise RuntimeError(f"Failed to create '{path}': {gdal.GetLastErrorMsg()}")
+    data_source = None  # noqa: F841 - closes/flushes the dataset
 
 
 def _extract_vector_into(pack_path: str, table_name: str, out_gpkg: str) -> str:
@@ -471,23 +597,32 @@ def import_country_pack(
         raise RuntimeError(f"'{working_directory}' already has a model.json - import needs an empty working directory.")
 
     model = _read_project_model(pack_path)
-    indicator_targets = _indicator_import_targets(model)
+    indicator_targets = _indicator_import_targets(model, pack_path)
     project_targets = _project_level_import_targets(model)
     result_targets = _result_import_targets(model)
 
     reserved = {INDEX_SCORE_TABLE_NAME, PROJECT_MODEL_TABLE_NAME}
     table_names = _all_table_names(pack_path) - reserved
-    study_area_layer_names = table_names - set(indicator_targets) - set(project_targets) - set(result_targets)
+    mask_table_names = {name for name in table_names if name.startswith(STUDY_AREA_MASK_TABLE_PREFIX)}
+    study_area_layer_names = (
+        table_names - set(indicator_targets) - set(project_targets) - set(result_targets) - mask_table_names
+    )
 
     imports_dir = os.path.join(working_directory, "country_pack_imports")
     inputs_dir = os.path.join(imports_dir, "inputs")
     results_dir = os.path.join(imports_dir, "results")
     inputs_gpkg = os.path.join(imports_dir, "inputs.gpkg")
     results_gpkg = os.path.join(imports_dir, "results.gpkg")
-    study_area_gpkg = os.path.join(working_directory, "study_area", "study_area.gpkg")
+    study_area_dir = os.path.join(working_directory, "study_area")
+    study_area_gpkg = os.path.join(study_area_dir, "study_area.gpkg")
+
+    _ensure_empty_gpkg(inputs_gpkg)
+    _ensure_empty_gpkg(results_gpkg)
+    _ensure_empty_gpkg(study_area_gpkg)
 
     imported: List[str] = []
     skipped: List[str] = []
+    mask_paths: List[str] = []
     ordered_names = sorted(table_names)
 
     for index, table_name in enumerate(ordered_names):
@@ -514,6 +649,8 @@ def import_country_pack(
                     node[field_name] = _extract_raster(pack_path, table_name, results_dir)
                 else:
                     node[field_name] = _extract_vector_into(pack_path, table_name, results_gpkg)
+            elif table_name in mask_table_names:
+                mask_paths.append(_extract_study_area_mask(pack_path, table_name, study_area_dir))
             elif table_name in study_area_layer_names:
                 _extract_vector_into(pack_path, table_name, study_area_gpkg)
             else:
@@ -529,6 +666,11 @@ def import_country_pack(
 
     if progress_callback:
         progress_callback(len(ordered_names), len(ordered_names), "")
+
+    try:
+        _rebuild_combined_mask_vrt(study_area_dir, mask_paths)
+    except Exception as e:
+        log_message(f"Skipping combined_mask.vrt rebuild: {e}", tag="GeoE3")
 
     # The model records its own working directory - stale after a move,
     # same as every other path rewritten above.

@@ -2,7 +2,7 @@
 """📦 Country pack module.
 
 Builds a single "country pack" GeoPackage self-contained enough to
-reconstruct an entire GeoE3 project elsewhere. Four kinds of content go
+reconstruct an entire GeoE3 project elsewhere. Five kinds of content go
 in, each its own named layer/raster table:
 
 - Configured INPUT data: the raw dataset a user pointed each indicator
@@ -16,6 +16,9 @@ in, each its own named layer/raster table:
   indicator/factor/dimension/analysis score as its own attribute
   column, which is what makes already-computed results survive the
   round trip almost for free). See study_area_sources().
+- The study area's own per-part raster masks (study_area/{area_name}.tif,
+  mosaicked by study_area/combined_mask.vrt), named
+  "study_area_mask_{area_name}". See study_area_mask_sources().
 - Already-computed result rasters, when they exist (an item that's been
   run), named "{id}_result" (dim_/fac_ prefixed for dimensions/factors -
   see result_sources()'s docstring for why that matters).
@@ -82,6 +85,18 @@ RASTER_FIELD_BY_MODE = {
 #: plain raster field was empty but this one held the actual configured
 #: source, silently dropping every hazard/nighttime-lights indicator
 #: from the pack.
+#:
+#: Despite the name, this field isn't vector-only: RasterDataSourceWidget.
+#: update_attributes() (the same widget class used for the plain-raster
+#: case above) also populates it - with the raster's own file path -
+#: whenever the user picks the hazard/nighttime-lights raster from an
+#: already-loaded QGIS layer via the combo box rather than browsing to a
+#: file. Confirmed live on a real local-scale project where every one of
+#: these indicators ended up here as a raster path, not a vector one, and
+#: assuming "vector" sent each straight into write_vector_source(), which
+#: silently failed to translate a GeoTIFF and dropped it from the pack.
+#: See _s2s_field_kind() - the field's actual kind is only known by
+#: opening the file.
 S2S_VECTOR_FIELD_BY_MODE = {
     "use_environmental_hazards": "environmental_hazards_layer_source",
     "use_nighttime_lights": "nighttime_lights_layer_source",
@@ -135,6 +150,18 @@ PROJECT_LEVEL_SOURCES = [
 
 #: GPKG's raster driver only supports these pixel types - anything else
 #: must be downcast (see _raster_needs_float32()).
+#:
+#: Byte is "supported" in the sense that the write never raises - but by
+#: default the GPKG driver's default tile format for a single-band Byte
+#: source applies a min/max colour stretch meant for a nice-looking
+#: render, not literal value storage, silently re-quantizing real data
+#: into a tiny few-value range - confirmed live on a real Byte-typed
+#: hazard raster (cyclone frequency, legitimately Byte since its counts
+#: fit in 0-255) where every value above 4 was destroyed on the round
+#: trip through the pack. write_raster_source() forces TILE_FORMAT=PNG8
+#: for Byte sources instead (see its docstring) rather than downcasting
+#: here, since PNG8's palette-index storage keeps every value exact
+#: while still writing an actual Byte raster.
 GPKG_RASTER_TYPES = ("Byte", "Int16", "UInt16", "Float32")
 
 #: IEEE 754 single-precision max - see write_raster_source()'s docstring
@@ -172,6 +199,37 @@ class PackSource:
     clip: bool = True
 
 
+def _s2s_field_kind(path: str) -> str:
+    """Whether a populated S2S_VECTOR_FIELD_BY_MODE path is actually a raster or a vector.
+
+    That field holds a Space2Stats-backed vector GeoPackage at regional
+    scale, but just as often - confirmed live, see S2S_VECTOR_FIELD_BY_
+    MODE's docstring - the raw hazard/nighttime-lights raster itself.
+    Opening the file is the only reliable way to tell them apart.
+
+    Args:
+        path: The configured source path (may include "|layername=...").
+
+    Returns:
+        "raster" if the path opens as a raster dataset, "vector" otherwise.
+    """
+    base_path, _ = _split_source_uri(path)
+    try:
+        dataset = gdal.Open(base_path)
+    except RuntimeError:
+        # With GDAL's exceptions mode on (see ogr.UseExceptions() in
+        # ookla_downloader.py - GDAL/OGR share one exceptions flag),
+        # Open() raises instead of returning None on a missing/
+        # unreadable path - confirmed live importing a country pack on
+        # a machine that never had the exporting machine's original
+        # path, which otherwise aborted the whole import before the
+        # per-table try/except even started.
+        dataset = None
+    kind = "raster" if dataset is not None else "vector"
+    dataset = None
+    return kind
+
+
 def _indicator_source_field(indicator: dict) -> Optional[tuple]:
     """Resolve which populated field holds one indicator's configured input, if any.
 
@@ -200,7 +258,7 @@ def _indicator_source_field(indicator: dict) -> Optional[tuple]:
             return field_name, "raster", None, None
         s2s_field = S2S_VECTOR_FIELD_BY_MODE.get(mode)
         if s2s_field and indicator.get(s2s_field):
-            return s2s_field, "vector", None, None
+            return s2s_field, _s2s_field_kind(indicator[s2s_field]), None, None
         return None
 
     if mode in CSV_MODE_FIELDS:
@@ -346,6 +404,69 @@ def study_area_sources(working_directory: str) -> List[PackSource]:
         for i in range(dataset.GetLayerCount())
     ]
     dataset = None
+    return sources
+
+
+#: Prefix for a study-area raster mask's pack layer name, so it can't
+#: collide with an indicator/result/study_area.gpkg layer of the same
+#: area_name, and so the importer can recognise it as a mask table
+#: rather than a plain study_area.gpkg vector layer - see
+#: study_area_mask_sources()/country_pack_import.py's matching handling.
+STUDY_AREA_MASK_TABLE_PREFIX = "study_area_mask_"
+
+
+def study_area_mask_sources(working_directory: str) -> List[PackSource]:
+    """Every per-part study-area raster mask (study_area/{area_name}.tif), bundled as its own raster table.
+
+    StudyAreaProcessingTask.create_raster_mask() writes one of these per
+    processed part during study area preparation, and create_raster_vrt()
+    mosaics them all into study_area/combined_mask.vrt - nothing reads
+    either back downstream today, but a pack extracted into a fresh
+    working directory should still look like the original project, not
+    a copy with files quietly missing.
+
+    study_area_creation_status's mask_processed column (not
+    study_area_bboxes/study_area_polygons, and not a directory glob) is
+    the authoritative source for which area_name masks actually got
+    written: a part can have rows in those other two tables and still
+    never get a mask .tif, if it was skipped afterwards by the GHSL-
+    intersection filter - checking the status table directly avoids
+    both that false positive and any dependency on filesystem ordering.
+
+    Args:
+        working_directory: The project's working directory.
+
+    Returns:
+        One PackSource per area_name whose mask .tif still exists on
+        disk (clip=False - it already *is* the study area boundary), or
+        an empty list if there's no study_area.gpkg yet, or it predates
+        the study_area_creation_status table.
+    """
+    study_area_gpkg = os.path.join(working_directory, "study_area", "study_area.gpkg")
+    if not os.path.exists(study_area_gpkg):
+        return []
+    dataset = ogr.Open(study_area_gpkg)
+    if dataset is None:
+        return []
+    # A plain layer lookup never raises even with UseExceptions() on
+    # (unlike ExecuteSQL() against a table that doesn't exist, which
+    # does on some GDAL builds - QGIS's bundled GDAL among them) - the
+    # right way to ask "does this project predate the status table" is
+    # this, not a try/except around the query itself.
+    if dataset.GetLayerByName("study_area_creation_status") is None:
+        dataset = None
+        return []
+    layer = dataset.ExecuteSQL("SELECT area_name FROM study_area_creation_status WHERE mask_processed = 1")
+    area_names = [feature.GetField("area_name") for feature in layer] if layer is not None else []
+    if layer is not None:
+        dataset.ReleaseResultSet(layer)
+    dataset = None
+
+    sources = []
+    for area_name in area_names:
+        mask_path = os.path.join(working_directory, "study_area", f"{area_name}.tif")
+        if os.path.exists(mask_path):
+            sources.append(PackSource(f"{STUDY_AREA_MASK_TABLE_PREFIX}{area_name}", mask_path, "raster", clip=False))
     return sources
 
 
@@ -602,28 +723,64 @@ def write_raster_source(
     creation_options = [f"RASTER_TABLE={source.layer_name}"]
     if append:
         creation_options.append("APPEND_SUBDATASET=YES")
-    warp_kwargs = {}
-    if source.clip:
-        warp_kwargs = {
-            "cutlineDSName": study_area_gpkg,
-            "cutlineLayer": study_area_layer,
-            "cropToCutline": True,
-        }
-    needs_float32 = _raster_needs_float32(source.path)
-    if needs_float32:
-        safe_nodata = _float32_safe_nodata(source.path)
-        if safe_nodata is not None:
-            warp_kwargs["dstNodata"] = safe_nodata
-    options = gdal.WarpOptions(
-        format="GPKG",
-        outputType=(gdal.GDT_Float32 if needs_float32 else gdal.GDT_Unknown),
-        creationOptions=creation_options,
-        **warp_kwargs,
-    )
-    result = gdal.Warp(out_gpkg, base_path, options=options)
-    if result is None:
-        raise RuntimeError(f"Failed to write raster '{source.layer_name}': {gdal.GetLastErrorMsg()}")
-    result = None  # noqa: F841 - closes/flushes the dataset
+    warp_source = base_path
+    identity_palette_vrt = None
+    source_dataset = gdal.Open(base_path)
+    if source_dataset is not None and gdal.GetDataTypeName(source_dataset.GetRasterBand(1).DataType) == "Byte":
+        # The GPKG driver's default tile format applies a min/max colour
+        # stretch to a single-band Byte source (meant for a nice-looking
+        # render, not literal value storage), silently re-quantizing real
+        # values - confirmed live on a real Byte-typed hazard raster
+        # (cyclone frequency, 1-110) where every value above 4 was
+        # destroyed, AND on a real 0/1 study area mask where every 1 got
+        # stretched to 255. TILE_FORMAT=PNG8 (a palette-indexed PNG) can
+        # store exact values instead - but only once the source itself
+        # carries an explicit IDENTITY grayscale palette (index i -> RGB
+        # (i,i,i)); left to compute its own, GDAL built the same kind of
+        # stretched palette as the default tile format, reproducing the
+        # exact bug this is meant to fix. Assigning the palette via a
+        # /vsimem/ VRT wrapper, rather than on the source file itself,
+        # avoids mutating a dataset this function doesn't own - several
+        # mask/count rasters (study area masks, cyclone frequency) are
+        # deliberately Byte and need to stay that way.
+        identity_palette_vrt = f"/vsimem/_identity_palette_{id(source)}.vrt"
+        vrt_dataset = gdal.Translate(identity_palette_vrt, source_dataset, format="VRT")
+        color_table = gdal.ColorTable()
+        for value in range(256):
+            color_table.SetColorEntry(value, (value, value, value, 255))
+        vrt_band = vrt_dataset.GetRasterBand(1)
+        vrt_band.SetRasterColorTable(color_table)
+        vrt_band.SetRasterColorInterpretation(gdal.GCI_PaletteIndex)
+        vrt_dataset = None
+        warp_source = identity_palette_vrt
+        creation_options.append("TILE_FORMAT=PNG8")
+    source_dataset = None
+    try:
+        warp_kwargs = {}
+        if source.clip:
+            warp_kwargs = {
+                "cutlineDSName": study_area_gpkg,
+                "cutlineLayer": study_area_layer,
+                "cropToCutline": True,
+            }
+        needs_float32 = _raster_needs_float32(source.path)
+        if needs_float32:
+            safe_nodata = _float32_safe_nodata(source.path)
+            if safe_nodata is not None:
+                warp_kwargs["dstNodata"] = safe_nodata
+        options = gdal.WarpOptions(
+            format="GPKG",
+            outputType=(gdal.GDT_Float32 if needs_float32 else gdal.GDT_Unknown),
+            creationOptions=creation_options,
+            **warp_kwargs,
+        )
+        result = gdal.Warp(out_gpkg, warp_source, options=options)
+        if result is None:
+            raise RuntimeError(f"Failed to write raster '{source.layer_name}': {gdal.GetLastErrorMsg()}")
+        result = None  # noqa: F841 - closes/flushes the dataset
+    finally:
+        if identity_palette_vrt is not None:
+            gdal.Unlink(identity_palette_vrt)
 
 
 def _source_vector_srs(base_path: str, source_layer_name: Optional[str], kind: str) -> Optional[osr.SpatialReference]:
@@ -964,7 +1121,12 @@ def build_country_pack(
     if os.path.exists(output_path):
         os.remove(output_path)
 
-    sources = all_sources(model) + study_area_sources(working_directory) + result_sources(model)
+    sources = (
+        all_sources(model)
+        + study_area_sources(working_directory)
+        + study_area_mask_sources(working_directory)
+        + result_sources(model)
+    )
     written: List[str] = []
     skipped: List[str] = []
 
