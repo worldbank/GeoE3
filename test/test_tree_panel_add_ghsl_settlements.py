@@ -51,6 +51,16 @@ class TestAddGhslSettlementsToMapRestoresVisibility(unittest.TestCase):
 
         self.panel = MagicMock()
         self.panel.working_directory = self.temp_dir
+        # add_ghsl_settlements_to_map() now checks _find_layer_tree_node()
+        # first to reveal an already-loaded layer instead of reloading it.
+        # Left unconfigured, self.panel's auto-generated Mock attribute
+        # returns a truthy Mock rather than None, which the method reads
+        # as "already loaded" and walks up via .parent() forever - every
+        # Mock.parent() call also auto-generates another truthy Mock, so
+        # that walk never reaches a real None and spins until the test
+        # process is killed. None is also the accurate answer here: this
+        # test's whole premise is the "nothing loaded yet" precondition.
+        self.panel._find_layer_tree_node = MagicMock(return_value=None)
 
     def tearDown(self):
         QgsProject.instance().clear()

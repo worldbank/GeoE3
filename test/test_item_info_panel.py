@@ -194,12 +194,16 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
         self.assertNotIn("Warning", self.panel.item_meta_label.toPlainText())
         self.assertEqual(self.panel.item_meta_label.toPlainText(), "Indicator")
 
-    def test_methodology_link_hidden_for_items_without_a_technique(self):
+    def test_methodology_link_replaced_by_sparkline_for_items_without_a_technique(self):
+        # A dimension never has its own technique, but every dimension is
+        # Sparkline-eligible (see show_item()) - "more" now offers that
+        # page directly instead of just disappearing (confirmed live).
         item = make_fake_item("dimension", "Accessibility")
 
         self.panel.show_item(item)
 
-        self.assertFalse(self.panel.more_link.isVisible())
+        self.assertTrue(self.panel.more_link.isVisible())
+        self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
 
     def test_methodology_link_shown_for_indicator_with_a_known_technique(self):
         item = make_fake_item("indicator", "Clinics nearby", analysis_mode="use_point_per_cell")
@@ -208,12 +212,16 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
 
         self.assertTrue(self.panel.more_link.isVisible())
 
-    def test_methodology_link_hidden_for_unmapped_analysis_mode(self):
+    def test_methodology_link_replaced_by_sparkline_for_unmapped_analysis_mode(self):
+        # No technique maps to this analysis_mode, but the indicator is
+        # still Sparkline-eligible, so "more" skips straight to Sparkline
+        # rather than offering a Methodology page that doesn't exist.
         item = make_fake_item("indicator", "Total score", analysis_mode="factor_aggregation")
 
         self.panel.show_item(item)
 
-        self.assertFalse(self.panel.more_link.isVisible())
+        self.assertTrue(self.panel.more_link.isVisible())
+        self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
 
     def test_icon_label_is_a_square_tile(self):
         self.assertEqual(self.panel.item_icon_label.objectName(), "iconTile")
@@ -236,7 +244,12 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
 
         item.getIcon.assert_called()
 
-    def test_showing_a_new_item_resets_to_the_item_page(self):
+    def test_showing_an_item_that_still_supports_it_stays_on_the_methodology_page(self):
+        # Selecting a tree item is meant to feel like a tab that stays
+        # selected across rows - re-showing an item whose technique still
+        # supports Methodology keeps the user there instead of bouncing
+        # back to the Item page (see show_item()'s "land on the same kind
+        # of page" comment; confirmed live).
         item = make_fake_item("indicator", "Clinics nearby", analysis_mode="use_point_per_cell")
         self.panel.show_item(item)
         self.panel._show_methodology_page()
@@ -244,7 +257,7 @@ class TestItemInfoPanelShowItem(unittest.TestCase):
 
         self.panel.show_item(item)
 
-        self.assertEqual(self.panel.stack.currentIndex(), 0)
+        self.assertEqual(self.panel.stack.currentIndex(), 1)
 
 
 class TestItemInfoPanelMethodologySlideOver(unittest.TestCase):
@@ -290,12 +303,20 @@ class TestItemInfoPanelMethodologySlideOver(unittest.TestCase):
         self.assertIsNot(self.panel.more_link.parentWidget(), self.panel.card)
         self.assertFalse(self.panel.card.isAncestorOf(self.panel.more_link))
 
-    def test_more_link_hides_while_on_the_methodology_page(self):
+    def test_more_link_offers_the_sparkline_page_next_while_on_methodology(self):
+        # The Methodology page is no longer the dead end it used to be -
+        # every indicator is Sparkline-eligible, so "more" now carries on
+        # to that page instead of disappearing (see _show_methodology_page()).
         self.assertTrue(self.panel.more_link.isVisible())
 
         self.panel.more_link.click()
 
-        self.assertFalse(self.panel.more_link.isVisible())
+        self.assertTrue(self.panel.more_link.isVisible())
+        self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
+
+        self.panel.more_link.click()
+
+        self.assertEqual(self.panel.stack.currentIndex(), 3)
 
     def test_more_link_reappears_after_returning_to_the_item_page(self):
         self.panel.more_link.click()
