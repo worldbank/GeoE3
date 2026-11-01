@@ -445,6 +445,19 @@ class GeoE3Dock(QDockWidget):
             return
         log_message(f"Opening associated QGIS project: {qgis_path}", tag="GeoE3", level=Qgis.Info)
         self._suppress_qgis_project_changed = True
+        # Capture the road network path before QgsProject.read() touches
+        # anything - QGIS adds the project's layers one at a time while
+        # reading, and the road network combo's filtered layer list (every
+        # line layer qualifies) resettles mid-load, auto-selecting whichever
+        # layer ends up first once all layers are present. That auto-select
+        # fires road_network_layer_path_changed unblocked, silently
+        # overwriting the correct saved path with the wrong layer (e.g. an
+        # OSM-derived layer sharing the same schema as the real road
+        # network). Block the combo's signals for the read() call so that
+        # cascade can't reach the model, then force the combo back onto the
+        # path we know is correct.
+        saved_road_network_path = self.tree_widget.road_network_layer_path()
+        self.road_network_widget.road_layer_combo.blockSignals(True)
         try:
             QgsProject.instance().read(qgis_path)
         except Exception as e:
@@ -454,7 +467,10 @@ class GeoE3Dock(QDockWidget):
                 level=Qgis.Critical,
             )
         finally:
+            self.road_network_widget.road_layer_combo.blockSignals(False)
             self._suppress_qgis_project_changed = False
+        if saved_road_network_path:
+            self.road_network_widget.restore_layer_from_path(saved_road_network_path)
 
     def on_panel_changed(self, index: int) -> None:
         """
