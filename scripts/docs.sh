@@ -31,7 +31,15 @@ require_nix() {
 cmd_serve() {
   require_mkdocs
   echo "Starting mkdocs serve at http://$ADDR (Ctrl-C to stop)"
-  exec mkdocs serve --dev-addr "$ADDR"
+  # The 'mkdocs' console script (Click CLI) loads the exact same config/
+  # plugins/theme and does register its file watcher correctly, but
+  # edits never trigger a rebuild through it in this environment -
+  # confirmed live with every launch method (nix run, the plain binary)
+  # and every edit method (editor, shell append). Calling the same
+  # mkdocs.commands.serve.serve() function directly via python3, skipping
+  # the console-script/Click layer entirely, picks up changes correctly -
+  # confirmed side by side with identical config/plugins/theme either way.
+  exec python3 -c "import mkdocs.commands.serve as s; s.serve(dev_addr='$ADDR')"
 }
 
 cmd_build() {
