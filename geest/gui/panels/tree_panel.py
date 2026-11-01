@@ -961,6 +961,15 @@ class TreePanel(QWidget):
             "road_network.gpkg",
             "settlements.gpkg",
         ]
+        # A country-pack-imported project keeps its configured indicator/
+        # project-level inputs here (see import_country_pack()'s inputs_dir/
+        # inputs_gpkg) - the same durability class as road_network.gpkg/
+        # settlements.gpkg above, just inside this one folder alongside
+        # "results" (already-computed outputs, which clearing workflows is
+        # supposed to wipe). Wiping the whole folder orphaned every one of
+        # those indicators' model.json fields, which still point inside it -
+        # confirmed live re-running an imported St Lucia project.
+        country_pack_imports_exceptions = ["inputs", "inputs.gpkg"]
         if self.working_directory is None:
             log_message(
                 "No working directory set, cannot clear workflows.",
@@ -970,6 +979,22 @@ class TreePanel(QWidget):
             return
         for filename in os.listdir(self.working_directory):
             file_path = os.path.join(self.working_directory, filename)
+            if filename == "country_pack_imports":
+                for sub_filename in os.listdir(file_path):
+                    if sub_filename in country_pack_imports_exceptions:
+                        continue
+                    sub_path = os.path.join(file_path, sub_filename)
+                    try:
+                        if os.path.isfile(sub_path) or os.path.islink(sub_path):
+                            os.unlink(sub_path)
+                        elif os.path.isdir(sub_path):
+                            shutil.rmtree(sub_path)
+                    except Exception as e:
+                        log_message(
+                            f"Failed to delete {sub_path}. Reason: {e}",
+                            level=Qgis.Critical,
+                        )
+                continue
             if filename not in exceptions:
                 try:
                     if os.path.isfile(file_path) or os.path.islink(file_path):
@@ -1803,6 +1828,7 @@ class TreePanel(QWidget):
         self.overall_progress_bar.setFormat("Building country pack... %p%")
 
         self.country_pack_task = CountryPackTask(self.working_directory, model_path, output_path, style_xml_by_path)
+        self.country_pack_task.progressChanged.connect(lambda value: self.overall_progress_bar.setValue(int(value)))
         self.country_pack_task.taskCompleted.connect(self.on_country_pack_completed)
         self.country_pack_task.taskTerminated.connect(self.on_country_pack_failed)
 
