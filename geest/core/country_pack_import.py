@@ -3,10 +3,10 @@
 
 Reverses country_pack.py: given a country pack GeoPackage (built by
 build_country_pack()) and an empty working directory, reconstructs a
-fully configured GeoE3 project there - study_area/study_area.gpkg,
-every configured input the model points at, every already-computed
-result, and model.json itself - ready to open as a project with no
-further setup.
+fully configured GeoE3 project there - study_area/study_area.gpkg, the
+study area's own raster masks and combined_mask.vrt, every configured
+input the model points at, every already-computed result, and
+model.json itself - ready to open as a project with no further setup.
 
 The pack's own PROJECT_MODEL_TABLE_NAME table is the starting point: it
 is a verbatim copy of the exporting project's model.json, including
@@ -16,9 +16,13 @@ indicator_source()/project_level_sources()/result_sources() used to
 decide what to write into the pack and under what layer name - so
 walking the model with the exact same field-mapping constants recovers,
 for each layer name in the pack, which field on which node to overwrite
-with a freshly-extracted local path. Every table name in the pack that
-doesn't match one of those three categories (and isn't one of the two
-fixed metadata tables) is assumed to be a study_area.gpkg layer,
+with a freshly-extracted local path. A table name starting with
+STUDY_AREA_MASK_TABLE_PREFIX is one of study_area_mask_sources()'s
+per-part raster masks (extracted to study_area/{area_name}.tif, then
+combined_mask.vrt is rebuilt locally from whichever of them survived -
+see _rebuild_combined_mask_vrt()). Every other table name that doesn't
+match one of the three model-driven categories (and isn't one of the
+two fixed metadata tables) is assumed to be a study_area.gpkg layer,
 bundled wholesale on export - see study_area_sources()'s docstring for
 why that's a safe assumption today.
 
@@ -43,6 +47,7 @@ from geest.core.country_pack import (
     PROJECT_MODEL_TABLE_NAME,
     RESULT_SUFFIX,
     S2S_VECTOR_FIELD_BY_MODE,
+    STUDY_AREA_MASK_TABLE_PREFIX,
     TOP_LEVEL_RESULT_RASTER_FIELDS,
     TOP_LEVEL_SUBNATIONAL_AGGREGATION_FIELDS,
     _indicator_source_field,
@@ -365,6 +370,62 @@ def _extract_raster(pack_path: str, table_name: str, out_dir: str) -> str:
     return out_path
 
 
+def _extract_study_area_mask(pack_path: str, table_name: str, study_area_dir: str) -> str:
+    """Pull one study-area mask raster table out of the pack into study_area/{area_name}.tif.
+
+    Args:
+        pack_path: Path to the country pack GeoPackage.
+        table_name: Name of the mask raster table (STUDY_AREA_MASK_TABLE_
+            PREFIX + area_name - see country_pack.py's
+            study_area_mask_sources()).
+        study_area_dir: The reconstructed project's study_area directory
+            (created if needed).
+
+    Returns:
+        Path to the written GeoTIFF.
+
+    Raises:
+        RuntimeError: If the translate fails.
+    """
+    os.makedirs(study_area_dir, exist_ok=True)
+    area_name = table_name[len(STUDY_AREA_MASK_TABLE_PREFIX) :]
+    out_path = os.path.join(study_area_dir, f"{area_name}.tif")
+    result = gdal.Translate(out_path, f"GPKG:{pack_path}:{table_name}", format="GTiff")
+    if result is None:
+        raise RuntimeError(f"Failed to extract study area mask '{table_name}': {gdal.GetLastErrorMsg()}")
+    result = None  # noqa: F841 - closes/flushes the dataset
+    return out_path
+
+
+def _rebuild_combined_mask_vrt(study_area_dir: str, mask_paths: List[str]) -> None:
+    """Rebuild study_area/combined_mask.vrt from the restored mask GeoTIFFs.
+
+    Mirrors StudyAreaProcessingTask.create_raster_vrt()'s own gdal.
+    BuildVRT call exactly. Rebuilding locally rather than bundling and
+    restoring the VRT's XML verbatim, since BuildVRT already produces a
+    portable result (relativeToVRT="1" with bare sibling filenames, no
+    absolute paths - confirmed against real generated VRTs) and
+    regenerating is simpler than keeping a separate text blob in sync
+    with however many of the original mask tables actually survived the
+    round trip.
+
+    Args:
+        study_area_dir: The reconstructed project's study_area directory.
+        mask_paths: Paths to the restored mask GeoTIFFs. A no-op if empty
+            (nothing was bundled, or every mask table was skipped).
+
+    Raises:
+        RuntimeError: If the VRT build fails.
+    """
+    if not mask_paths:
+        return
+    vrt_path = os.path.join(study_area_dir, "combined_mask.vrt")
+    result = gdal.BuildVRT(vrt_path, mask_paths, separate=False)
+    if result is None:
+        raise RuntimeError(f"Failed to rebuild combined_mask.vrt: {gdal.GetLastErrorMsg()}")
+    result = None  # noqa: F841 - closes/flushes the dataset
+
+
 def _extract_csv(pack_path: str, table_name: str, out_dir: str) -> str:
     """Pull one vector table out of the pack as a standalone CSV.
 
@@ -477,17 +538,22 @@ def import_country_pack(
 
     reserved = {INDEX_SCORE_TABLE_NAME, PROJECT_MODEL_TABLE_NAME}
     table_names = _all_table_names(pack_path) - reserved
-    study_area_layer_names = table_names - set(indicator_targets) - set(project_targets) - set(result_targets)
+    mask_table_names = {name for name in table_names if name.startswith(STUDY_AREA_MASK_TABLE_PREFIX)}
+    study_area_layer_names = (
+        table_names - set(indicator_targets) - set(project_targets) - set(result_targets) - mask_table_names
+    )
 
     imports_dir = os.path.join(working_directory, "country_pack_imports")
     inputs_dir = os.path.join(imports_dir, "inputs")
     results_dir = os.path.join(imports_dir, "results")
     inputs_gpkg = os.path.join(imports_dir, "inputs.gpkg")
     results_gpkg = os.path.join(imports_dir, "results.gpkg")
-    study_area_gpkg = os.path.join(working_directory, "study_area", "study_area.gpkg")
+    study_area_dir = os.path.join(working_directory, "study_area")
+    study_area_gpkg = os.path.join(study_area_dir, "study_area.gpkg")
 
     imported: List[str] = []
     skipped: List[str] = []
+    mask_paths: List[str] = []
     ordered_names = sorted(table_names)
 
     for index, table_name in enumerate(ordered_names):
@@ -514,6 +580,8 @@ def import_country_pack(
                     node[field_name] = _extract_raster(pack_path, table_name, results_dir)
                 else:
                     node[field_name] = _extract_vector_into(pack_path, table_name, results_gpkg)
+            elif table_name in mask_table_names:
+                mask_paths.append(_extract_study_area_mask(pack_path, table_name, study_area_dir))
             elif table_name in study_area_layer_names:
                 _extract_vector_into(pack_path, table_name, study_area_gpkg)
             else:
@@ -529,6 +597,11 @@ def import_country_pack(
 
     if progress_callback:
         progress_callback(len(ordered_names), len(ordered_names), "")
+
+    try:
+        _rebuild_combined_mask_vrt(study_area_dir, mask_paths)
+    except Exception as e:
+        log_message(f"Skipping combined_mask.vrt rebuild: {e}", tag="GeoE3")
 
     # The model records its own working directory - stale after a move,
     # same as every other path rewritten above.

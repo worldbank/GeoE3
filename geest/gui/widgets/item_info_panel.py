@@ -36,6 +36,7 @@ from qgis.PyQt.QtWidgets import (
 
 from geest.core.reports.methodology import TECHNIQUES, technique_for_indicator
 from geest.core.topic_icons import topic_icon_filename
+from geest.gui.widgets.sparkline_chart import SparklineChart
 from geest.utilities import resources_path
 
 NAVY = "#002244"
@@ -95,6 +96,23 @@ class ItemInfoPanel(QWidget):
     #: preferred height (there is nothing else to resize for).
     toggled = pyqtSignal(bool)
 
+    #: Emitted with a stop's "key" (see geest.core.analysis_outputs) when
+    #: the carousel lands on an available output the host should load into
+    #: the canvas - never emitted for a stop marked unavailable, since
+    #: there's nothing to load.
+    outputChanged = pyqtSignal(str)
+
+    #: Emitted when the user navigates onto the Sparkline page - the
+    #: host responds with set_sparkline_data()/set_sparkline_unavailable().
+    #: Carries the active carousel stop's "key" (see
+    #: geest.core.analysis_outputs) for an "analysis" item, or "" for
+    #: every other role (indicator/factor/dimension each have exactly
+    #: one column, no stop to name). Not computed eagerly on every tree
+    #: click: the underlying read (see geest.core.sparkline_data) is a
+    #: real full-column SQLite scan, not an in-memory lookup, so it's
+    #: only worth paying for when the page is actually opened.
+    sparklineRequested = pyqtSignal(str)
+
     def __init__(self, parent=None):
         """🏗️ Initialize the instance.
 
@@ -111,6 +129,29 @@ class ItemInfoPanel(QWidget):
         # processing was still under way.
         self._progress_active = False
         self._progress_title = "Analysis in progress..."
+        # The analysis-level output carousel (GeoE3 Score / by Population /
+        # Aggregate / Masked / Job Opportunities Mask / GHSL Settlements) -
+        # see set_analysis_outputs(). Empty for every other role.
+        self._output_stops = []
+        self._current_output_index = 0
+        self._score_heading_text = ""
+        self._score_meta_text = ""
+        # Whether "next" from the current Item/Methodology page leads to a
+        # Sparkline page - True for any indicator/factor/dimension (see
+        # show_item()), or per-stop for "analysis" (see
+        # _render_current_output(), ANALYSIS_OUTPUT_STOPS' "sparkline" key).
+        self._sparkline_eligible = False
+        # Which of Item(0)/Methodology(1)/Sparkline(3) the user last
+        # explicitly navigated to, for indicator/factor/dimension items -
+        # show_item() consults this so switching to another indicator
+        # while viewing its Methodology/Sparkline page lands on the SAME
+        # kind of page for the new one, instead of always resetting to
+        # Item (confirmed live: expected to behave like a tab that stays
+        # selected across rows, not a per-item default). Not consulted
+        # for "analysis" items - set_analysis_outputs() always starts a
+        # freshly-selected analysis node's own carousel at stop 0's Item
+        # view by design, regardless of this.
+        self._active_page = 0
         self._build_ui()
         self.clear()
 
@@ -220,6 +261,7 @@ class ItemInfoPanel(QWidget):
         self.stack.addWidget(self._build_item_page())
         self.stack.addWidget(self._build_methodology_page())
         self.stack.addWidget(self._build_progress_page())
+        self.stack.addWidget(self._build_sparkline_page())
         card_layout.addWidget(self.stack)
 
         outer.addWidget(self.card)
@@ -300,6 +342,32 @@ class ItemInfoPanel(QWidget):
         outer.addLayout(row, 1)
         return page
 
+    def _build_sparkline_page(self) -> QWidget:
+        """⚙️ Build the score-distribution Sparkline page.
+
+        Returns:
+            The page widget.
+        """
+        page = QWidget()
+        outer = QVBoxLayout(page)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(4)
+
+        self.sparkline_heading_label = QLabel("Score Distribution")
+        self.sparkline_heading_label.setObjectName("headingLabel")
+        outer.addWidget(self.sparkline_heading_label)
+
+        self.sparkline_chart = SparklineChart()
+        outer.addWidget(self.sparkline_chart)
+
+        self.sparkline_caption_label = QLabel("")
+        self.sparkline_caption_label.setObjectName("statusLabel")
+        self.sparkline_caption_label.setWordWrap(True)
+        outer.addWidget(self.sparkline_caption_label)
+
+        outer.addStretch(1)
+        return page
+
     def _build_progress_page(self) -> QWidget:
         """⚙️ Build the "a run is in progress" page: status text and
         the two progress bars (overall item count, current task) shown
@@ -376,27 +444,193 @@ class ItemInfoPanel(QWidget):
             self.set_expanded(True)
 
     def _on_header_label_clicked(self):
-        """⚙️ Carousel "previous" control: expand first, then go back.
+        """⚙️ "Previous" control: expand first, then step back.
 
-        A no-op carousel step while a run is in progress - the header
-        reads a status title then, not "← Selected item", so there's
-        nothing to navigate back to until the run finishes.
+        Doubles as the analysis-output carousel's "previous" button
+        whenever one is active (see set_analysis_outputs()) - otherwise
+        it's the indicator/methodology/Sparkline "go back" link, a no-op
+        while a run is in progress (the header reads a status title
+        then, not "← Selected item", so there's nothing to navigate
+        back to until the run finishes).
         """
         if not self._expanded:
             self.set_expanded(True)
+        if self._output_stops:
+            if self.stack.currentIndex() == 3:
+                # Back from this stop's Sparkline page returns to the
+                # SAME stop's Item view, not the previous stop - one
+                # step back undoes one step forward (see
+                # _on_more_link_clicked()'s matching branch).
+                self._render_current_output()
+            else:
+                self._advance_output(-1)
+            return
         if self._progress_active:
+            return
+        if self.stack.currentIndex() == 3 and self._current_technique_key is not None:
+            # Back from Sparkline is one step, same as everywhere else
+            # in this chain - to Methodology when there is one, not a
+            # skip straight to Item (confirmed live: it's a carousel,
+            # "←" should undo the last "→", not jump home).
+            self._show_methodology_page()
             return
         self._show_item_page()
 
     def _on_more_link_clicked(self):
-        """⚙️ Carousel "next" control: expand first, then go to methodology."""
+        """⚙️ "Next" control: expand first, then step forward.
+
+        Doubles as the analysis-output carousel's "next" button whenever
+        one is active (see set_analysis_outputs()) - otherwise it's the
+        indicator/methodology "Methodology →" link, then (for any role)
+        the "Sparkline →" link once there's nothing more specific left
+        to show.
+        """
         if not self._expanded:
             self.set_expanded(True)
-        self._show_methodology_page()
+        if self._output_stops:
+            if self.stack.currentIndex() != 3 and self._sparkline_eligible:
+                # "Next" from a stop's Item view shows THAT stop's own
+                # Sparkline first, not the next stop - see
+                # _render_current_output()'s docstring for why this
+                # satisfies "the sparkline is for the active sub item".
+                self._show_sparkline_page()
+            else:
+                self._advance_output(1)
+            return
+        current = self.stack.currentIndex()
+        if current == 0 and self._current_technique_key is not None:
+            self._show_methodology_page()
+        elif current in (0, 1) and self._sparkline_eligible:
+            self._show_sparkline_page()
+        elif current == 3:
+            # Sparkline is the last page in this chain - "next" wraps
+            # the carousel back around to the Item page rather than
+            # dead-ending (confirmed live: it's a carousel, there
+            # should always be a "→" somewhere to go, even from the
+            # last stop).
+            self._show_item_page()
+
+    def set_analysis_outputs(self, stops, current_index: int = 0) -> None:
+        """⚙️ Show (or hide) the analysis-output carousel.
+
+        Repurposes the header's existing "← Selected item"/"Methodology →"
+        controls as the carousel's previous/next buttons - those are
+        otherwise unused for an "analysis" role item (it never has a
+        methodology technique of its own), so this never conflicts with
+        the indicator/methodology navigation they normally drive.
+
+        Args:
+            stops: A list of stop dicts (see geest.core.analysis_outputs.
+                ANALYSIS_OUTPUT_STOPS), each with an added "available"
+                bool, or None/empty to hide the carousel - the caller is
+                expected to pass this every time it calls show_item(),
+                not just for "analysis" items, so a carousel left over
+                from a previously selected item never lingers.
+            current_index: Which stop to land on first.
+        """
+        self._output_stops = list(stops) if stops else []
+        if not self._output_stops:
+            self._current_output_index = 0
+            # No more_link/header_label reset needed here: the caller
+            # (TreePanel.on_item_clicked()) always calls show_item()
+            # before this, and _show_item_page() already fully repaints
+            # both controls (text, cursor, style, visibility) from
+            # scratch every time it runs - carousel or not - so there's
+            # nothing left over from a previous analysis-item visit to
+            # undo. An unconditional re-paint here used to stomp back
+            # over whatever show_item() had JUST correctly set for a
+            # factor/dimension (e.g. "Sparkline  →"), always forcing it
+            # to "Methodology  →" instead (confirmed live).
+            return
+        # Snapshot the text show_item() just painted for the real item, so
+        # stop 0 ("score") can be restored to it later - including after
+        # cycling away and back, when nothing else still has these
+        # values lying around (see _render_current_output()). Text only,
+        # not a QPixmap snapshot of the icon - a QLabel.pixmap() snapshot
+        # segfaulted on the second visit to stop 0, once setPixmap() had
+        # since been called again for other stops (confirmed live; same
+        # class of bug as a GDAL Dataset being garbage-collected out from
+        # under a Band it issued). Unlike the heading/description, the
+        # icon never needs restoring anyway - an "analysis" item's icon
+        # is always topics/geoe3_score.svg regardless of item id (see
+        # topic_icons.py's ANALYSIS_ICON), the exact same file stop 0
+        # already names, so just re-rendering it fresh like every other
+        # stop (below) already reproduces it exactly.
+        self._score_heading_text = self.item_heading_label.text()
+        self._score_meta_text = self.item_meta_label.toPlainText()
+        self._current_output_index = current_index % len(self._output_stops)
+        self._render_current_output()
+
+    def _advance_output(self, delta: int) -> None:
+        """⚙️ Step the carousel by delta stops, wrapping at either end.
+
+        Args:
+            delta: +1 for "next", -1 for "previous".
+        """
+        self._current_output_index = (self._current_output_index + delta) % len(self._output_stops)
+        self._render_current_output()
+        stop = self._output_stops[self._current_output_index]
+        if stop.get("available"):
+            self.outputChanged.emit(stop["key"])
+
+    def _render_current_output(self) -> None:
+        """⚙️ Paint the item page + header for the carousel's current stop.
+
+        Also returns the stack to this (Item) page - the one caller that
+        needs that is "back" from this stop's own Sparkline page (see
+        _on_header_label_clicked()); every other caller is already on
+        this page, so it's a no-op for them.
+        """
+        self.stack.setCurrentIndex(0)
+        self._active_page = 0
+        stop = self._output_stops[self._current_output_index]
+        self._sparkline_eligible = stop.get("sparkline", True)
+        icon = QIcon(resources_path("resources", "icons", "topics", stop["icon"]))
+        if not icon.isNull():
+            self.item_icon_label.setPixmap(icon.pixmap(24, 24))
+        else:
+            self.item_icon_label.clear()
+
+        # Stop 0 ("score") restores exactly what show_item() painted for
+        # this analysis item when the carousel started - its real heading
+        # (the item's own tree name, not a hardcoded "GeoE3 Score") and
+        # its real description (a custom model.json one, or
+        # _analysis_default_description()'s women's-empowerment-aware
+        # copy) - rather than this stop's generic placeholder text, which
+        # lost that real description (confirmed live). The snapshot (see
+        # set_analysis_outputs()) is what makes this survive cycling away
+        # to another stop and back, not just the very first render.
+        if self._current_output_index == 0:
+            self.item_heading_label.setText(self._score_heading_text)
+            self.item_meta_label.setPlainText(self._score_meta_text)
+        else:
+            self.item_heading_label.setText(stop["label"])
+            description = stop["description"]
+            if not stop.get("available", True):
+                description = f"{description}  —  not yet computed"
+            self.item_meta_label.setPlainText(description)
+
+        self.header_label.setText("←  Previous")
+        self.header_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.header_label.setStyleSheet(f"color: {CYAN};")
+        self.more_link.setText("Sparkline  →" if self._sparkline_eligible else "Next  →")
+        self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.more_link.setStyleSheet(f"color: {CYAN};")
+        self.more_link.setVisible(True)
 
     def clear(self):
         """⚙️ Show a neutral placeholder when nothing is selected."""
         self._current_technique_key = None
+        # Reset directly rather than via set_analysis_outputs(None) - this
+        # is called from several places that don't also pair it with a
+        # set_analysis_outputs() call, and a stale non-empty _output_stops
+        # would make the next header_label/more_link click silently resume
+        # carousel navigation instead of the (now-active) placeholder/
+        # methodology behaviour those controls should have.
+        self._output_stops = []
+        self._current_output_index = 0
+        self._sparkline_eligible = False
+        self._active_page = 0
         self.item_icon_label.clear()
         self.item_heading_label.setText("No item selected")
         self.item_meta_label.setPlainText("Click a dimension, factor or indicator in the tree to see details here.")
@@ -417,6 +651,16 @@ class ItemInfoPanel(QWidget):
     def _set_header_as_back_link(self):
         """⚙️ Active carousel state: the "previous" control, back to the item page."""
         self.header_label.setText("←  Selected item")
+        self.header_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.header_label.setStyleSheet(f"color: {CYAN};")
+
+    def _set_header_as_sparkline_back_link(self, label: str):
+        """⚙️ Active carousel state while on a stop's own Sparkline page: "back" names that stop, not a generic "Selected item".
+
+        Args:
+            label: The current carousel stop's own label (e.g. "GeoE3 Score").
+        """
+        self.header_label.setText(f"←  {label}")
         self.header_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.header_label.setStyleSheet(f"color: {CYAN};")
 
@@ -595,6 +839,15 @@ class ItemInfoPanel(QWidget):
             technique_for_indicator(analysis_mode, self._analysis_scale_for_item(item)) if analysis_mode else None
         )
         self._current_technique_key = technique_key
+        # Every indicator/factor/dimension has an "id" and so a
+        # study_area_grid column to build a Sparkline from (even if that
+        # column turns out to have no scored cells yet - that's an empty
+        # chart with a caption, not a missing page). "analysis" is
+        # handled entirely through set_analysis_outputs()/
+        # _render_current_output() instead, per-carousel-stop - not set
+        # here, since this method runs before that one for an analysis
+        # item (see TreePanel.on_item_clicked()).
+        self._sparkline_eligible = role in ("indicator", "factor", "dimension")
         # Content above is still updated (ready for when hide_progress()
         # eventually calls _show_item_page()) but the stack itself stays
         # on the progress page while a run is active - selecting a
@@ -602,13 +855,41 @@ class ItemInfoPanel(QWidget):
         # progress display the user is actually watching.
         if self._progress_active:
             return
-        self._show_item_page()
+        # Land on the same KIND of page the user was already viewing for
+        # the previous item - switching between indicators/factors/
+        # dimensions while reading a Methodology or Sparkline page
+        # should carry that choice over to the newly-selected item, not
+        # silently reset to the plain Item page every time (confirmed
+        # live - expected to behave like a tab that stays selected
+        # across tree rows). Falls back gracefully when the new item
+        # doesn't support the remembered page (e.g. was on Methodology,
+        # new item is a factor/dimension with no technique of its own).
+        # Not consulted for "analysis" - set_analysis_outputs() (called
+        # right after this, see TreePanel.on_item_clicked()) always
+        # starts a freshly-selected analysis node's own carousel at
+        # stop 0's Item view by design, overriding whatever this picks.
+        if self._active_page == 1 and technique_key is not None:
+            self._show_methodology_page()
+        elif self._active_page in (1, 3) and self._sparkline_eligible:
+            self._show_sparkline_page()
+        else:
+            self._show_item_page()
 
     def _show_item_page(self):
         """⚙️ Switch the stack to the "selected item" page."""
-        self.more_link.setVisible(self._current_technique_key is not None)
+        if self._current_technique_key is not None:
+            self.more_link.setText("Methodology  →")
+            self.more_link.setVisible(True)
+        elif self._sparkline_eligible:
+            self.more_link.setText("Sparkline  →")
+            self.more_link.setVisible(True)
+        else:
+            self.more_link.setVisible(False)
+        self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.more_link.setStyleSheet(f"color: {CYAN};")
         self._set_header_as_label()
         self.stack.setCurrentIndex(0)
+        self._active_page = 0
 
     def _show_methodology_page(self):
         """⚙️ Switch the stack to the methodology page for the current item."""
@@ -623,9 +904,71 @@ class ItemInfoPanel(QWidget):
         # show_item(); methodology_body_label is the same kind of
         # scrollable text area (_scrollable_text()).
         self.methodology_body_label.setPlainText(technique["description"])
-        # The header's Methodology link is for navigating TO this page -
-        # hide it while already here; the header itself becomes the "go
-        # back" control instead (see _set_header_as_back_link()).
-        self.more_link.setVisible(False)
+        # The header's Methodology link was for navigating TO this page -
+        # replace it with "Sparkline →" (every indicator is sparkline-
+        # eligible, see show_item()) now that we're here; the header
+        # itself becomes the "go back" control instead (see
+        # _set_header_as_back_link()).
+        self.more_link.setText("Sparkline  →")
+        self.more_link.setVisible(self._sparkline_eligible)
         self._set_header_as_back_link()
         self.stack.setCurrentIndex(1)
+        self._active_page = 1
+
+    def _show_sparkline_page(self) -> None:
+        """⚙️ Switch to the Sparkline page and ask the host for its data.
+
+        Emits sparklineRequested every time this page is entered rather
+        than caching the last result - the host (TreePanel) is the one
+        that knows whether the underlying data could have changed since
+        the last visit (a re-run, a different carousel stop), and the
+        read itself (geest.core.sparkline_data) is cheap enough for a
+        single explicit "I just navigated here" trigger, unlike doing it
+        on every tree click.
+        """
+        stop_key = ""
+        if self._output_stops:
+            # "Back" returns to this SAME stop's Item view; "next"
+            # continues the outer carousel to the following stop
+            # (_on_more_link_clicked()'s carousel branch already does
+            # this once more_link is visible again) - a true circular
+            # carousel, not a dead end.
+            stop = self._output_stops[self._current_output_index]
+            stop_key = stop["key"]
+            self._set_header_as_sparkline_back_link(stop["label"])
+            self.more_link.setText("Next  →")
+        elif self._current_technique_key is not None:
+            # "Back" undoes the last "→" (to Methodology, one step),
+            # same one-step convention as everywhere else in this
+            # chain; "next" wraps back around to Item.
+            self._set_header_as_sparkline_back_link("Methodology")
+            self.more_link.setText("Selected item  →")
+        else:
+            self._set_header_as_back_link()
+            self.more_link.setText("Selected item  →")
+        self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.more_link.setStyleSheet(f"color: {CYAN};")
+        self.more_link.setVisible(True)
+        self.stack.setCurrentIndex(3)
+        self._active_page = 3
+        self.sparklineRequested.emit(stop_key)
+
+    def set_sparkline_data(self, counts, colors, caption: str) -> None:
+        """⚙️ Feed the Sparkline page's chart - called by the host in response to sparklineRequested.
+
+        Args:
+            counts: Bar heights, one per class (see geest.core.sparkline_data).
+            colors: One hex colour per bar, same length/order as counts.
+            caption: One-line caption shown under the chart (e.g. "61,616 grid cells scored").
+        """
+        self.sparkline_chart.set_data(counts, colors)
+        self.sparkline_caption_label.setText(caption)
+
+    def set_sparkline_unavailable(self, message: str) -> None:
+        """⚙️ Show a message instead of a chart on the Sparkline page.
+
+        Args:
+            message: Why no chart is available (e.g. "No scored cells yet").
+        """
+        self.sparkline_chart.set_unavailable(message)
+        self.sparkline_caption_label.setText("")

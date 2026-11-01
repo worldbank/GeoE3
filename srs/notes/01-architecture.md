@@ -1191,7 +1191,7 @@ Collection of reusable processing tasks and helper functions.
 | `geest/core/algorithms/subnational_aggregation_processor.py` | Admin aggregation | `SubnationalAggregationProcessingTask` | Zonal statistics |
 | `geest/core/grid_column_utils.py` | Grid output writing | Module functions | `write_raster_values_to_grid()`, `rasterize_grid_column()` |
 | `geest/core/gpkg_doctor.py` | GeoPackage repair | `HealReport` (namedtuple), functions | `heal_geopackage()`, `schema_error()` |
-| `geest/core/constants.py` | Application constants | Module vars | `APPLICATION_NAME`, `MAX_FEATURES_FOR_VECTOR`, S2S field mappings |
+| `geest/core/constants.py` | Application constants | Module vars | `APPLICATION_NAME`, S2S field mappings |
 | `geest/utilities.py` | Global utilities | Module functions | `log_message()`, `resources_path()`, theme helpers |
 
 ---

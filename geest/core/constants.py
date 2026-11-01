@@ -156,5 +156,3 @@ DEFAULT_S2S_URBAN_RURAL_MEASURES = {
     "urban": "Urban population share",
     "rural": "Rural population share",
 }
-
-MAX_FEATURES_FOR_VECTOR = 100000
