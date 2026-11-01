@@ -17,14 +17,6 @@ Once installed, you'll find GeoE3's icon in the QGIS toolbar. Click it to
 open the panel, which docks to the right-hand side of the window by
 default.
 
-![Plugin Interface](../images/new%20images/Welcome_GeoE3.jpg){ width="45%" }
-
-> 1. **Locate the Toolbar Icon**  ![Toolbar Icon](../images/new%20images/Tool%20icon.jpg){ width="5%" }
-> Find the plugin's icon in the QGIS toolbar.
->
-> 2. **Open the Plugin**
-> Click on the plugin's toolbar icon to open its main window.
-
 The first page is a short welcome and overview; the next explains what
 the tool does and who built it. Use the arrow buttons at the bottom of
 the panel to move between pages.
@@ -38,8 +30,6 @@ the panel to move between pages.
 
 Next, GeoE3 asks you to choose a project folder — every analysis lives in
 its own folder, which the plugin manages for you.
-
-![GeoE3 Project](../images/new%20images/Project_Selection.jpg){ width="45%" }
 
 **Open an Existing Project** loads a project folder you've already set up
 and configured — pick this to carry on where you left off.
@@ -106,14 +96,10 @@ is a raster layer which covers the study area, excluding any pixels
 outside the area by giving them NoData, and including any areas inside
 the study area by giving them a value of one.
 
-![Study area creation progress](../images/new%20images/StudyArea_Creation.jpg){ width="45%" }
-
 When it finishes, a **Study Area Report** opens automatically, summarizing
 how many grid cells were created, how long each part of the country took
 to process, and where the generated files live (your project folder's
 `study_area/` subfolder). You can reopen it any time.
-
-![Study Area Report](../images/new%20images/StudyArea_report.jpg){ width="55%" }
 
 ### Setting up routing
 
@@ -132,9 +118,6 @@ it's in the wrong coordinate reference system, GeoE3 will reproject it
 into the correct one for you automatically. If you don't have a road
 dataset, you can also click the **Download from OpenStreetMap** button
 and it will fetch one for you from Geofabrik or OpenStreetMap directly.
-
-![Road network selection](../images/new%20images/RoadNetwork.jpg){ width="45%" }
-![Road network reprojected](../images/new%20images/RoadNetwork2.jpg){ width="45%" }
 
 ## Reading the dock: a tree of dimensions, factors and indicators
 
@@ -156,11 +139,6 @@ see its factors, expand a factor to see its indicators. What each of
 these levels actually *means*, and how they combine, is the subject of
 [The Model](the-model.md). This page is just about finding your way
 around the panel itself.
-
-<figure markdown>
-![The GeoE3 data processing interface](../images/new%20images/Nav_understand.jpg){ width="45%" }
-<figcaption>The data processing interface: dimensions and factors on the left, status widgets on the right.</figcaption>
-</figure>
 
 **Status widgets.** Each row in the tree shows a small icon telling you
 what state that item is in:

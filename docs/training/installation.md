@@ -58,5 +58,3 @@ Follow the steps below to install the GEOE3 QGIS plugin.
 
 Next: [The Interface](interface.md), opening the plugin, creating your
 first project, and getting oriented in the model tree.
-
-![GEOE3 Settings](../images/new%20images/Install_page_settings.png){ width="60%" }

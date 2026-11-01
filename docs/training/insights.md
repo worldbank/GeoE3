@@ -2,9 +2,10 @@
 
 !!! abstract "Learning objective"
     By the end of this page you'll be able to interpret the final GeoE3
-    score, drill into any dimension, factor or indicator's methodology
-    and weightings, and understand the bivariate legend that results
-    from combining enablement with population density.
+    score, drill into any dimension, factor or indicator's methodology,
+    weightings and score distribution, step through the GeoE3 Score's
+    own output carousel, and understand the bivariate legend that
+    results from combining enablement with population density.
 
 <p align="justify">
 This page picks up once the GeoE3 Score has been configured and run (see
@@ -29,20 +30,58 @@ very enabling.
 <figcaption>The completed model tree, with the final GeoE3 Score on the same 0–5 scale as everything beneath it.</figcaption>
 </figure>
 
-We're able to go and explore all of the individual results as well — you
-can click on any layer and you'll see a description of it at the bottom,
-in the info panel (you can shrink this panel and resize it back again),
-including the methodology that was used to calculate it. For example,
-Workplace Discrimination uses a single factor applied equally to all
-cells throughout the region.
+We're able to go and explore all of the individual results as well.
+Click on any layer in the tree. You'll see a description of it in the
+info panel at the bottom right. You can shrink this panel and resize it
+back again. For every indicator, factor and dimension, that description
+now comes with extra pages. Step through them using the **→** link in
+the panel's header.
 
 You can go through and explore the different results generated at the
-dimension level, then the factor level, and down at the indicator level —
-remembering that the combination of indicators is combined into the
-factor. If you double-click on a factor, you can see in a table the
-weightings used to say what the relative importance of each was in the
-total assessment. This is the same weights dialog covered in
+dimension level, then the factor level, and down at the indicator level.
+Remember that the combination of indicators is combined into the factor.
+If you double-click on a factor, you can see in a table the weightings
+used to say what the relative importance of each was in the total
+assessment. This is the same weights dialog covered in
 [Configuring Items](configuring-items.md).
+
+### Exploring an Item: Description, Methodology and Score Distribution
+---
+Click an indicator. Workplace Discrimination, say. The info panel opens
+on its **Item** page. You'll see its role, its description, and a
+**Methodology →** link.
+
+Click **Methodology →**. The panel explains, in plain language, which of
+the [eight processor types](processor-types.md) produced this
+indicator's score. It's the same explanation the PDF report's own
+Methodology section gives. You get it the moment you click the item.
+
+Click forward once more and you'll reach the **Sparkline** page. It's a
+small bar chart showing how the grid cells scored, 0 to 5, for whatever
+you've got selected. Factors and dimensions skip straight here from
+their Item page.
+
+The header's left hand label walks you back the same way you came. One
+click from Sparkline takes you back to Methodology for an indicator, or
+straight to Item for a factor or dimension. Select a different item
+while you're sitting on the Methodology page and the panel stays on
+Methodology for the new item too, as long as it still has one. It
+behaves like a tab that stays selected as you move around the tree.
+
+### The GeoE3 Score's Own Carousel
+---
+The GeoE3 Score node works a little differently. A single run produces
+up to six different output layers. Click it and the same **→** link
+cycles through all six. **GeoE3 Score**. **GeoE3 by Population**.
+**GeoE3 Aggregate**. **Masked Scores**. **Job Opportunities Mask**.
+**GHSL Settlements**. You'll only see the ones you actually configured
+and ran.
+
+Each stop gets its own Item page. Four of the six also get their own
+Sparkline. Job Opportunities Mask is a binary mask. GHSL Settlements is
+a reference layer. Neither gets a Sparkline page. So "Next" from the
+GeoE3 by Population stop goes to that stop's own score distribution
+first. Then it moves on to Aggregate.
 
 ### Visualizing the Outputs
 ---
@@ -128,6 +167,12 @@ results are available for export to CSV or any GIS format. Both are
 covered next, in [The Analysis Report](report.md).
 
 !!! success "Recap"
+    - The info panel's **→** link steps any indicator through Item,
+      Methodology and Sparkline. Factors and dimensions skip straight
+      from Item to Sparkline.
+    - The GeoE3 Score node has its own carousel of up to six output
+      stops, each with its own Item page and, for four of the six, its
+      own Sparkline.
     - The GeoE3 Score combines the three dimensions you've already
       configured, weighted and run just like any other item in the tree.
     - Adding a population layer (auto-fetched from Space2Stats, or your
