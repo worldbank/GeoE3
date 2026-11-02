@@ -216,6 +216,26 @@ body,
     border: 1px solid var(--rule-line);
 }
 
+/* Training walkthrough screenshots use an inline {width="X%"} attribute
+   per image (35%, 45%, 55%...), each one an arbitrary leftover from
+   whatever size the original screenshot happened to need. Material's
+   own default (.md-typeset img { max-width: 100% }) only caps images,
+   it does not undo a smaller explicit width. Override every percentage-
+   width screenshot back to the full content column; pixel-width inline
+   topic icons ({width="22"} etc.) do not match this selector and are
+   left alone. */
+.md-typeset img[width$="%"] {
+    width: 100% !important;
+}
+
+/* Material renders markdown tables at their natural (auto) width,
+   left-aligned by default. Centre every table horizontally in the
+   content column instead. */
+.md-typeset table:not([class]) {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Hero CTA buttons — flat, no shadow, Blue primary, Cloud secondary.
    markdown wraps consecutive links in a single <p>; we apply the flex
    layout to that <p> too so buttons sit side-by-side instead of

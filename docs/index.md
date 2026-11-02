@@ -25,6 +25,10 @@ close the gap.
 ## Welcome to GeoE3
 
 <p align="center">
+  <img src="images/geoe3-marquee.gif" alt="GeoE3 running in QGIS: selecting indicators in the model tree and watching the enablement score map update" style="max-width:100%;">
+</p>
+
+<p align="center">
   <img src="images/new%20images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure — wind turbines, schools, clinics, transport, housing — illustrating the spatial factors the GeoWEAF framework scores" style="max-width:360px;">
 </p>
 

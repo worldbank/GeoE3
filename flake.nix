@@ -115,9 +115,7 @@
 
         # mkdocs site lifecycle (see scripts/docs.sh) — run from inside
         # `nix develop` so mkdocs (from requirements-dev.txt) is on PATH.
-        docs-serve = mkDocsApp "serve"; # start mkdocs serve in the background
-        docs-stop = mkDocsApp "stop"; # stop the background mkdocs serve
-        docs-status = mkDocsApp "status"; # is mkdocs serve running?
+        docs-serve = mkDocsApp "serve"; # start mkdocs serve in the foreground, Ctrl-C to stop
         docs-build = mkDocsApp "build"; # mkdocs build --strict -> site/
         docs-pdf = mkDocsApp "pdf"; # single combined PDF -> site/pdf/
       };
@@ -136,6 +134,7 @@
           pkgs.gdb
           pkgs.git
           pkgs.minio-client # for grabbing ookla data
+          pkgs.gifsicle # compressing/optimizing docs GIF screenshots
           pkgs.glogg
           pkgs.glow # terminal markdown viewer
           pkgs.gource # Software version control visualization

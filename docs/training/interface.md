@@ -17,39 +17,41 @@ Once installed, you'll find GeoE3's icon in the QGIS toolbar. Click it to
 open the panel, which docks to the right-hand side of the window by
 default.
 
-![Plugin Interface](../images/new%20images/Welcome_GeoE3.jpg){ width="45%" }
-
-> 1. **Locate the Toolbar Icon**  ![Toolbar Icon](../images/new%20images/Tool%20icon.jpg){ width="5%" }
-> Find the plugin's icon in the QGIS toolbar.
->
-> 2. **Open the Plugin**
-> Click on the plugin's toolbar icon to open its main window.
-
 The first page is a short welcome and overview; the next explains what
 the tool does and who built it. Use the arrow buttons at the bottom of
 the panel to move between pages.
 
 <figure markdown>
-![The Welcome to GeoE3 panel](../images/training/welcome-panel.jpg){ width="35%" }
+![The Welcome to GeoE3 panel](../images/training/welcome-panel.png){ width="35%" }
 <figcaption>The welcome panel.</figcaption>
 </figure>
 
 ## Opening or creating a project
 
-Next, GeoE3 asks you to choose a project folder — every analysis lives in
+Next, GeoE3 asks you to choose a project folder. Every analysis lives in
 its own folder, which the plugin manages for you.
 
-![GeoE3 Project](../images/new%20images/Project_Selection.jpg){ width="45%" }
-
 **Open an Existing Project** loads a project folder you've already set up
-and configured — pick this to carry on where you left off.
+and configured. Pick this to carry on where you left off.
 
 **Create a New Project** walks you through setting one up from scratch,
 which is what the rest of this page covers.
 
+**Import a Country Pack** rebuilds someone else's project from a single
+GeoPackage they exported (see Building a Country Pack, later in this
+walkthrough). Point it at the pack file and an empty working folder.
+GeoE3 reconstructs the project there including the study area, each
+input's configuration, all of the already-computed results, and the
+model itself.
+
+<figure markdown>
+![The GeoE3 project selection page: Open an Existing Project, Create a New Project, or Import a Country Pack](../images/training/geoe3-project-selection.png){ width="45%" }
+<figcaption>The three ways into a GeoE3 project.</figcaption>
+</figure>
+
 !!! warning
     The folder you choose must be **empty**. GeoE3 treats everything in
-    it as its own — using a folder that already has other files in it can
+    it as its own. Using a folder that already has other files in it can
     lead to errors or accidental overwrites. Give it a descriptive name
     (country/region plus a date is a good pattern) so you can find it
     again later.
@@ -67,16 +69,14 @@ three choices to pick from to define the scale of your analysis:
 | Local    | A city or small region             | 100 m              |
 
 In all three cases you can change the grid size if you want to, but the
-defaults are a reasonable place to start. Regional scale also unlocks the
-Space2Stats prefetch step covered in [Getting
-Data](datacollection.md#tutorial-automatic-downloads-built-into-geoe3).
+defaults are a reasonable place to start.
 
 <figure markdown>
 ![The GeoE3 project creation wizard: scale, grid size, boundary layer and Women's Enabling Environments options](../images/training/project-wizard.jpg)
 <figcaption>Scale, grid size, boundary layer and the Women's Enabling Environments toggle, all in one step.</figcaption>
 </figure>
 
-Then it asks for the boundary layer — point it at your Admin0 (national
+Then it asks for the boundary layer. Point it at your Admin0 (national
 boundary) layer, and tell it which column has the country name. If your
 boundary layer doesn't look like the typical boundary you'd expect (it
 still extends out into the ocean, for example, or is missing the level
@@ -84,20 +84,20 @@ you need), see the
 [GADM](datacollection.md#tutorial-official-administrative-boundaries-from-gadm)
 and
 [HDX](datacollection.md#tutorial-humanitarian-data-exchange-hdx)
-tutorials — OpenStreetMap's admin boundaries aren't always reliable.
+tutorials. OpenStreetMap's admin boundaries aren't always reliable.
 
 The last thing it asks is whether you want to do a Women's Enabling
 Environment study, or just a generic economic enabling-environment study.
 Leave **Women's Enabling Environments** ticked for the
 GeoWEAF-framework analysis this walkthrough demonstrates; untick it for
-the generic one, and you'll get a slightly different workflow — some
+the generic one, and you'll get a slightly different workflow. Some
 women-specific factors get disabled, and the Contextual dimension needs
 an EPLEX score instead of individual factor analysis.
 
 ### What happens next: the study area grid
 
 Once you confirm, it computes a grid across the study area and writes
-that into a GeoPackage file — you can see it in the study area. It
+that into a GeoPackage file. You can see it in the study area. It
 creates various different products: the main thing is the GeoPackage,
 which contains a regular grid (for a regional analysis this is an H3
 grid, so hexagons covering the whole study area; national and local
@@ -106,14 +106,32 @@ is a raster layer which covers the study area, excluding any pixels
 outside the area by giving them NoData, and including any areas inside
 the study area by giving them a value of one.
 
-![Study area creation progress](../images/new%20images/StudyArea_Creation.jpg){ width="45%" }
+<figure markdown>
+![GeoE3 processing the study area grid, from scale selection through to a completed progress bar](../images/training/study-area-creation-progress.gif){ width="261" }
+<figcaption>Processing the study area. The report opens automatically once it reaches 100%.</figcaption>
+</figure>
 
 When it finishes, a **Study Area Report** opens automatically, summarizing
 how many grid cells were created, how long each part of the country took
 to process, and where the generated files live (your project folder's
 `study_area/` subfolder). You can reopen it any time.
 
-![Study Area Report](../images/new%20images/StudyArea_report.jpg){ width="55%" }
+<figure markdown>
+![A quick scroll through the Study Area Report](../images/training/study-area-report.gif){ width="85%" }
+<figcaption>The Study Area Report, opened automatically once the grid finishes.</figcaption>
+</figure>
+
+If you picked **Regional** scale, GeoE3 now offers to prefetch Space2Stats
+data for every Space2Stats-backed indicator in one go. Tick **Fetch S2S
+data** and click Next. National and local-scale projects skip this step
+entirely. See [Getting
+Data](datacollection.md#tutorial-automatic-downloads-built-into-geoe3) for
+exactly what gets downloaded.
+
+<figure markdown>
+![The GeoE3 Space2Stats prefetch step](../images/training/space2stats-prefetch-interface.png){ width="45%" }
+<figcaption>Space2Stats prefetch, Regional scale only.</figcaption>
+</figure>
 
 ### Setting up routing
 
@@ -121,20 +139,32 @@ The next thing it wants to do is set up the routing environment. For some
 analysis steps we use a routing analysis that allows us to understand,
 for example, what's the travel time for a woman to move from her home to
 a clinic (or what have you) using the road network. It's possible to use
-OpenRouteService for this, but you need an API key — or you can use the
+OpenRouteService for this, but you need an API key. Or you can use the
 native QGIS routing (`native:serviceareafromlayer`), which is a bit
 slower but doesn't require any keys.
 
-Either way, it wants to know if you've got a road network. If you've
-already downloaded OSM data (see [Getting Data](datacollection.md)), you
-probably don't want to use the railways — you want the roads layer. If
-it's in the wrong coordinate reference system, GeoE3 will reproject it
-into the correct one for you automatically. If you don't have a road
-dataset, you can also click the **Download from OpenStreetMap** button
-and it will fetch one for you from Geofabrik or OpenStreetMap directly.
+<figure markdown>
+![The GeoE3 ORS Setup page: native QGIS routing or OpenRouteService, with an API key field](../images/training/routing-ors-setup.png){ width="35%" }
+<figcaption>Native QGIS routing is the default. Switch to OpenRouteService and paste in an API key if you have one.</figcaption>
+</figure>
 
-![Road network selection](../images/new%20images/RoadNetwork.jpg){ width="45%" }
-![Road network reprojected](../images/new%20images/RoadNetwork2.jpg){ width="45%" }
+Next you should indicate if you've got a road network. If you've already
+downloaded OSM data (see [Getting Data](datacollection.md)), you can use
+the road lines layer it provides. If you don't have a road dataset, you
+can also click the **Download from OpenStreetMap** button and it will
+fetch a combined roads and cycleways network for you from OpenStreetMap
+directly.
+
+<figure markdown>
+![Selecting a road network layer for the routing environment](../images/training/road-network-selection.png){ width="35%" }
+<figcaption>Selecting a road network layer for the routing environment.</figcaption>
+</figure>
+
+!!! note
+    If your road network layer isn't already in the study area's CRS,
+    GeoE3 reprojects it for you automatically. You'll see the
+    reprojected copy named with a `_reprojected` suffix, like
+    `road_network_reprojected` above.
 
 ## Reading the dock: a tree of dimensions, factors and indicators
 
@@ -146,33 +176,42 @@ Characterization dimension. Those are further subdivided into
 **factors** (the second-level grouping), and each dimension may have one
 or more factors associated with it.
 
-<figure markdown>
-![The full GeoE3 model tree: 3 dimensions, 16 factors, 35 indicators](../images/training/model-tree.jpg){ width="55%" }
-<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators).</figcaption>
-</figure>
-
 It's a tree in the literal QGIS-layer-panel sense: expand a dimension to
 see its factors, expand a factor to see its indicators. What each of
 these levels actually *means*, and how they combine, is the subject of
 [The Model](the-model.md). This page is just about finding your way
 around the panel itself.
 
+Each row's small leading icon also shows what kind of item it is:
+
+| Icon | Role |
+|---|---|
+| ![Dimension icon](../images/icons/dimension.svg){ width="20" } | Dimension |
+| ![Factor icon](../images/icons/factor.svg){ width="20" } | Factor |
+| ![Indicator icon](../images/icons/indicator.svg){ width="20" } | Indicator |
+
+**Status widgets.** Each row in the tree also shows a small status icon
+telling you what state that item is in:
+
 <figure markdown>
-![The GeoE3 data processing interface](../images/new%20images/Nav_understand.jpg){ width="45%" }
-<figcaption>The data processing interface: dimensions and factors on the left, status widgets on the right.</figcaption>
+![Five tree row status icons: configured and ready to run, completed successfully, not yet configured, disabled, and completed with error](../images/training/tree-status-icons.png){ width="55%" }
+<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators), with the five status icons numbered 1 to 5 above.</figcaption>
 </figure>
 
-**Status widgets.** Each row in the tree shows a small icon telling you
-what state that item is in:
+| # | Icon | Status | Meaning |
+|---|---|---|---|
+| 1 | ![Configured, not run](../images/icons/not-run.svg){ width="20" } | Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
+| 2 | ![Completed successfully](../images/icons/completed-success.svg){ width="20" } | Completed successfully | Processing finished without errors. |
+| 3 | ![Required, not configured](../images/icons/required-not-configured.svg){ width="20" } | Not yet configured | Required inputs are still missing. |
+| 4 | ![Excluded from analysis](../images/icons/excluded.svg){ width="20" } | Disabled | Deliberately excluded. Won't run or count toward the score. |
+| 5 | ![Workflow failed](../images/icons/failed.svg){ width="20" } | Completed with error | Something went wrong. Check the log file. |
 
-| Status | Meaning |
-|---|---|
-| Configured, not run | Inputs are set up but the workflow hasn't been executed yet |
-| Required, not configured | Essential inputs are still missing |
-| Completed successfully | Processing finished without errors |
-| Workflow failed | Something went wrong (needs troubleshooting) |
-| Not configured (optional) | Optional inputs, left unset |
-| Excluded from analysis | Deliberately disabled, won't be run or counted |
+!!! note
+    In this example, **EPLEX Score** shows as Disabled because this is a
+    Women's Enabling Environments analysis, which uses the WBL-based
+    indicators instead (see [Contextual Dimension](contextual.md)). A
+    generic economic-enablement analysis is the other way around: EPLEX
+    Score is enabled, and the WBL indicators are disabled.
 
 ## Right-click to interact with items
 

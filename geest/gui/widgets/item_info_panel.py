@@ -610,10 +610,21 @@ class ItemInfoPanel(QWidget):
                 description = f"{description}  —  not yet computed"
             self.item_meta_label.setPlainText(description)
 
-        self.header_label.setText("←  Previous")
+        # Name the actual destination stop rather than a generic
+        # "Previous"/"Next" - every other back/forward label in this
+        # panel already names where it's going ("← Methodology",
+        # "Selected item →", "← GeoE3 Score"), these two were the only
+        # ones left that didn't (confirmed live, caught alongside the
+        # Sparkline-page label bug this was investigated next to).
+        previous_stop = self._output_stops[(self._current_output_index - 1) % len(self._output_stops)]
+        self.header_label.setText(f"←  {previous_stop['label']}")
         self.header_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.header_label.setStyleSheet(f"color: {CYAN};")
-        self.more_link.setText("Sparkline  →" if self._sparkline_eligible else "Next  →")
+        if self._sparkline_eligible:
+            self.more_link.setText("Sparkline  →")
+        else:
+            next_stop = self._output_stops[(self._current_output_index + 1) % len(self._output_stops)]
+            self.more_link.setText(f"{next_stop['label']}  →")
         self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
         self.more_link.setStyleSheet(f"color: {CYAN};")
         self.more_link.setVisible(True)

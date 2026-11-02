@@ -15,6 +15,11 @@ methodology, and then provide some more detailed analysis results. The
 examples on this page are real pages from a Regional-scale Women's
 Enabling Environments analysis of Portugal.
 
+<figure markdown>
+![A quick scroll through the full GeoE3 analysis report, cover to cover](../images/report/analysis-report-scroll.gif){ width="85%" }
+<figcaption>A quick scroll through the full report, cover to cover.</figcaption>
+</figure>
+
 ## Credits
 
 It starts off with the credits and attribution: the partners that
