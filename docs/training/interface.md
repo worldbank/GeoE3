@@ -109,7 +109,7 @@ outside the area by giving them NoData, and including any areas inside
 the study area by giving them a value of one.
 
 <figure markdown>
-![GeoE3 processing the study area grid, showing a progress bar at 100 percent](../images/training/study-area-creation-progress.png){ width="261" }
+![GeoE3 processing the study area grid, from scale selection through to a completed progress bar](../images/training/study-area-creation-progress.gif){ width="261" }
 <figcaption>Processing the study area. The report opens automatically once it reaches 100%.</figcaption>
 </figure>
 
