@@ -39,7 +39,7 @@ Place Characterization factors refer to the following indicators:
 
 For certain factors, **multiple data input options** are available depending on the data's format and availability.
 
-As with the Accessibility dimension, **Active transport, Safety and Water sanitation** factors can be processed according to the level of analysis—whether conducted at a broader scale, such as the **national level**, or tailored to a more localized context, such as **urban or regional** areas.
+As with the Accessibility dimension, **Active transport, Safety and Water sanitation** factors can be processed according to the level of analysis. This might be a broader scale, such as the **national level**, or a more localized context, such as **urban or regional** areas.
 
 ### Input Place Characterization factors
 
@@ -55,16 +55,15 @@ rely on non-motorized modes of travel for daily commutes and errands.
 It is computed using the OpenStreetMap road network, where road types
 are classified based on their suitability for walking and cycling.
 
-**Locate Active Transport Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your street crossing points, cycle path and footpath lines, and
+block layout polygons, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Active Transport section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point features for street crossings, lines for cycle paths and footpaths and polygons for block layout**) corresponding to the indicators by clicking the three-dot button.
-> - ⚖️ **Assign Weights**: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.
-> - 🚫 **Exclude Unused Factors (optional)**: If a specific factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - 🔄 **Readjust Weights**: Weight values must add up to 1 or they're shown in red. After excluding any subfactors, press **Balance Weights** to reset the remaining ones to an equal share rather than typing each value by hand.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![Active Transport input](../images/new%20images/ActiveTransport.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Active Transport factor](../images/training/placecharacterization-active-transport-input.png){ width="75%" }
+<figcaption>Active Transport input configuration.</figcaption>
+</figure>
 
 **Active Transport** factor is calculated based on road types from OpenStreetMap as follows:
 | Subfactor               | Score 0          | Score 1               | Score 2                 | Score 3                 | Score 4                 | Score 5                 |
@@ -236,16 +235,14 @@ incorporate it into the processing. In doing so, users should align the
 data with the thresholds provided to maintain consistency and
 reliability.
 
-**Locate Environmental Hazards Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+each subfactor at its raster layer, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Environmental Hazards section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the **raster features** corresponding to the indicators by clicking the three-dot button.
-> - ⚖️ **Assign Weights**: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.
-> - 🚫 **Exclude Unused Factors (optional)**: If a specific factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - 🔄 **Readjust Weights**: Weight values must add up to 1 or they're shown in red. After excluding any subfactors, press **Balance Weights** to reset the remaining ones to an equal share rather than typing each value by hand.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![Environmental Hazards data input](../images/new%20images/EnvHazards.jpg){ width="55%" }
+<figure markdown>
+![Configuring the Environmental Hazards factor](../images/training/placecharacterization-environmental-hazards-input.png){ width="55%" }
+<figcaption>Environmental Hazards input configuration.</figcaption>
+</figure>
 
 **Environmental Hazards** reclassifies input data to a standardized scale of 0 to 5 using a linear scaling process, where *5* represents areas with no environmental hazards and *0* represents areas with the highest level of hazard.
 
@@ -272,14 +269,15 @@ points of interest suggests the existence of minimum water and
 sanitation infrastructure necessary for service delivery, even where
 direct household level data are unavailable.
 
-**Locate Water sanitation Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your water and sanitation points of interest, adjust the buffer
+radius if needed (1000m by default), then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Water sanitation section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point features**) corresponding to the points of interest by clicking the three-dot button; a buffer is needed to estimate the spatial impact of these facilities, the default radius is set to 1000 meters; however, this value can be adjusted based on the user's considerations.
-> - 🚫 **Exclude Unused Factor (optional)**: If this specific factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![Water sanitation input](../images/new%20images/WaterSanitation.jpg){ width="55%" }
+<figure markdown>
+![Configuring the Water Sanitation factor](../images/training/placecharacterization-water-sanitation-input.png){ width="55%" }
+<figcaption>Water Sanitation input configuration.</figcaption>
+</figure>
 
 **Water Sanitation** is assessed based on the presence of water related features within a raster cell, applying a default 3000m buffer. The scoring is as follows:
 
