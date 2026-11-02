@@ -176,11 +176,6 @@ Characterization dimension. Those are further subdivided into
 **factors** (the second-level grouping), and each dimension may have one
 or more factors associated with it.
 
-<figure markdown>
-![The full GeoE3 model tree: 3 dimensions, 16 factors, 35 indicators](../images/training/model-tree.jpg){ width="55%" }
-<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators).</figcaption>
-</figure>
-
 It's a tree in the literal QGIS-layer-panel sense: expand a dimension to
 see its factors, expand a factor to see its indicators. What each of
 these levels actually *means*, and how they combine, is the subject of
@@ -200,7 +195,7 @@ telling you what state that item is in:
 
 <figure markdown>
 ![Five tree row status icons: configured and ready to run, completed successfully, not yet configured, disabled, and completed with error](../images/training/tree-status-icons.png){ width="55%" }
-<figcaption>The five status icons, numbered 1 to 5 above.</figcaption>
+<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators), with the five status icons numbered 1 to 5 above.</figcaption>
 </figure>
 
 | # | Status | Meaning |
