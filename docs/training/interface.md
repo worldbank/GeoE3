@@ -22,7 +22,7 @@ the tool does and who built it. Use the arrow buttons at the bottom of
 the panel to move between pages.
 
 <figure markdown>
-![The Welcome to GeoE3 panel](../images/training/welcome-panel.jpg){ width="35%" }
+![The Welcome to GeoE3 panel](../images/training/welcome-panel.png){ width="35%" }
 <figcaption>The welcome panel.</figcaption>
 </figure>
 
