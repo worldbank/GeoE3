@@ -18,6 +18,11 @@ but it will delete any analysis outputs. It then works through every
 indicator, factor and dimension in order, calculating scores across the
 grid, and loads each result onto the map as it completes.
 
+<figure markdown>
+![Opening the Run All dropdown to find Run Incomplete](../images/training/running-analysis-run-incomplete.gif){ width="75%" }
+<figcaption>Click the small arrow on the Run All button to reveal Run Incomplete.</figcaption>
+</figure>
+
 To rerun a single item after changing something, right-click it and
 choose **Clear Item**, then right-click again and, holding **Shift**,
 choose **Run Item Workflow**. This is covered already on [The
