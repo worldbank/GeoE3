@@ -203,13 +203,13 @@ telling you what state that item is in:
 <figcaption>The five status icons, numbered 1 to 5 above.</figcaption>
 </figure>
 
-| Status | Meaning |
-|---|---|
-| Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
-| Completed successfully | Processing finished without errors. |
-| Not yet configured | Required inputs are still missing. |
-| Disabled | Deliberately excluded. Won't run or count toward the score. |
-| Completed with error | Something went wrong. Check the log file. |
+| # | Status | Meaning |
+|---|---|---|
+| 1 | Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
+| 2 | Completed successfully | Processing finished without errors. |
+| 3 | Not yet configured | Required inputs are still missing. |
+| 4 | Disabled | Deliberately excluded. Won't run or count toward the score. |
+| 5 | Completed with error | Something went wrong. Check the log file. |
 
 !!! note
     In this example, **EPLEX Score** shows as Disabled because this is a
