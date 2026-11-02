@@ -38,15 +38,21 @@ and configured. Pick this to carry on where you left off.
 which is what the rest of this page covers.
 
 **Import a Country Pack** rebuilds someone else's project from a single
-GeoPackage they exported (see Building a Country Pack, later in this
-walkthrough). Point it at the pack file and an empty working folder.
-GeoE3 reconstructs the project there including the study area, each
-input's configuration, all of the already-computed results, and the
-model itself.
+GeoPackage they exported (see [Building a Country
+Pack](sharing.md#building-a-country-pack), later in this walkthrough).
+Point it at the pack file and an empty working folder. GeoE3
+reconstructs the project there including the study area, each input's
+configuration, all of the already-computed results, and the model
+itself.
 
 <figure markdown>
 ![The GeoE3 project selection page: Open an Existing Project, Create a New Project, or Import a Country Pack](../images/training/geoe3-project-selection.png){ width="45%" }
 <figcaption>The three ways into a GeoE3 project.</figcaption>
+</figure>
+
+<figure markdown>
+![Importing a country pack: choosing the pack file and an empty working folder, then the import progress](../images/training/import-a-country-pack.gif){ width="85%" }
+<figcaption>Importing a country pack: pick the pack file and an empty working folder, then GeoE3 rebuilds the project.</figcaption>
 </figure>
 
 !!! warning
