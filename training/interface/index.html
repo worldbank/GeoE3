@@ -1464,38 +1464,34 @@ plugin</a> and have some data to work with. If not, see
 <p>Once installed, you'll find GeoE3's icon in the QGIS toolbar. Click it to
 open the panel, which docks to the right-hand side of the window by
 default.</p>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Welcome_GeoE3.jpg" data-desc-position="bottom"><img alt="Plugin Interface" src="../../images/new%20images/Welcome_GeoE3.jpg" width="45%"></a></p>
-<blockquote>
-<ol>
-<li>
-<p><strong>Locate the Toolbar Icon</strong>  <a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Tool%20icon.jpg" data-desc-position="bottom"><img alt="Toolbar Icon" src="../../images/new%20images/Tool%20icon.jpg" width="5%"></a>
-Find the plugin's icon in the QGIS toolbar.</p>
-</li>
-<li>
-<p><strong>Open the Plugin</strong>
-Click on the plugin's toolbar icon to open its main window.</p>
-</li>
-</ol>
-</blockquote>
 <p>The first page is a short welcome and overview; the next explains what
 the tool does and who built it. Use the arrow buttons at the bottom of
 the panel to move between pages.</p>
 <figure>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/welcome-panel.jpg" data-desc-position="bottom"><img alt="The Welcome to GeoE3 panel" src="../../images/training/welcome-panel.jpg" width="35%"></a></p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/welcome-panel.png" data-desc-position="bottom"><img alt="The Welcome to GeoE3 panel" src="../../images/training/welcome-panel.png" width="35%"></a></p>
 <figcaption>The welcome panel.</figcaption>
 </figure>
 <h2 id="opening-or-creating-a-project">Opening or creating a project<a class="headerlink" href="#opening-or-creating-a-project" title="Permanent link">¶</a></h2>
-<p>Next, GeoE3 asks you to choose a project folder — every analysis lives in
+<p>Next, GeoE3 asks you to choose a project folder. Every analysis lives in
 its own folder, which the plugin manages for you.</p>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Project_Selection.jpg" data-desc-position="bottom"><img alt="GeoE3 Project" src="../../images/new%20images/Project_Selection.jpg" width="45%"></a></p>
 <p><strong>Open an Existing Project</strong> loads a project folder you've already set up
-and configured — pick this to carry on where you left off.</p>
+and configured. Pick this to carry on where you left off.</p>
 <p><strong>Create a New Project</strong> walks you through setting one up from scratch,
 which is what the rest of this page covers.</p>
+<p><strong>Import a Country Pack</strong> rebuilds someone else's project from a single
+GeoPackage they exported (see Building a Country Pack, later in this
+walkthrough). Point it at the pack file and an empty working folder.
+GeoE3 reconstructs the project there including the study area, each
+input's configuration, all of the already-computed results, and the
+model itself.</p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/geoe3-project-selection.png" data-desc-position="bottom"><img alt="The GeoE3 project selection page: Open an Existing Project, Create a New Project, or Import a Country Pack" src="../../images/training/geoe3-project-selection.png" width="45%"></a></p>
+<figcaption>The three ways into a GeoE3 project.</figcaption>
+</figure>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The folder you choose must be <strong>empty</strong>. GeoE3 treats everything in
-it as its own — using a folder that already has other files in it can
+it as its own. Using a folder that already has other files in it can
 lead to errors or accidental overwrites. Give it a descriptive name
 (country/region plus a date is a good pattern) so you can find it
 again later.</p>
@@ -1531,14 +1527,12 @@ three choices to pick from to define the scale of your analysis:</p>
 </tbody>
 </table>
 <p>In all three cases you can change the grid size if you want to, but the
-defaults are a reasonable place to start. Regional scale also unlocks the
-Space2Stats prefetch step covered in <a href="../datacollection/#tutorial-automatic-downloads-built-into-geoe3">Getting
-Data</a>.</p>
+defaults are a reasonable place to start.</p>
 <figure>
 <p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/project-wizard.jpg" data-desc-position="bottom"><img alt="The GeoE3 project creation wizard: scale, grid size, boundary layer and Women's Enabling Environments options" src="../../images/training/project-wizard.jpg"></a></p>
 <figcaption>Scale, grid size, boundary layer and the Women's Enabling Environments toggle, all in one step.</figcaption>
 </figure>
-<p>Then it asks for the boundary layer — point it at your Admin0 (national
+<p>Then it asks for the boundary layer. Point it at your Admin0 (national
 boundary) layer, and tell it which column has the country name. If your
 boundary layer doesn't look like the typical boundary you'd expect (it
 still extends out into the ocean, for example, or is missing the level
@@ -1546,17 +1540,17 @@ you need), see the
 <a href="../datacollection/#tutorial-official-administrative-boundaries-from-gadm">GADM</a>
 and
 <a href="../datacollection/#tutorial-humanitarian-data-exchange-hdx">HDX</a>
-tutorials — OpenStreetMap's admin boundaries aren't always reliable.</p>
+tutorials. OpenStreetMap's admin boundaries aren't always reliable.</p>
 <p>The last thing it asks is whether you want to do a Women's Enabling
 Environment study, or just a generic economic enabling-environment study.
 Leave <strong>Women's Enabling Environments</strong> ticked for the
 GeoWEAF-framework analysis this walkthrough demonstrates; untick it for
-the generic one, and you'll get a slightly different workflow — some
+the generic one, and you'll get a slightly different workflow. Some
 women-specific factors get disabled, and the Contextual dimension needs
 an EPLEX score instead of individual factor analysis.</p>
 <h3 id="what-happens-next-the-study-area-grid">What happens next: the study area grid<a class="headerlink" href="#what-happens-next-the-study-area-grid" title="Permanent link">¶</a></h3>
 <p>Once you confirm, it computes a grid across the study area and writes
-that into a GeoPackage file — you can see it in the study area. It
+that into a GeoPackage file. You can see it in the study area. It
 creates various different products: the main thing is the GeoPackage,
 which contains a regular grid (for a regional analysis this is an H3
 grid, so hexagons covering the whole study area; national and local
@@ -1564,29 +1558,57 @@ scale use square grid cells instead), and it also contains masks. A mask
 is a raster layer which covers the study area, excluding any pixels
 outside the area by giving them NoData, and including any areas inside
 the study area by giving them a value of one.</p>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/StudyArea_Creation.jpg" data-desc-position="bottom"><img alt="Study area creation progress" src="../../images/new%20images/StudyArea_Creation.jpg" width="45%"></a></p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/study-area-creation-progress.gif" data-desc-position="bottom"><img alt="GeoE3 processing the study area grid, from scale selection through to a completed progress bar" src="../../images/training/study-area-creation-progress.gif" width="261"></a></p>
+<figcaption>Processing the study area. The report opens automatically once it reaches 100%.</figcaption>
+</figure>
 <p>When it finishes, a <strong>Study Area Report</strong> opens automatically, summarizing
 how many grid cells were created, how long each part of the country took
 to process, and where the generated files live (your project folder's
 <code>study_area/</code> subfolder). You can reopen it any time.</p>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/StudyArea_report.jpg" data-desc-position="bottom"><img alt="Study Area Report" src="../../images/new%20images/StudyArea_report.jpg" width="55%"></a></p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/study-area-report.gif" data-desc-position="bottom"><img alt="A quick scroll through the Study Area Report" src="../../images/training/study-area-report.gif" width="85%"></a></p>
+<figcaption>The Study Area Report, opened automatically once the grid finishes.</figcaption>
+</figure>
+<p>If you picked <strong>Regional</strong> scale, GeoE3 now offers to prefetch Space2Stats
+data for every Space2Stats-backed indicator in one go. Tick <strong>Fetch S2S
+data</strong> and click Next. National and local-scale projects skip this step
+entirely. See <a href="../datacollection/#tutorial-automatic-downloads-built-into-geoe3">Getting
+Data</a> for
+exactly what gets downloaded.</p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/space2stats-prefetch-interface.png" data-desc-position="bottom"><img alt="The GeoE3 Space2Stats prefetch step" src="../../images/training/space2stats-prefetch-interface.png" width="45%"></a></p>
+<figcaption>Space2Stats prefetch, Regional scale only.</figcaption>
+</figure>
 <h3 id="setting-up-routing">Setting up routing<a class="headerlink" href="#setting-up-routing" title="Permanent link">¶</a></h3>
 <p>The next thing it wants to do is set up the routing environment. For some
 analysis steps we use a routing analysis that allows us to understand,
 for example, what's the travel time for a woman to move from her home to
 a clinic (or what have you) using the road network. It's possible to use
-OpenRouteService for this, but you need an API key — or you can use the
+OpenRouteService for this, but you need an API key. Or you can use the
 native QGIS routing (<code>native:serviceareafromlayer</code>), which is a bit
 slower but doesn't require any keys.</p>
-<p>Either way, it wants to know if you've got a road network. If you've
-already downloaded OSM data (see <a href="../datacollection/">Getting Data</a>), you
-probably don't want to use the railways — you want the roads layer. If
-it's in the wrong coordinate reference system, GeoE3 will reproject it
-into the correct one for you automatically. If you don't have a road
-dataset, you can also click the <strong>Download from OpenStreetMap</strong> button
-and it will fetch one for you from Geofabrik or OpenStreetMap directly.</p>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/RoadNetwork.jpg" data-desc-position="bottom"><img alt="Road network selection" src="../../images/new%20images/RoadNetwork.jpg" width="45%"></a>
-<a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/RoadNetwork2.jpg" data-desc-position="bottom"><img alt="Road network reprojected" src="../../images/new%20images/RoadNetwork2.jpg" width="45%"></a></p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/routing-ors-setup.png" data-desc-position="bottom"><img alt="The GeoE3 ORS Setup page: native QGIS routing or OpenRouteService, with an API key field" src="../../images/training/routing-ors-setup.png" width="35%"></a></p>
+<figcaption>Native QGIS routing is the default. Switch to OpenRouteService and paste in an API key if you have one.</figcaption>
+</figure>
+<p>Next you should indicate if you've got a road network. If you've already
+downloaded OSM data (see <a href="../datacollection/">Getting Data</a>), you can use
+the road lines layer it provides. If you don't have a road dataset, you
+can also click the <strong>Download from OpenStreetMap</strong> button and it will
+fetch a combined roads and cycleways network for you from OpenStreetMap
+directly.</p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/road-network-selection.png" data-desc-position="bottom"><img alt="Selecting a road network layer for the routing environment" src="../../images/training/road-network-selection.png" width="35%"></a></p>
+<figcaption>Selecting a road network layer for the routing environment.</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your road network layer isn't already in the study area's CRS,
+GeoE3 reprojects it for you automatically. You'll see the
+reprojected copy named with a <code>_reprojected</code> suffix, like
+<code>road_network_reprojected</code> above.</p>
+</div>
 <h2 id="reading-the-dock-a-tree-of-dimensions-factors-and-indicators">Reading the dock: a tree of dimensions, factors and indicators<a class="headerlink" href="#reading-the-dock-a-tree-of-dimensions-factors-and-indicators" title="Permanent link">¶</a></h2>
 <p>Once you click through, you land on the model tree (the main working
 view you'll spend most of your time in). It organises the different types
@@ -1595,55 +1617,90 @@ the Contextual dimension, the Accessibility dimension, and the Place
 Characterization dimension. Those are further subdivided into
 <strong>factors</strong> (the second-level grouping), and each dimension may have one
 or more factors associated with it.</p>
-<figure>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/model-tree.jpg" data-desc-position="bottom"><img alt="The full GeoE3 model tree: 3 dimensions, 16 factors, 35 indicators" src="../../images/training/model-tree.jpg" width="55%"></a></p>
-<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators).</figcaption>
-</figure>
 <p>It's a tree in the literal QGIS-layer-panel sense: expand a dimension to
 see its factors, expand a factor to see its indicators. What each of
 these levels actually <em>means</em>, and how they combine, is the subject of
 <a href="../the-model/">The Model</a>. This page is just about finding your way
 around the panel itself.</p>
-<figure>
-<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/new%20images/Nav_understand.jpg" data-desc-position="bottom"><img alt="The GeoE3 data processing interface" src="../../images/new%20images/Nav_understand.jpg" width="45%"></a></p>
-<figcaption>The data processing interface: dimensions and factors on the left, status widgets on the right.</figcaption>
-</figure>
-<p><strong>Status widgets.</strong> Each row in the tree shows a small icon telling you
-what state that item is in:</p>
+<p>Each row's small leading icon also shows what kind of item it is:</p>
 <table>
 <thead>
 <tr>
+<th>Icon</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/dimension.svg" data-desc-position="bottom"><img alt="Dimension icon" src="../../images/icons/dimension.svg" width="20"></a></td>
+<td>Dimension</td>
+</tr>
+<tr>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/factor.svg" data-desc-position="bottom"><img alt="Factor icon" src="../../images/icons/factor.svg" width="20"></a></td>
+<td>Factor</td>
+</tr>
+<tr>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/indicator.svg" data-desc-position="bottom"><img alt="Indicator icon" src="../../images/icons/indicator.svg" width="20"></a></td>
+<td>Indicator</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Status widgets.</strong> Each row in the tree also shows a small status icon
+telling you what state that item is in:</p>
+<figure>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/training/tree-status-icons.png" data-desc-position="bottom"><img alt="Five tree row status icons: configured and ready to run, completed successfully, not yet configured, disabled, and completed with error" src="../../images/training/tree-status-icons.png" width="55%"></a></p>
+<figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators), with the five status icons numbered 1 to 5 above.</figcaption>
+</figure>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Icon</th>
 <th>Status</th>
 <th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Configured, not run</td>
-<td>Inputs are set up but the workflow hasn't been executed yet</td>
+<td>1</td>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/not-run.svg" data-desc-position="bottom"><img alt="Configured, not run" src="../../images/icons/not-run.svg" width="20"></a></td>
+<td>Configured and ready to run</td>
+<td>Inputs are set up. The workflow hasn't run yet.</td>
 </tr>
 <tr>
-<td>Required, not configured</td>
-<td>Essential inputs are still missing</td>
-</tr>
-<tr>
+<td>2</td>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/completed-success.svg" data-desc-position="bottom"><img alt="Completed successfully" src="../../images/icons/completed-success.svg" width="20"></a></td>
 <td>Completed successfully</td>
-<td>Processing finished without errors</td>
+<td>Processing finished without errors.</td>
 </tr>
 <tr>
-<td>Workflow failed</td>
-<td>Something went wrong (needs troubleshooting)</td>
+<td>3</td>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/required-not-configured.svg" data-desc-position="bottom"><img alt="Required, not configured" src="../../images/icons/required-not-configured.svg" width="20"></a></td>
+<td>Not yet configured</td>
+<td>Required inputs are still missing.</td>
 </tr>
 <tr>
-<td>Not configured (optional)</td>
-<td>Optional inputs, left unset</td>
+<td>4</td>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/excluded.svg" data-desc-position="bottom"><img alt="Excluded from analysis" src="../../images/icons/excluded.svg" width="20"></a></td>
+<td>Disabled</td>
+<td>Deliberately excluded. Won't run or count toward the score.</td>
 </tr>
 <tr>
-<td>Excluded from analysis</td>
-<td>Deliberately disabled, won't be run or counted</td>
+<td>5</td>
+<td><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="../../images/icons/failed.svg" data-desc-position="bottom"><img alt="Workflow failed" src="../../images/icons/failed.svg" width="20"></a></td>
+<td>Completed with error</td>
+<td>Something went wrong. Check the log file.</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this example, <strong>EPLEX Score</strong> shows as Disabled because this is a
+Women's Enabling Environments analysis, which uses the WBL-based
+indicators instead (see <a href="../contextual/">Contextual Dimension</a>). A
+generic economic-enablement analysis is the other way around: EPLEX
+Score is enabled, and the WBL indicators are disabled.</p>
+</div>
 <h2 id="right-click-to-interact-with-items">Right-click to interact with items<a class="headerlink" href="#right-click-to-interact-with-items" title="Permanent link">¶</a></h2>
 <p>Every item in the tree (indicator, factor, dimension or the top-level
 analysis) responds to the same right-click context menu. This is how
