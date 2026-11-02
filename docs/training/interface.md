@@ -148,13 +148,23 @@ slower but doesn't require any keys.
 <figcaption>Native QGIS routing is the default. Switch to OpenRouteService and paste in an API key if you have one.</figcaption>
 </figure>
 
-Either way, it wants to know if you've got a road network. If you've
-already downloaded OSM data (see [Getting Data](datacollection.md)), you
-probably don't want to use the railways. You want the roads layer. If
-it's in the wrong coordinate reference system, GeoE3 will reproject it
-into the correct one for you automatically. If you don't have a road
-dataset, you can also click the **Download from OpenStreetMap** button
-and it will fetch one for you from Geofabrik or OpenStreetMap directly.
+Next you should indicate if you've got a road network. If you've already
+downloaded OSM data (see [Getting Data](datacollection.md)), you can use
+the road lines layer it provides. If you don't have a road dataset, you
+can also click the **Download from OpenStreetMap** button and it will
+fetch a combined roads and cycleways network for you from OpenStreetMap
+directly.
+
+<figure markdown>
+![Selecting a road network layer for the routing environment](../images/training/road-network-selection.png){ width="35%" }
+<figcaption>Selecting a road network layer for the routing environment.</figcaption>
+</figure>
+
+!!! note
+    If your road network layer isn't already in the study area's CRS,
+    GeoE3 reprojects it for you automatically. You'll see the
+    reprojected copy named with a `_reprojected` suffix, like
+    `road_network_reprojected` above.
 
 ## Reading the dock: a tree of dimensions, factors and indicators
 
