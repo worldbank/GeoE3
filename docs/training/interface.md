@@ -28,11 +28,11 @@ the panel to move between pages.
 
 ## Opening or creating a project
 
-Next, GeoE3 asks you to choose a project folder — every analysis lives in
+Next, GeoE3 asks you to choose a project folder. Every analysis lives in
 its own folder, which the plugin manages for you.
 
 **Open an Existing Project** loads a project folder you've already set up
-and configured — pick this to carry on where you left off.
+and configured. Pick this to carry on where you left off.
 
 **Create a New Project** walks you through setting one up from scratch,
 which is what the rest of this page covers.
@@ -51,7 +51,7 @@ model itself.
 
 !!! warning
     The folder you choose must be **empty**. GeoE3 treats everything in
-    it as its own — using a folder that already has other files in it can
+    it as its own. Using a folder that already has other files in it can
     lead to errors or accidental overwrites. Give it a descriptive name
     (country/region plus a date is a good pattern) so you can find it
     again later.
@@ -78,7 +78,7 @@ Data](datacollection.md#tutorial-automatic-downloads-built-into-geoe3).
 <figcaption>Scale, grid size, boundary layer and the Women's Enabling Environments toggle, all in one step.</figcaption>
 </figure>
 
-Then it asks for the boundary layer — point it at your Admin0 (national
+Then it asks for the boundary layer. Point it at your Admin0 (national
 boundary) layer, and tell it which column has the country name. If your
 boundary layer doesn't look like the typical boundary you'd expect (it
 still extends out into the ocean, for example, or is missing the level
@@ -86,20 +86,20 @@ you need), see the
 [GADM](datacollection.md#tutorial-official-administrative-boundaries-from-gadm)
 and
 [HDX](datacollection.md#tutorial-humanitarian-data-exchange-hdx)
-tutorials — OpenStreetMap's admin boundaries aren't always reliable.
+tutorials. OpenStreetMap's admin boundaries aren't always reliable.
 
 The last thing it asks is whether you want to do a Women's Enabling
 Environment study, or just a generic economic enabling-environment study.
 Leave **Women's Enabling Environments** ticked for the
 GeoWEAF-framework analysis this walkthrough demonstrates; untick it for
-the generic one, and you'll get a slightly different workflow — some
+the generic one, and you'll get a slightly different workflow. Some
 women-specific factors get disabled, and the Contextual dimension needs
 an EPLEX score instead of individual factor analysis.
 
 ### What happens next: the study area grid
 
 Once you confirm, it computes a grid across the study area and writes
-that into a GeoPackage file — you can see it in the study area. It
+that into a GeoPackage file. You can see it in the study area. It
 creates various different products: the main thing is the GeoPackage,
 which contains a regular grid (for a regional analysis this is an H3
 grid, so hexagons covering the whole study area; national and local
@@ -119,13 +119,13 @@ The next thing it wants to do is set up the routing environment. For some
 analysis steps we use a routing analysis that allows us to understand,
 for example, what's the travel time for a woman to move from her home to
 a clinic (or what have you) using the road network. It's possible to use
-OpenRouteService for this, but you need an API key — or you can use the
+OpenRouteService for this, but you need an API key. Or you can use the
 native QGIS routing (`native:serviceareafromlayer`), which is a bit
 slower but doesn't require any keys.
 
 Either way, it wants to know if you've got a road network. If you've
 already downloaded OSM data (see [Getting Data](datacollection.md)), you
-probably don't want to use the railways — you want the roads layer. If
+probably don't want to use the railways. You want the roads layer. If
 it's in the wrong coordinate reference system, GeoE3 will reproject it
 into the correct one for you automatically. If you don't have a road
 dataset, you can also click the **Download from OpenStreetMap** button
