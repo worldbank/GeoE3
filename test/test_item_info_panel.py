@@ -613,5 +613,58 @@ class TestItemInfoPanelProgress(unittest.TestCase):
         self.assertEqual(self.panel.item_heading_label.text(), "Accessibility")
 
 
+class TestItemInfoPanelAnalysisCarouselLabels(unittest.TestCase):
+    """The carousel's back/forward labels must name the actual
+    destination stop, not a generic "Previous"/"Next" - every other
+    back/forward label in this panel already names its destination
+    ("← Methodology", "Selected item →"), confirmed live as the one
+    inconsistency left once the Sparkline-page label bug (separate,
+    _current_technique_key-driven) was investigated.
+    """
+
+    def setUp(self):
+        self.panel = ItemInfoPanel()
+        self.panel.show()
+        self.item = make_fake_item("analysis", "GeoE3 Score")
+        self.panel.show_item(self.item)
+        self.stops = [
+            {"key": "score", "label": "GeoE3 Score", "icon": "geoe3_score.svg", "description": "", "sparkline": True},
+            {
+                "key": "by_population",
+                "label": "GeoE3 by Population",
+                "icon": "geoe3_by_population.svg",
+                "description": "",
+                "sparkline": True,
+            },
+            {
+                "key": "opportunities_mask",
+                "label": "Job Opportunities Mask",
+                "icon": "job_opportunities_mask.svg",
+                "description": "",
+                "sparkline": False,
+            },
+        ]
+
+    def test_back_label_names_the_previous_stop(self):
+        self.panel.set_analysis_outputs(self.stops, current_index=1)
+
+        self.assertEqual(self.panel.header_label.text(), "←  GeoE3 Score")
+
+    def test_back_label_wraps_to_the_last_stop_from_the_first(self):
+        self.panel.set_analysis_outputs(self.stops, current_index=0)
+
+        self.assertEqual(self.panel.header_label.text(), "←  Job Opportunities Mask")
+
+    def test_forward_label_names_the_next_stop_when_this_one_has_no_sparkline(self):
+        self.panel.set_analysis_outputs(self.stops, current_index=2)
+
+        self.assertEqual(self.panel.more_link.text(), "GeoE3 Score  →")
+
+    def test_forward_label_still_says_sparkline_when_this_stop_has_one(self):
+        self.panel.set_analysis_outputs(self.stops, current_index=0)
+
+        self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
+
+
 if __name__ == "__main__":
     unittest.main()
