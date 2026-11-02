@@ -66,6 +66,7 @@ block layout polygons, then run it.
 </figure>
 
 **Active Transport** factor is calculated based on road types from OpenStreetMap as follows:
+
 | Subfactor               | Score 0          | Score 1               | Score 2                 | Score 3                 | Score 4                 | Score 5                 |
 |----------------------|------------------|-----------------------|-------------------------|-------------------------|-------------------------|-------------------------|
 | **Key = highway** | bus_guideway, escape, raceway, construction and proposed roads           | motorway, motorway_link, trunk and trunk_lin                 | primary, primary_link and track                  | secondary, secondary_link, unclassified, road, bridleway and service          | tertiary and tertiary_link                    | Pedestrian, Footway, Residential, Living_street, steps           |
