@@ -116,7 +116,7 @@ levels × 3 population tiers, 15 exact classes in total:
 | 14 | Highly enabling, medium population | <span style="display:inline-block;width:14px;height:14px;background:#2c7bb6;border:1px solid #0003;border-radius:2px;"></span> |
 | 15 | Highly enabling, high population | <span style="display:inline-block;width:14px;height:14px;background:#4ab8e0;border:1px solid #0003;border-radius:2px;"></span> |
 
-![WEE Score features](../images/new%20images/8-WEEpopB.jpg){ width="65%" }
+![WEE Score features](../images/legacy/8-WEEpopB.jpg){ width="65%" }
 
 The outputs are stored within the project folder created during the
 setup phase as raster files. These files can be shared and further
@@ -151,7 +151,7 @@ The GeoE3 Score node has the same right-click menu as any other item
 (see [The Interface](interface.md#right-click-to-interact-with-items)),
 plus several score-specific **Add to Map** variants:
 
-![WEE Score features](../images/new%20images/WEE_features.jpg){ width="65%" }
+![WEE Score features](../images/legacy/WEE_features.jpg){ width="65%" }
 
 | Menu item | What it does |
 |---|---|

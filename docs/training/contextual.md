@@ -37,7 +37,7 @@ stringency, created by the International Labour Organization (ILO),
 that measures how strongly a country's laws protect workers against
 dismissal at the initiative of an employer.
 
-![Contextual Weights](../images/new%20images/Contextual_dm.jpg){ width="75%" }
+![Contextual Weights](../images/legacy/Contextual_dm.jpg){ width="75%" }
 
 Enter the EPLEX score as a fraction between 0 and 1 (the tool multiplies
 it by 5 to put it on the usual 0–5 scale); if you already have a value
@@ -312,7 +312,7 @@ and follow the same [generic pattern](configuring-items.md#the-generic-pattern)
 as every other item in the tree: assign weights, balance them, and run
 it.
 
-![Contextual Final Output](../images/new%20images/Contextual_dm1.jpg){ width="75%" }
+![Contextual Final Output](../images/legacy/Contextual_dm1.jpg){ width="75%" }
 
 The outputs (Workplace Discrimination, Regulatory Frameworks and
 Financial Inclusion, plus their aggregation into the final Contextual
