@@ -187,17 +187,36 @@ these levels actually *means*, and how they combine, is the subject of
 [The Model](the-model.md). This page is just about finding your way
 around the panel itself.
 
-**Status widgets.** Each row in the tree shows a small icon telling you
-what state that item is in:
+Each row's small leading icon also shows what kind of item it is:
+
+| Icon | Role |
+|---|---|
+| ![Dimension icon](../images/icons/dimension.svg){ width="20" } | Dimension |
+| ![Factor icon](../images/icons/factor.svg){ width="20" } | Factor |
+| ![Indicator icon](../images/icons/indicator.svg){ width="20" } | Indicator |
+
+**Status widgets.** Each row in the tree also shows a small status icon
+telling you what state that item is in:
+
+<figure markdown>
+![Five tree row status icons: configured and ready to run, completed successfully, not yet configured, disabled, and completed with error](../images/training/tree-status-icons.png){ width="55%" }
+<figcaption>The five status icons, numbered 1 to 5 above.</figcaption>
+</figure>
 
 | Status | Meaning |
 |---|---|
-| Configured, not run | Inputs are set up but the workflow hasn't been executed yet |
-| Required, not configured | Essential inputs are still missing |
-| Completed successfully | Processing finished without errors |
-| Workflow failed | Something went wrong (needs troubleshooting) |
-| Not configured (optional) | Optional inputs, left unset |
-| Excluded from analysis | Deliberately disabled, won't be run or counted |
+| Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
+| Completed successfully | Processing finished without errors. |
+| Not yet configured | Required inputs are still missing. |
+| Disabled | Deliberately excluded. Won't run or count toward the score. |
+| Completed with error | Something went wrong. Check the log file. |
+
+!!! note
+    In this example, **EPLEX Score** shows as Disabled because this is a
+    Women's Enabling Environments analysis, which uses the WBL-based
+    indicators instead (see [Contextual Dimension](contextual.md)). A
+    generic economic-enablement analysis is the other way around: EPLEX
+    Score is enabled, and the WBL indicators are disabled.
 
 ## Right-click to interact with items
 
