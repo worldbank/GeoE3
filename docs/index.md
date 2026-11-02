@@ -29,7 +29,7 @@ close the gap.
 </p>
 
 <p align="center">
-  <img src="images/new%20images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure — wind turbines, schools, clinics, transport, housing — illustrating the spatial factors the GeoWEAF framework scores" style="max-width:360px;">
+  <img src="images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure: wind turbines, schools, clinics, transport, housing. Illustrates the spatial factors the GeoWEAF framework scores." style="max-width:360px;">
 </p>
 
 Developed by the World Bank, **GeoE3 (The Geospatial Enabling Environments
@@ -46,13 +46,13 @@ job opportunities for people across different regions.
 
 GeoE3 is the practical, in-QGIS implementation of the World Bank's GeoWEAF
 framework. It combines contextual, accessibility and place-characterization
-data — childcare, safety, transport, digital inclusion, environmental hazards
-and more — into a single enablement score for every cell of a study area.
+data (childcare, safety, transport, digital inclusion, environmental hazards
+and more) into a single enablement score for every cell of a study area.
 
 Run it against a city, a region or a whole country. The output tells you two
 things: where conditions already support women's employment, and which
-specific missing piece of infrastructure — a clinic, a bus route, broadband —
-would raise the score where it's weakest.
+specific missing piece of infrastructure would raise the score where it's
+weakest. That could be a clinic, a bus route, or broadband.
 
 ## What's in the box
 
@@ -72,7 +72,7 @@ would raise the score where it's weakest.
     ---
 
     OpenStreetMap, GHSL settlement data and Ookla broadband coverage download
-    straight into the project automatically — no manual GIS prep required.
+    straight into the project automatically. No manual GIS prep required.
 
     [:octicons-arrow-right-24: Data collection](training/datacollection.md)
 
@@ -89,7 +89,7 @@ would raise the score where it's weakest.
 
     ---
 
-    Installs from the QGIS Plugin Manager like any other plugin — nothing
+    Installs from the QGIS Plugin Manager like any other plugin. Nothing
     bespoke to compile or configure.
 
     [:octicons-arrow-right-24: Installation](training/installation.md)

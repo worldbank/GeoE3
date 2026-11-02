@@ -11,8 +11,8 @@ For further inquiries or to get involved, please feel free to drop us an **email
 We look forward to hearing from you!
 
 <p align="center" markdown="1">
-[![Canada-World Bank Clean Energy and Forests Climate Facility](../images/new%20images/Canada-removebg-preview.png){ width="100" }](https://www.worldbank.org/en/topic/climatechange/brief/canada-world-bank-clean-energy-and-forests-climate-facility)
-[![WB GDA](../images/new%20images/logo_GDA.jpg){ width="150" }](https://worldbank.github.io/GOST)
-[![WB GOST](../images/new%20images/wb-gost.png){ width="200" }](https://worldbank.github.io/GOST)
-[![Kartoza](../images/new%20images/KartozaLogoHorizontalCMYK-removebg-preview.png){ width="150" }](https://www.kartoza.com)
+[![Canada-World Bank Clean Energy and Forests Climate Facility](../images/legacy/Canada-removebg-preview.png){ width="100" }](https://www.worldbank.org/en/topic/climatechange/brief/canada-world-bank-clean-energy-and-forests-climate-facility)
+[![WB GDA](../images/legacy/logo_GDA.jpg){ width="150" }](https://worldbank.github.io/GOST)
+[![WB GOST](../images/legacy/wb-gost.png){ width="200" }](https://worldbank.github.io/GOST)
+[![Kartoza](../images/legacy/KartozaLogoHorizontalCMYK-removebg-preview.png){ width="150" }](https://www.kartoza.com)
 </p>
