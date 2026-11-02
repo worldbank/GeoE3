@@ -396,7 +396,10 @@ dimension and follow the same [generic
 pattern](configuring-items.md#the-generic-pattern) as every other item
 in the tree: assign weights, balance them, and run it.
 
-![Accessibility Weights](../images/new%20images/ACC_2.0.jpg){ width="75%" }
+<figure markdown>
+![Editing the Accessibility dimension's weights across its five factors](../images/training/accessibility-dimension-weights.gif){ width="75%" }
+<figcaption>Assigning weights across the five Accessibility factors.</figcaption>
+</figure>
 
 The outputs (all five factors and their subfactors, plus their
 aggregation into the final Accessibility score) land in the
