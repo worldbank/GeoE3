@@ -143,6 +143,11 @@ OpenRouteService for this, but you need an API key. Or you can use the
 native QGIS routing (`native:serviceareafromlayer`), which is a bit
 slower but doesn't require any keys.
 
+<figure markdown>
+![The GeoE3 ORS Setup page: native QGIS routing or OpenRouteService, with an API key field](../images/training/routing-ors-setup.png){ width="35%" }
+<figcaption>Native QGIS routing is the default. Switch to OpenRouteService and paste in an API key if you have one.</figcaption>
+</figure>
+
 Either way, it wants to know if you've got a road network. If you've
 already downloaded OSM data (see [Getting Data](datacollection.md)), you
 probably don't want to use the railways. You want the roads layer. If
