@@ -198,13 +198,13 @@ telling you what state that item is in:
 <figcaption>The complete model tree for a Women's Enabling Environments analysis (3 dimensions, 16 factors, 35 indicators), with the five status icons numbered 1 to 5 above.</figcaption>
 </figure>
 
-| # | Status | Meaning |
-|---|---|---|
-| 1 | Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
-| 2 | Completed successfully | Processing finished without errors. |
-| 3 | Not yet configured | Required inputs are still missing. |
-| 4 | Disabled | Deliberately excluded. Won't run or count toward the score. |
-| 5 | Completed with error | Something went wrong. Check the log file. |
+| # | Icon | Status | Meaning |
+|---|---|---|---|
+| 1 | ![Configured, not run](../images/icons/not-run.svg){ width="20" } | Configured and ready to run | Inputs are set up. The workflow hasn't run yet. |
+| 2 | ![Completed successfully](../images/icons/completed-success.svg){ width="20" } | Completed successfully | Processing finished without errors. |
+| 3 | ![Required, not configured](../images/icons/required-not-configured.svg){ width="20" } | Not yet configured | Required inputs are still missing. |
+| 4 | ![Excluded from analysis](../images/icons/excluded.svg){ width="20" } | Disabled | Deliberately excluded. Won't run or count toward the score. |
+| 5 | ![Workflow failed](../images/icons/failed.svg){ width="20" } | Completed with error | Something went wrong. Check the log file. |
 
 !!! note
     In this example, **EPLEX Score** shows as Disabled because this is a
