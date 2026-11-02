@@ -40,7 +40,7 @@ This tool evaluates how easily people can access essential services and amenitie
 
 **Measurement**: The default measurement for travel is distance in meters, which is most appropriate for walking. These thresholds are based on evidence from the literature at the factor level and are designed to provide consistency across analyses. If driving is selected as a travel mode, time in minutes is a more appropriate measurement.
 
-**Thresholds**: They can be adjusted depending on the scope of the analysis—whether it is conducted at a broader scale, such as the **national level**, or focused on a more localized context, such as **urban or regional** areas.
+**Thresholds**: They can be adjusted depending on the scope of the analysis. This might be a broader scale, such as the **national level**, or a more localized context, such as **urban or regional** areas.
 
 ---
 
@@ -62,17 +62,15 @@ spaces crucial. This factor is composed of 5 subfactors which provide
 additional granularity: kindergartens/childcare, primary schools,
 groceries, pharmacies and green spaces.
 
-**Locate Women's Travel Patterns Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+each subfactor at its point data (or **Download from OSM**), adjust the
+travel mode and thresholds if needed, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Women's Travel Patterns section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point features**) corresponding to the indicators by clicking the three-dot button. You can also use the **Download from OSM** function to extract the latest data from OpenStreetMap.
-> - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
-> - ⚖️ **Assign Weights**: Assign appropriate weights to reflect the relative importance of each factor in the analysis. Ensure these values are consistent with your project objectives, accurately represent the significance of each factor and add up to 1 for a balanced evaluation.
-> - 🚫 **Exclude Unused Factors (optional)**: If a specific factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - 🔄 **Readjust Weights**: Weight values must add up to 1 or they're shown in red. After excluding any subfactors, press **Balance Weights** to reset the remaining ones to an equal share rather than typing each value by hand.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![WTP input](../images/new%20images/WTP_2.0.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Women's Travel Patterns factor](../images/training/accessibility-wtp-input.png){ width="75%" }
+<figcaption>Women's Travel Patterns input configuration.</figcaption>
+</figure>
 
 **Default** Women's Travel Patterns thresholds:
 
@@ -131,15 +129,15 @@ proximity of public transportation stops, which is crucial for people
 that rely on buses, trains, or trams to access jobs, education, and
 essential services.
 
-**Locate Access to Public Transport Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your public transportation stops layer (including maritime stops),
+adjust the travel mode and thresholds if needed, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Access to Public Transport section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefile (**point features**) corresponding to the **Location of public transportation stops, including maritime** by clicking the three-dot button.
-> - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
-> - 🚫 **Exclude Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![APT input](../images/new%20images/PT_2.0.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Access to Public Transport factor](../images/training/accessibility-public-transport-input.png){ width="75%" }
+<figcaption>Access to Public Transport input configuration.</figcaption>
+</figure>
 
 **Default** Access to Public Transport thresholds:
 
@@ -197,16 +195,15 @@ essential services.
 healthcare services in terms of distance, impacting their well-being
 and ability to participate in the workforce.
 
-**Locate Access to Health Facilities Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your hospitals and clinics layer, adjust the travel mode and
+thresholds if needed, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Access to Health Facilities section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefile (**point features**) corresponding to the **Location of hospitals and clinics** by clicking the three-dot button.
-> - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
-> - 🚫 **Exclude Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-
-![AHF input](../images/new%20images/HF_2.0.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Access to Health Facilities factor](../images/training/accessibility-health-facilities-input.png){ width="75%" }
+<figcaption>Access to Health Facilities input configuration.</figcaption>
+</figure>
 
 **Default** Access to Health Facilities thresholds:
 
@@ -264,15 +261,15 @@ and ability to participate in the workforce.
 to higher education institutions and training centers, influencing
 people's ability to gain necessary qualifications.
 
-**Locate Access to Education and Training Facilities Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your universities and technical schools layer, adjust the travel
+mode and thresholds if needed, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Access to Education and Training Facilities section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefile (**point features**) corresponding to the **Location of universities and technical schools** by clicking the three-dot button.
-> - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
-> - 🚫 **Exclude Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![AET input](../images/new%20images/EF_2.0.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Access to Education and Training Facilities factor](../images/training/accessibility-education-facilities-input.png){ width="75%" }
+<figcaption>Access to Education and Training Facilities input configuration.</figcaption>
+</figure>
 
 **Default** Access to Education and Training Facilities thresholds:
 
@@ -330,15 +327,15 @@ people's ability to gain necessary qualifications.
 and financial institutions, which is essential for people's economic
 empowerment and ability to access credit.
 
-**Locate Access to Financial Facilities Section**
+Configure it using the [generic
+pattern](configuring-items.md#the-generic-pattern): double-click, point
+it at your banks and financial facilities layer, adjust the travel mode
+and thresholds if needed, then run it.
 
-> - 🖱️🖱️ **Double-click** on the **Access to Financial Facilities section** to open the pop-up.
-> - 📝 In the *Input* field, you can select layers already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefile (**point features**) corresponding to the **Location of banks and other financial facilities** by clicking the three-dot button.
-> - 🔧 **Travel mode (optional)**: Change the travel mode from walking to driving and the measurements from meters to minutes and amend the default thresholds if local context suggests more appropriate increments.
-> - 🚫 **Exclude Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
-> - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
-
-![AFF input](../images/new%20images/FF_2.0.jpg){ width="75%" }
+<figure markdown>
+![Configuring the Access to Financial Facilities factor](../images/training/accessibility-financial-facilities-input.png){ width="75%" }
+<figcaption>Access to Financial Facilities input configuration.</figcaption>
+</figure>
 
 **Default** Access to Financial Facilities thresholds:
 
