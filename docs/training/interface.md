@@ -69,9 +69,7 @@ three choices to pick from to define the scale of your analysis:
 | Local    | A city or small region             | 100 m              |
 
 In all three cases you can change the grid size if you want to, but the
-defaults are a reasonable place to start. Regional scale also unlocks the
-Space2Stats prefetch step covered in [Getting
-Data](datacollection.md#tutorial-automatic-downloads-built-into-geoe3).
+defaults are a reasonable place to start.
 
 <figure markdown>
 ![The GeoE3 project creation wizard: scale, grid size, boundary layer and Women's Enabling Environments options](../images/training/project-wizard.jpg)
@@ -121,6 +119,18 @@ to process, and where the generated files live (your project folder's
 <figure markdown>
 ![A quick scroll through the Study Area Report](../images/training/study-area-report.gif){ width="85%" }
 <figcaption>The Study Area Report, opened automatically once the grid finishes.</figcaption>
+</figure>
+
+If you picked **Regional** scale, GeoE3 now offers to prefetch Space2Stats
+data for every Space2Stats-backed indicator in one go. Tick **Fetch S2S
+data** and click Next. National and local-scale projects skip this step
+entirely. See [Getting
+Data](datacollection.md#tutorial-automatic-downloads-built-into-geoe3) for
+exactly what gets downloaded.
+
+<figure markdown>
+![The GeoE3 Space2Stats prefetch step](../images/training/space2stats-prefetch-interface.png){ width="45%" }
+<figcaption>Space2Stats prefetch, Regional scale only.</figcaption>
 </figure>
 
 ### Setting up routing
