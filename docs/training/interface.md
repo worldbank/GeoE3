@@ -108,6 +108,11 @@ is a raster layer which covers the study area, excluding any pixels
 outside the area by giving them NoData, and including any areas inside
 the study area by giving them a value of one.
 
+<figure markdown>
+![GeoE3 processing the study area grid, showing a progress bar at 100 percent](../images/training/study-area-creation-progress.png){ width="261" }
+<figcaption>Processing the study area. The report opens automatically once it reaches 100%.</figcaption>
+</figure>
+
 When it finishes, a **Study Area Report** opens automatically, summarizing
 how many grid cells were created, how long each part of the country took
 to process, and where the generated files live (your project folder's
