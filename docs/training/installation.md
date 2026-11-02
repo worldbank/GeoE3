@@ -27,15 +27,16 @@ Follow the steps below to install the GEOE3 QGIS plugin.
 > - 1. Launch QGIS.
 > - 1. Go to **Plugins** > **Manage and Install Plugins…**.
 
-![QGIS Plugin Setup](../images/new%20images/plugins.JPG){ width="50%" }
-
 #### Step 2: Install the Plugin
 
 > - 1. In the **Plugin Manager** window, select the **All** tab in the Plugin Manager.
 > - 2. Search for `GEOE3`.
 > - 3. Select the plugin and click **Install Plugin**.
 
-![QGIS Plugin Installation](../images/new%20images/Install_page_plugin.png){ width="60%" }
+<figure markdown>
+![Opening the Plugin Manager from the Plugins menu, then searching for GEOE3 under the All tab](../images/training/qgis-plugin-manager-search-geoe3.png)
+<figcaption>(1) Plugins → Manage and Install Plugins…, (2) the All tab, (3) search for GEOE3.</figcaption>
+</figure>
 
 #### Step 3: Verify the Installation and Configure the Tool
 
