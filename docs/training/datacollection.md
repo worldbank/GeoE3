@@ -151,13 +151,13 @@ only the geospatial data, so filter on **geodata** to narrow it down.
 </figure>
 
 For example, health facilities is going to be one of the things you're
-interested in for the Accessibility dimension — since it's there on HDX,
+interested in for the Accessibility dimension. Since it's there on HDX,
 grab it. (The source is still coming from HDX, though it looks like they
 get it from HOT OSM.) Open the dataset page, scroll to **Data and
 Resources**, and download the shapefile or GeoPackage.
 
 <figure markdown>
-![Downloading a dataset from its HDX resource page](../images/new%20images/Humdata_download.jpg)
+![Downloading the shapefile resource from an HDX dataset page](../images/training/hdx-download-resource.gif){ width="85%" }
 <figcaption>Downloading the point-data resource for a dataset.</figcaption>
 </figure>
 
