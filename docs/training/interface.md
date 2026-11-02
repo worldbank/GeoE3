@@ -118,6 +118,11 @@ how many grid cells were created, how long each part of the country took
 to process, and where the generated files live (your project folder's
 `study_area/` subfolder). You can reopen it any time.
 
+<figure markdown>
+![A quick scroll through the Study Area Report](../images/training/study-area-report.gif){ width="85%" }
+<figcaption>The Study Area Report, opened automatically once the grid finishes.</figcaption>
+</figure>
+
 ### Setting up routing
 
 The next thing it wants to do is set up the routing environment. For some
