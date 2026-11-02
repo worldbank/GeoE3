@@ -37,6 +37,18 @@ and configured — pick this to carry on where you left off.
 **Create a New Project** walks you through setting one up from scratch,
 which is what the rest of this page covers.
 
+**Import a Country Pack** rebuilds someone else's project from a single
+GeoPackage they exported (see Building a Country Pack, later in this
+walkthrough). Point it at the pack file and an empty working folder.
+GeoE3 reconstructs the whole project there: the study area, every
+configured input, every already-computed result, and the model itself.
+It opens ready to run.
+
+<figure markdown>
+![The GeoE3 project selection page: Open an Existing Project, Create a New Project, or Import a Country Pack](../images/training/geoe3-project-selection.png){ width="45%" }
+<figcaption>The three ways into a GeoE3 project.</figcaption>
+</figure>
+
 !!! warning
     The folder you choose must be **empty**. GeoE3 treats everything in
     it as its own — using a folder that already has other files in it can
