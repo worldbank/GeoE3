@@ -42,6 +42,21 @@ GeoE3 Score is calculated against. You can hand that GeoPackage to a
 colleague who wants to build their own analysis on the same spatial
 framework.
 
+## Building a country pack
+---
+Data bundles allow you to easily share the same spatial framework with a
+colleague. Use the right-click menu on the GeoE3 Score node and use the
+**Bundle Input Data to GeoPackage** menu item to package the study area,
+all configured inputs, all computed results, and the model itself into a
+GeoPackage. You can then give that single file to anyone, and **Import a
+Country Pack** (see [The Interface](interface.md)) rebuilds the whole
+project from it, ready to run without any further setup.
+
+<figure markdown>
+![Bundling a project's inputs and results into a country pack GeoPackage](../images/training/building-a-country-pack.gif){ width="85%" }
+<figcaption>Bundling a project's inputs and results into a country pack GeoPackage.</figcaption>
+</figure>
+
 !!! success "Recap"
     - The raw grid is yours to use beyond QGIS. Add it as a vector
       layer and export its attribute table to CSV for further analysis
@@ -49,6 +64,9 @@ framework.
     - **Add GeoE3 Aggregates to Map** gets you the subnational
       breakdown; the **Identify** tool reads off each region's name and
       majority score.
+    - **Bundle Input Data to GeoPackage** packs the whole project
+      (inputs, results, and the model) into one file. **Import a
+      Country Pack** rebuilds it from that file, ready to run.
     - **Open Working Directory** gets you straight to every file this
       analysis produced, including the `study_area/` GeoPackage every
       output is built on.

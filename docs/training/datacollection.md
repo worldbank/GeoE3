@@ -139,25 +139,25 @@ first subdivision, and so on) — finally, what we need.
 
 Another common source of data is the [Humanitarian Data
 Exchange](https://data.humdata.org/), HDX for short. GeoE3 does **not**
-query it automatically — this is a manual browse-and-download source, the
+query it automatically. This is a manual browse-and-download source, the
 same as Geofabrik or GADM. Punch in your country and you'll see a range
 of interesting-looking datasets: health, population, airports, railways,
-buildings, education. Some of these will be useful for you — but you want
+buildings, education. Some of these will be useful for you, but you want
 only the geospatial data, so filter on **geodata** to narrow it down.
 
 <figure markdown>
-![Searching HDX for a dataset](../images/new%20images/Humdata_search.jpg)
-<figcaption>Filtering an HDX search down to geospatial datasets only.</figcaption>
+![Searching HDX for Saint Lucia datasets, filtered to geodata only](../images/training/hdx-search-geodata.png){ width="85%" }
+<figcaption>(1) The URL encodes your search and filter, handy for bookmarking. (2) Type your country into the search box. (3) Tick Geodata under Advanced filters to narrow results down to geospatial datasets only.</figcaption>
 </figure>
 
 For example, health facilities is going to be one of the things you're
-interested in for the Accessibility dimension — since it's there on HDX,
+interested in for the Accessibility dimension. Since it's there on HDX,
 grab it. (The source is still coming from HDX, though it looks like they
 get it from HOT OSM.) Open the dataset page, scroll to **Data and
 Resources**, and download the shapefile or GeoPackage.
 
 <figure markdown>
-![Downloading a dataset from its HDX resource page](../images/new%20images/Humdata_download.jpg)
+![Downloading the shapefile resource from an HDX dataset page](../images/training/hdx-download-resource.gif){ width="85%" }
 <figcaption>Downloading the point-data resource for a dataset.</figcaption>
 </figure>
 
