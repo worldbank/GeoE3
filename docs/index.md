@@ -29,7 +29,7 @@ close the gap.
 </p>
 
 <p align="center">
-  <img src="images/new%20images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure — wind turbines, schools, clinics, transport, housing — illustrating the spatial factors the GeoWEAF framework scores" style="max-width:360px;">
+  <img src="images/legacy/framework.png" alt="A diverse group of people connected by a winding road through infrastructure — wind turbines, schools, clinics, transport, housing — illustrating the spatial factors the GeoWEAF framework scores" style="max-width:360px;">
 </p>
 
 Developed by the World Bank, **GeoE3 (The Geospatial Enabling Environments

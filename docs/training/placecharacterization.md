@@ -89,19 +89,19 @@ essential services.
 > - 📂 **Flexible Data Input Options**: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:
 > - 1️⃣ Using **Perceived Safety data** index score as input:
 
-![Safety index score](../images/new%20images/SafetyPerception.jpg){ width="55%" }
+![Safety index score](../images/legacy/SafetyPerception.jpg){ width="55%" }
 
 > - 2️⃣ Using **Classified Safety data** as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**polygon features**) corresponding to the safety data by clicking the three-dot button and the classification field; this layer will be used for processing:
 >
-![Safety classes](../images/new%20images/Safety_classes1.jpg){ width="55%" }
+![Safety classes](../images/legacy/Safety_classes1.jpg){ width="55%" }
 
 > - 3️⃣ Using **Nighttime Lights data** as input; VIIRS Nighttime Lights raster may be used as proxy data for presence of area illumination at night time; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the (**raster data**) corresponding to NTL by clicking the three-dot button; this layer will be used for processing:
 >
-![Safety NTL](../images/new%20images/SafetyPerception2.jpg){ width="55%" }
+![Safety NTL](../images/legacy/SafetyPerception2.jpg){ width="55%" }
 
 > - 4️⃣ Using **Street lights data** as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**point locations**) representing street lights by clicking the three-dot button; this layer will be used for processing:
 >
-![Safety street lights](../images/new%20images/Safety_street1.jpg){ width="55%" }
+![Safety street lights](../images/legacy/Safety_street1.jpg){ width="55%" }
 
 > - 🚫 **Exclude Unused Factors (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
 > - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
@@ -131,11 +131,11 @@ access to employment and essential services.
 > - 📂 **Flexible Data Input Options**: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:
 > - 1️⃣ Using **Point features data** as input; select point locations representing data related to fragility, conflict and violence events; a buffer is needed to estimate the spatial impact of these events, the default radius is 5000m but if the impact radius of an event is known, it should be used instead:
 
-![FCV points](../images/new%20images/FCV1.jpg){ width="55%" }
+![FCV points](../images/legacy/FCV1.jpg){ width="55%" }
 
 > - 2️⃣ Using **ACLED data** as input; select ACLED data in CSV format representing fragility, conflict, and violence events; this indicator is structured by assigning scores to rasters based on their overlap with buffers indicating different types of events. Using point locations of FCV events, generate circular buffers with a default radius of 5 km to estimate the spatial impact of these events. If the impact radius of an event is known, it should be used instead; a pop-up will appear to validate the CSV format.
 
-![FCV csv data](../images/new%20images/FCV2.jpg){ width="55%" }
+![FCV csv data](../images/legacy/FCV2.jpg){ width="55%" }
 
 > - 🚫 **Exclude Unused Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
 > - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
@@ -164,11 +164,11 @@ account only for areas where people live.
 > - 📂 **Flexible Data Input Options**: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:
 > - 1️⃣ Using **Index score** at the national or regional level, based on the proportion of women who have attained higher education as input:
 
-![Education index score](../images/new%20images/Education1.jpg){ width="55%" }
+![Education index score](../images/legacy/Education1.jpg){ width="55%" }
 
 > - 2️⃣ Using **Classify Polygon Into Classes data** as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**polygon features**) corresponding to the education data by clicking the three-dot button then, select the classification field to be used for processing:
 
-![Education classified polygons data](../images/new%20images/Education2.jpg){ width="55%" }
+![Education classified polygons data](../images/legacy/Education2.jpg){ width="55%" }
 
 > - 🚫 **Exclude Unused Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
 > - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
@@ -194,11 +194,11 @@ inhabited areas.
 > - 📂 **Flexible Data Input Options**: Multiple data input options are available depending on the data's availability, format, or geographic coverage. Select one of the following options:
 > - 1️⃣ Using **Index score** at the national or regional level, based on the proportion of available digital infrastructure as input:
 
-![Digital Inclusion index score](../images/new%20images/DigitalInclusion1.jpg){ width="55%" }
+![Digital Inclusion index score](../images/legacy/DigitalInclusion1.jpg){ width="55%" }
 
 > - 2️⃣ Using **Classify Polygon Into Classes data** as input; select the layer already loaded in the QGIS Layer Panel from the dropdown menu or manually enter the file path for the shapefiles (**polygon features**) corresponding to the digital inclusion data by clicking the three-dot button then, select the classification field to be used for processing:
 
-![Digital Inclusion classified polygons data](../images/new%20images/DigitalInclusion2.jpg){ width="55%" }
+![Digital Inclusion classified polygons data](../images/legacy/DigitalInclusion2.jpg){ width="55%" }
 
 > - 🚫 **Exclude Unused Factor (optional)**: If this factor is not intended to be included in the process, uncheck the **Use** button associated with it.
 > - ✅ **Finalize**: Once all settings are configured, click OK to confirm and proceed to the next step.
@@ -292,7 +292,7 @@ Characterization** dimension and follow the same [generic
 pattern](configuring-items.md#the-generic-pattern) as every other item
 in the tree: assign weights, balance them, and run it.
 
-![Place Characterization Weights](../images/new%20images/PC_weights0.jpg){ width="75%" }
+![Place Characterization Weights](../images/legacy/PC_weights0.jpg){ width="75%" }
 
 The outputs (all seven factors and their subfactors, plus their
 aggregation into the final Place Characterization score) land in the

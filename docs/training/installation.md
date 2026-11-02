@@ -41,7 +41,7 @@ Follow the steps below to install the GEOE3 QGIS plugin.
 
 > - 1. After installation, check the QGIS toolbar for the new **GEOE3** icon *Show/Hide GEOE3 Panel*.
 
-![GEOE3 Toolbar Icons](../images/new%20images/icons.jpg){ width="40%" }
+![GEOE3 Toolbar Icons](../images/legacy/icons.jpg){ width="40%" }
 
 !!! success "Recap"
     - GeoE3 is a regular QGIS plugin, installed from the Plugin Manager.
