@@ -228,6 +228,14 @@ body,
     width: 100% !important;
 }
 
+/* Material renders markdown tables at their natural (auto) width,
+   left-aligned by default. Centre every table horizontally in the
+   content column instead. */
+.md-typeset table:not([class]) {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Hero CTA buttons — flat, no shadow, Blue primary, Cloud secondary.
    markdown wraps consecutive links in a single <p>; we apply the flex
    layout to that <p> too so buttons sit side-by-side instead of
