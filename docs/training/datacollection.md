@@ -1,11 +1,12 @@
 # Getting Data
 
 !!! abstract "Learning objective"
-    By the end of this page you'll know every way GeoE3 gets its input
-    data — what downloads automatically, what you fetch yourself and
-    import, and what you research and type in by hand — so you can source
-    data confidently for any country, not just the Portugal example used
-    throughout this walkthrough.
+    In this lesson we will cover some different ways that you can get
+    input data for GeoE3. This includes automated downloads, or "fetch
+    it yourself and import it". In some cases you will need to research
+    to find indices that are applicable for your study area. By the end
+    of this section you should be able to source data confidently for
+    any country.
 
 Every indicator in the GeoE3 model needs a dataset or a number behind it.
 There are three distinct ways that data gets into your project:
