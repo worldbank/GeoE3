@@ -134,6 +134,7 @@
           pkgs.gdb
           pkgs.git
           pkgs.minio-client # for grabbing ookla data
+          pkgs.gifsicle # compressing/optimizing docs GIF screenshots
           pkgs.glogg
           pkgs.glow # terminal markdown viewer
           pkgs.gource # Software version control visualization
