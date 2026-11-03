@@ -1,14 +1,14 @@
 ## ![](../images/topics/geoe3_score.svg){ width="28" style="vertical-align:middle;margin-right:0.4rem;" } Viewing Your Results
 
 !!! abstract "Learning objective"
-    By the end of this page you'll be able to interpret the final GeoE3
-    score, drill into any dimension, factor or indicator's methodology,
-    weightings and score distribution, step through the GeoE3 Score's
-    own output carousel, and understand the bivariate legend that
-    results from combining enablement with population density.
+By the end of this page you'll be able to interpret the final GeoE3
+score, drill into any dimension, factor or indicator's methodology,
+weightings and score distribution, step through the GeoE3 Score's
+output carousel, and understand the bivariate legend that
+results from combining enablement with population density.
 
 <p align="justify">
-This page picks up once the GeoE3 Score has been configured and run (see
+We assume the GeoE3 Score has been configured and run (see
 <a href="configuring-items.md">Configuring Items</a> for assigning dimension
 weights, adding a population layer or mask, and <a href="running-the-analysis.md">Running
 the Analysis</a> for actually kicking off the run). The
@@ -30,46 +30,50 @@ very enabling.
 <figcaption>The completed model tree, with the final GeoE3 Score on the same 0–5 scale as everything beneath it.</figcaption>
 </figure>
 
-We're able to go and explore all of the individual results as well.
-Click on any layer in the tree. You'll see a description of it in the
-info panel at the bottom right. You can shrink this panel and resize it
-back again. For every indicator, factor and dimension, that description
-now comes with extra pages. Step through them using the **→** link in
-the panel's header.
+We're able to go and explore all of the individual results as well. Click on any
+layer in the tree. You'll see a description of it in the info panel at the
+bottom right. You can shrink this panel using the little triangle icon and
+resize it back again using the same icon. For every indicator, factor and
+dimension, that description now comes with extra pages. Step through them using
+the **→** link in the panel's header.
 
 You can go through and explore the different results generated at the
-dimension level, then the factor level, and down at the indicator level.
+dimension level, then the factor level, and down to the indicator level.
 Remember that the combination of indicators is combined into the factor.
-If you double-click on a factor, you can see in a table the weightings
-used to say what the relative importance of each was in the total
+If you double-click on a factor, you can see a table with the weightings
+used to show what the relative importance of each was in the total
 assessment. This is the same weights dialog covered in
 [Configuring Items](configuring-items.md).
 
 ### Exploring an Item: Description, Methodology and Score Distribution
+
 ---
-Click an indicator. Workplace Discrimination, say. The info panel opens
+
+Click an indicator, for example, Workplace Discrimination. The info panel opens
 on its **Item** page. You'll see its role, its description, and a
 **Methodology →** link.
 
 Click **Methodology →**. The panel explains, in plain language, which of
 the [eight processor types](processor-types.md) produced this
-indicator's score. It's the same explanation the PDF report's own
-Methodology section gives. You get it the moment you click the item.
+indicator's score. It's the same explanation the PDF report's
+Methodology section gives.
 
-Click forward once more and you'll reach the **Sparkline** page. It's a
+Click forward once more and you'll reach the **Sparkline**. It's a
 small bar chart showing how the grid cells scored, 0 to 5, for whatever
 you've got selected. Factors and dimensions skip straight here from
-their Item page.
+their Item page since they do not have a methodology page.
 
 The header's left hand label walks you back the same way you came. One
 click from Sparkline takes you back to Methodology for an indicator, or
 straight to Item for a factor or dimension. Select a different item
-while you're sitting on the Methodology page and the panel stays on
+while you're on the Methodology page and the panel stays on
 Methodology for the new item too, as long as it still has one. It
 behaves like a tab that stays selected as you move around the tree.
 
 ### The GeoE3 Score's Own Carousel
+
 ---
+
 The GeoE3 Score node works a little differently. A single run produces
 up to six different output layers. Click it and the same **→** link
 cycles through all six. **GeoE3 Score**. **GeoE3 by Population**.
@@ -89,10 +93,12 @@ first. Then it moves on to Aggregate.
 </figure>
 
 ### Visualizing the Outputs
+
 ---
-After completing the process, the outputs are automatically added to
+
+When completing the process, the outputs are automatically added to
 the Layer Panel in QGIS as a group layer. This group layer has the
-*Mutually Exclusive Group* feature activated, which ensures that only
+_Mutually Exclusive Group_ feature activated, which ensures that only
 one layer within the group can be visible at a time. When this feature
 is enabled, turning on the visibility of one layer automatically turns
 off the visibility of the others within the same group, making it
@@ -103,28 +109,36 @@ administrative level, by population, or by job distribution). The
 aggregated-by-population outputs use a bivariate legend: 5 enablement
 levels × 3 population tiers, 15 exact classes in total:
 
-| Score | Class | Colour |
-|---|---|---|
-| 1 | Very low enablement, low population | <span style="display:inline-block;width:14px;height:14px;background:#b11419;border:1px solid #0003;border-radius:2px;"></span> |
-| 2 | Very low enablement, medium population | <span style="display:inline-block;width:14px;height:14px;background:#d7191c;border:1px solid #0003;border-radius:2px;"></span> |
-| 3 | Very low enablement, high population | <span style="display:inline-block;width:14px;height:14px;background:#f14247;border:1px solid #0003;border-radius:2px;"></span> |
-| 4 | Low enablement, low population | <span style="display:inline-block;width:14px;height:14px;background:#d68f47;border:1px solid #0003;border-radius:2px;"></span> |
-| 5 | Low enablement, medium population | <span style="display:inline-block;width:14px;height:14px;background:#fdae61;border:1px solid #0003;border-radius:2px;"></span> |
-| 6 | Low enablement, high population | <span style="display:inline-block;width:14px;height:14px;background:#ffc688;border:1px solid #0003;border-radius:2px;"></span> |
-| 7 | Moderately enabling, low population | <span style="display:inline-block;width:14px;height:14px;background:#e0e09f;border:1px solid #0003;border-radius:2px;"></span> |
-| 8 | Moderately enabling, medium population | <span style="display:inline-block;width:14px;height:14px;background:#ffffb4;border:1px solid #0003;border-radius:2px;"></span> |
-| 9 | Moderately enabling, high population | <span style="display:inline-block;width:14px;height:14px;background:#ffffee;border:1px solid #0003;border-radius:2px;"></span> |
-| 10 | Enabling, low population | <span style="display:inline-block;width:14px;height:14px;background:#93bd9b;border:1px solid #0003;border-radius:2px;"></span> |
-| 11 | Enabling, medium population | <span style="display:inline-block;width:14px;height:14px;background:#bce1b8;border:1px solid #0003;border-radius:2px;"></span> |
-| 12 | Enabling, high population | <span style="display:inline-block;width:14px;height:14px;background:#dbfbd5;border:1px solid #0003;border-radius:2px;"></span> |
-| 13 | Highly enabling, low population | <span style="display:inline-block;width:14px;height:14px;background:#1d5c8d;border:1px solid #0003;border-radius:2px;"></span> |
-| 14 | Highly enabling, medium population | <span style="display:inline-block;width:14px;height:14px;background:#2c7bb6;border:1px solid #0003;border-radius:2px;"></span> |
-| 15 | Highly enabling, high population | <span style="display:inline-block;width:14px;height:14px;background:#4ab8e0;border:1px solid #0003;border-radius:2px;"></span> |
+| Score | Class                                  | Colour                                                                                                                         |
+| ----- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1     | Very low enablement, low population    | <span style="display:inline-block;width:14px;height:14px;background:#b11419;border:1px solid #0003;border-radius:2px;"></span> |
+| 2     | Very low enablement, medium population | <span style="display:inline-block;width:14px;height:14px;background:#d7191c;border:1px solid #0003;border-radius:2px;"></span> |
+| 3     | Very low enablement, high population   | <span style="display:inline-block;width:14px;height:14px;background:#f14247;border:1px solid #0003;border-radius:2px;"></span> |
+| 4     | Low enablement, low population         | <span style="display:inline-block;width:14px;height:14px;background:#d68f47;border:1px solid #0003;border-radius:2px;"></span> |
+| 5     | Low enablement, medium population      | <span style="display:inline-block;width:14px;height:14px;background:#fdae61;border:1px solid #0003;border-radius:2px;"></span> |
+| 6     | Low enablement, high population        | <span style="display:inline-block;width:14px;height:14px;background:#ffc688;border:1px solid #0003;border-radius:2px;"></span> |
+| 7     | Moderately enabling, low population    | <span style="display:inline-block;width:14px;height:14px;background:#e0e09f;border:1px solid #0003;border-radius:2px;"></span> |
+| 8     | Moderately enabling, medium population | <span style="display:inline-block;width:14px;height:14px;background:#ffffb4;border:1px solid #0003;border-radius:2px;"></span> |
+| 9     | Moderately enabling, high population   | <span style="display:inline-block;width:14px;height:14px;background:#ffffee;border:1px solid #0003;border-radius:2px;"></span> |
+| 10    | Enabling, low population               | <span style="display:inline-block;width:14px;height:14px;background:#93bd9b;border:1px solid #0003;border-radius:2px;"></span> |
+| 11    | Enabling, medium population            | <span style="display:inline-block;width:14px;height:14px;background:#bce1b8;border:1px solid #0003;border-radius:2px;"></span> |
+| 12    | Enabling, high population              | <span style="display:inline-block;width:14px;height:14px;background:#dbfbd5;border:1px solid #0003;border-radius:2px;"></span> |
+| 13    | Highly enabling, low population        | <span style="display:inline-block;width:14px;height:14px;background:#1d5c8d;border:1px solid #0003;border-radius:2px;"></span> |
+| 14    | Highly enabling, medium population     | <span style="display:inline-block;width:14px;height:14px;background:#2c7bb6;border:1px solid #0003;border-radius:2px;"></span> |
+| 15    | Highly enabling, high population       | <span style="display:inline-block;width:14px;height:14px;background:#4ab8e0;border:1px solid #0003;border-radius:2px;"></span> |
 
 ![WEE Score features](../images/legacy/8-WEEpopB.jpg){ width="65%" }
 
 The outputs are stored within the project folder created during the
-setup phase as raster files. These files can be shared and further
+setup phase as raster files and as columns in the study_area_grid table in the
+study_area.gpkg.
+
+<figure markdown>
+![Browsing to the study_area_grid table inside study_area.gpkg in the QGIS Browser panel](../images/training/insights-study-area-grid-browser.gif){ width="85%" }
+<figcaption>The study_area_grid table lives inside the GeoE3 Study Area group, alongside the other study area layers.</figcaption>
+</figure>
+
+These files can be shared and further
 utilized for various purposes, such as visualization in QGIS or other
 GIS software, integration into reports, overlaying with other spatial
 datasets, or performing advanced geospatial analyses, such as
