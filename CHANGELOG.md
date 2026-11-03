@@ -477,6 +477,11 @@ version per the policy above.
 
 ### Fixed
 
+- **The toolbar button's tooltip read "GeoE3 Settings"**, which doesn't
+  describe what it does. It toggles the GeoE3 dock panel's visibility,
+  already reflected correctly after the first click ("Show GeoE3
+  Panel" / "Hide GeoE3 Panel"). The panel is visible by default on
+  load, so the initial tooltip now reads "Hide GeoE3 Panel" to match.
 - **Settings toggled in Settings > GeoE3 (e.g. "Include Subnational
   Score Matrix") could silently revert after restarting QGIS**, even
   when correctly unchecked and confirmed with OK every time.
