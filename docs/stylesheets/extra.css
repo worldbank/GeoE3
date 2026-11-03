@@ -97,6 +97,14 @@
     height: 1.6rem;
 }
 
+/* Material swaps the header's title from the site name ("GeoE3") to the
+   current page's own title once you scroll past its h1. Hide the second
+   topic so the header always reads "GeoE3", on every page, at any
+   scroll position. */
+.md-header__topic[data-md-component="header-topic"] {
+    display: none;
+}
+
 /* -----------------------------------------------------------------------
    Typography — Nunito everywhere, JetBrains Mono for code.
    ----------------------------------------------------------------------- */
