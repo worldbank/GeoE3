@@ -109,6 +109,11 @@ administrative level, by population, or by job distribution). The
 aggregated-by-population outputs use a bivariate legend: 5 enablement
 levels × 3 population tiers, 15 exact classes in total:
 
+<figure markdown>
+![The bivariate legend grid: 5 enablement levels across, 3 population density tiers down](../images/training/geoe3-bivariate-legend-grid.png){ width="65%" }
+<figcaption>Enablement (columns) combines with population density (rows) to give the 15 classes in the table below.</figcaption>
+</figure>
+
 | Score | Class                                  | Colour                                                                                                                         |
 | ----- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | 1     | Very low enablement, low population    | <span style="display:inline-block;width:14px;height:14px;background:#b11419;border:1px solid #0003;border-radius:2px;"></span> |
@@ -129,21 +134,21 @@ levels × 3 population tiers, 15 exact classes in total:
 
 ![WEE Score features](../images/legacy/8-WEEpopB.jpg){ width="65%" }
 
-The outputs are stored within the project folder created during the
-setup phase as raster files and as columns in the study_area_grid table in the
-study_area.gpkg.
+The outputs are stored within the project folder created during the setup phase
+as raster files and as columns in the study_area_grid table in the
+study_area.gpkg. The process for adding the study area grid to your QGIS project
+is shown in the image below.
 
 <figure markdown>
 ![Browsing to the study_area_grid table inside study_area.gpkg in the QGIS Browser panel](../images/training/insights-study-area-grid-browser.gif){ width="85%" }
 <figcaption>The study_area_grid table lives inside the GeoE3 Study Area group, alongside the other study area layers.</figcaption>
 </figure>
 
-These files can be shared and further
-utilized for various purposes, such as visualization in QGIS or other
-GIS software, integration into reports, overlaying with other spatial
-datasets, or performing advanced geospatial analyses, such as
-identifying priority areas or conducting trend analysis based on the
-scores.
+These files can be shared and further utilized for various purposes, such as
+visualization in QGIS or other GIS software, integration into reports,
+overlaying with other spatial datasets, or performing advanced geospatial
+analyses, such as identifying priority areas or conducting trend analysis based
+on the scores.
 
 If the results do not immediately appear in the Layer Panel after
 processing the GeoE3 Scores, you can resolve this by either adding them
@@ -152,7 +157,7 @@ and selecting **Add to map** from the context menu.
 
 When population and a subnational boundary layer are both configured,
 **Add GeoE3 Aggregates to Map** breaks the enablement scores down by
-subnational district using the same 15-class bivariate legend above.
+subnational districts using the same 15-class bivariate legend above.
 Each region is shaded by its majority class, from dark red (low
 enablement, low population) through to bright blue (high enablement,
 high population).
@@ -169,9 +174,8 @@ with the rest of what's in the PDF report.
 The GeoE3 Score node still keeps two dedicated actions on its
 right-click menu: **Add GeoE3 Score to Map** and **Add Study Area to
 Map**. The other five outputs (By Population, Aggregates, Masked
-Scores, Job Opportunities Mask, GHSL Settlements) no longer have their
-own menu entries. Step through them with the info panel's carousel
-instead, covered above in [The GeoE3 Score's Own
+Scores, Job Opportunities Mask, GHSL Settlements) can be viewed using
+the info panel's carousel, covered above in [The GeoE3 Score's Own
 Carousel](#the-geoe3-scores-own-carousel). The first time you land on a
 stop it loads onto the map. After that, revisiting it just switches its
 visibility back on.
