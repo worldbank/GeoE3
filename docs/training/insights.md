@@ -152,20 +152,15 @@ There's one more advanced option worth knowing about: the subnational
 score matrix. It's covered in [The Analysis Report](report.md) along
 with the rest of what's in the PDF report.
 
-The GeoE3 Score node has the same right-click menu as any other item
-(see [The Interface](interface.md#right-click-to-interact-with-items)),
-plus several score-specific **Add to Map** variants:
-
-![WEE Score features](../images/legacy/WEE_features.jpg){ width="65%" }
-
-| Menu item | What it does |
-|---|---|
-| **Add GeoE3 Score to Map** | The base 5-class enablement score |
-| **Add GeoE3 by Population to Map** | The 15-class bivariate enablement × population score |
-| **Add GeoE3 Aggregates to Map** | The subnational breakdown by administrative boundary |
-| **Add Masked Scores to Map** | The score restricted to whatever mask you configured |
-| **Add Job Opportunities Mask to Map** | The job-distribution mask, if configured |
-| **Add Study Area to Map** | The study area boundary itself |
+The GeoE3 Score node still keeps two dedicated actions on its
+right-click menu: **Add GeoE3 Score to Map** and **Add Study Area to
+Map**. The other five outputs (By Population, Aggregates, Masked
+Scores, Job Opportunities Mask, GHSL Settlements) no longer have their
+own menu entries. Step through them with the info panel's carousel
+instead, covered above in [The GeoE3 Score's Own
+Carousel](#the-geoe3-scores-own-carousel). The first time you land on a
+stop it loads onto the map. After that, revisiting it just switches its
+visibility back on.
 
 Every run also produces a full PDF analysis report, and the raw grid
 results are available for export to CSV or any GIS format. Both are
