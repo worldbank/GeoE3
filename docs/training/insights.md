@@ -83,6 +83,11 @@ a reference layer. Neither gets a Sparkline page. So "Next" from the
 GeoE3 by Population stop goes to that stop's own score distribution
 first. Then it moves on to Aggregate.
 
+<figure markdown>
+![Stepping through all six GeoE3 Score carousel stops, map and Sparkline updating at each one](../images/training/geoe3-score-carousel.gif){ width="85%" }
+<figcaption>Clicking → through all six stops: GeoE3 Score, GeoE3 by Population, GeoE3 Aggregate, Masked Scores, Job Opportunities Mask, GHSL Settlements, then back to GeoE3 Score.</figcaption>
+</figure>
+
 ### Visualizing the Outputs
 ---
 After completing the process, the outputs are automatically added to
