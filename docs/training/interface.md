@@ -247,6 +247,27 @@ Map**.
     Item Workflow**. This reassesses the input and outputs the corrected
     score.
 
+The top-level analysis item's right-click menu adds several more
+entries on top of the common set above:
+
+<figure markdown>
+![The analysis item's right-click context menu](../images/training/analysis-context-menu.png){ width="40%" }
+<figcaption>The top-level analysis item's full right-click menu.</figcaption>
+</figure>
+
+| Menu item | What it does |
+|---|---|
+| **Edit Weights and Settings** | Opens the dialog for adjusting the analysis's dimension weights and other settings |
+| **Set Network Layers** | Jumps to the Network tab to configure the road network used for routing |
+| **Set ORS Options** | Jumps to the OpenRouteService tab to set up routing options |
+| **Clean Unused Layers from Project** | Removes any layers left in the QGIS project that are no longer in the legend |
+| **Animate results** | Steps through all tree items in sequence with a short pause on each, as a visual tour of the run |
+| **Add GeoE3 Score to Map** | Loads the GeoE3 Score layer onto the map |
+| **Add Study Area to Map** | Loads the study area boundary and grid layers onto the map |
+| **Show Analysis Report** | Generates and opens the full PDF analysis report |
+| **Bundle Input Data to GeoPackage** | Packages all configured input datasets into a single GeoPackage |
+| **Show Study Area Report** | Generates and opens the study area summary report |
+
 **Run All** (bottom of the panel) runs every workflow regardless of
 status; **Run Incomplete** only runs the ones that haven't completed yet.
 The **Project** button takes you back to the setup pages above if you
