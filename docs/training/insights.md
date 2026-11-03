@@ -133,19 +133,19 @@ and selecting **Add to map** from the context menu.
 
 When population and a subnational boundary layer are both configured,
 **Add GeoE3 Aggregates to Map** breaks the enablement scores down by
-subnational district using the same 15-class bivariate legend above —
-each region shaded by its majority class, from dark red (low enablement,
-low population) through to bright blue (high enablement, high
-population).
+subnational district using the same 15-class bivariate legend above.
+Each region is shaded by its majority class, from dark red (low
+enablement, low population) through to bright blue (high enablement,
+high population).
 
 <figure markdown>
 ![Subnational districts coloured by the 15-class enablement × population legend](../images/training/geoe3-bivariate-legend-map.jpg)
-<figcaption>Each subnational region shaded by its majority class — combining 5 enablement levels with 3 population tiers (low/medium/high) gives the 15 categories in the legend.</figcaption>
+<figcaption>Each subnational region shaded by its majority class. Combining 5 enablement levels with 3 population tiers (low/medium/high) gives the 15 categories in the legend.</figcaption>
 </figure>
 
-There's one more advanced option worth knowing about — the subnational
-score matrix — covered in [The Analysis Report](report.md) along with
-the rest of what's in the PDF report.
+There's one more advanced option worth knowing about: the subnational
+score matrix. It's covered in [The Analysis Report](report.md) along
+with the rest of what's in the PDF report.
 
 The GeoE3 Score node has the same right-click menu as any other item
 (see [The Interface](interface.md#right-click-to-interact-with-items)),
