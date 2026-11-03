@@ -11,11 +11,11 @@
 Every indicator in the GeoE3 model needs a dataset or a number behind it.
 There are three distinct ways that data gets into your project:
 
-1. **Automatic, in-app downloads** — GeoE3 fetches it for you, no browser
+1. **Automatic, in-app downloads**: GeoE3 fetches it for you, no browser
    required.
-2. **Manual download and import** — you find a dataset on an external
+2. **Manual download and import**: you find a dataset on an external
    website, download it, and load it into QGIS yourself.
-3. **Manual research and entry** — for national-level indicators (like
+3. **Manual research and entry**: for national-level indicators (like
    workplace discrimination law), you research a published score and type
    a single number into the plugin.
 
@@ -39,22 +39,22 @@ you can also use the built-in downloader tool, which is based on
 [QuickOSM](https://docs.3liz.org/QuickOSM/) logic. Click the **Download
 from OSM** button inside an indicator's dialog, and it will do a query
 from OpenStreetMap and fetch down the specific data that indicator
-needs — childcare facilities, for example, if that's the one you're
-configuring.
+needs (childcare facilities, for example, if that's the one you're
+configuring).
 
 <figure markdown>
 ![Download from OSM button inside an indicator's configuration dialog](../images/training/indicator-osm-download.jpg)
-<figcaption>The <strong>OSM Download</strong> button inside an indicator dialog — here, Women's Travel Patterns.</figcaption>
+<figcaption>The <strong>OSM Download</strong> button inside an indicator dialog, here Women's Travel Patterns.</figcaption>
 </figure>
 
 !!! note
-    Quite often the servers are busy and it might fail — I suggest you
-    just keep trying every few minutes until it works for you.
+    Quite often the servers are busy and it might fail. Keep trying
+    every few minutes until it works for you.
 
 One of the nice things about setting up a project is that if you're doing
 a **regional**-scale one, you can also prefetch a bunch of data for your
 analysis. Tick the box in the setup wizard and click Next, and it's going
-to go and download a bunch of indicators — a bunch of reference datasets,
+to go and download a bunch of indicators: a bunch of reference datasets,
 Space2Stats, that we can use for the analysis.
 
 <figure markdown>
@@ -64,22 +64,23 @@ Space2Stats, that we can use for the analysis.
 
 GHSL (Global Human Settlement Layer) settlement/population classification
 and Ookla open broadband/mobile coverage also get fetched automatically
-in the background the first time a workflow needs them — there's nothing
+in the background the first time a workflow needs them. There's nothing
 to click for those.
 
 This whole process is about collecting data, and there are a bunch of
 different sources you can fetch it from: there's the Space2Stats program,
-which is World Bank hosted data; there's OpenStreetMap — which basically
-you wouldn't get straight from OpenStreetMap, you'd get it from a service
-like the Geofabrik service below, or using the QuickOSM downloader tool,
-or using the button inside of the indicator, which also basically uses
-QuickOSM underneath the hood; or you might get it from your national
-dataset, from whatever your country's official data sources provide.
+which is World Bank hosted data; there's OpenStreetMap, which you
+wouldn't normally get straight from OpenStreetMap itself. Instead
+you'd get it from a service like the Geofabrik service below, or using
+the QuickOSM downloader tool, or using the button inside of the
+indicator, which also basically uses QuickOSM underneath the hood. Or
+you might get it from your national dataset, from whatever your
+country's official data sources provide.
 
 ## Tutorial: OpenStreetMap extracts from Geofabrik
 
-For a national or local-scale project — where Space2Stats' regional
-prefetch doesn't apply — to get busy with actually using the plugin, we
+For a national or local-scale project, where Space2Stats' regional
+prefetch doesn't apply, to get busy with actually using the plugin, we
 need to get some data. What I recommend is to head over to
 [Geofabrik](https://www.geofabrik.de/) to start off. Geofabrik is an
 amazing website where they provide extracts from OpenStreetMap for free,
@@ -87,53 +88,53 @@ and you can just go and download any data you want.
 
 <figure markdown>
 ![The Geofabrik download server page](../images/training/geofabrik-download-server.jpg)
-<figcaption>Geofabrik's download server — free OSM extracts, updated daily, organised by continent then country.</figcaption>
+<figcaption>Geofabrik's download server: free OSM extracts, updated daily, organised by continent then country.</figcaption>
 </figure>
 
 Go to the Geofabrik homepage, then **Data**, then **Downloads**. Click the
 link at the top and it's split up by regions, so you just start drilling
-down to your region — continent, then country (and sometimes there are
+down to your region: continent, then country (and sometimes there are
 sub-regions too, for larger countries). You can download it in different
 ways: individual files, or one big file which has got kind of everything
-in it — grab the latest free `.gpkg.zip` (GeoPackage) if it's offered.
+in it. Grab the latest free `.gpkg.zip` (GeoPackage) if it's offered.
 Once it's downloaded, extract it, add it to QGIS, and right-click the
 folder in the **Browser** panel → **Add as a Favorite**, which will make
 it easy to work with the data in that folder going forward.
 
 The geopackage is more convenient because you get everything in one
-single file — you don't have a lot of files all over your hard drive to
+single file. You don't have a lot of files all over your hard drive to
 keep track of. But if there's an error in the file, you can go to plan B,
-which is to download the shapefiles instead — or use GADM (below) for
+which is to download the shapefiles instead, or use GADM (below) for
 boundaries specifically.
 
 ## Tutorial: official administrative boundaries from GADM
 
 Sometimes the admin boundary you get from OpenStreetMap or HDX still
-isn't quite what you want — it might include the coastal maritime area
+isn't quite what you want. It might include the coastal maritime area
 rather than the land boundary you need, or the highest level available
 might not be the one you're after. If you don't have what you want yet,
 the next option is to use [GADM](https://gadm.org/) boundaries.
 
 You could search just for "[your country] official boundary" and see if
-you can find it published by an official source — quite difficult to do,
-though if you're working in your own country, maybe you're already
-familiar with where to get the official data. I happen to know about
+you can find it published by an official source. That's often difficult
+to do, though if you're working in your own country, maybe you're
+already familiar with where to get the official data. I happen to know about
 GADM:
 
 <figure markdown>
 ![The GADM data download page](../images/training/gadm-data-page.jpg)
-<figcaption>GADM — pick your country, download a GeoPackage of its administrative boundaries at every level.</figcaption>
+<figcaption>GADM: pick your country, download a GeoPackage of its administrative boundaries at every level.</figcaption>
 </figure>
 
-Here you can also download data by country — choose yours, and again, you
+Here you can also download data by country. Choose yours, and again, you
 can get a geopackage, which is always nicer. It contains one layer per
 administrative level (`ADM_0` for the national boundary, `ADM_1` for the
-first subdivision, and so on) — finally, what we need.
+first subdivision, and so on), finally what we need.
 
 !!! warning "Check the license before you redistribute anything"
     GADM data is free for **academic and non-commercial use**.
-    Redistribution or commercial use needs permission from GADM first —
-    see their [license page](https://gadm.org/license.html) before you
+    Redistribution or commercial use needs permission from GADM first.
+    See their [license page](https://gadm.org/license.html) before you
     publish an analysis built on it.
 
 ## Tutorial: Humanitarian Data Exchange (HDX)
@@ -163,7 +164,7 @@ Resources**, and download the shapefile or GeoPackage.
 </figure>
 
 HDX is a good first stop for health facilities and some administrative
-boundary sets, but coverage varies a lot by country — if it doesn't have
+boundary sets, but coverage varies a lot by country. If it doesn't have
 what you need, fall back to the in-app OSM downloader or Geofabrik.
 
 ## Tutorial: population data from WorldPop
@@ -174,7 +175,7 @@ during project setup, you likely already have a Space2Stats population
 layer and can skip this. If not, getting it is its own little side quest.
 
 There are various places to get population data. You can go to the
-Humanitarian Data Exchange — ideally looking for the group you're trying
+Humanitarian Data Exchange, ideally looking for the group you're trying
 to foster enablement for (women's census population, say), though it's
 not always there as a clean geospatial layer. Failing that, go to
 [WorldPop](https://hub.worldpop.org/). WorldPop is an open data
@@ -182,23 +183,23 @@ initiative for providing population data for around the world.
 
 Under national boundaries you can download the total population for a
 given year. But if you want more, you can also get the demographic
-breakdown — go to **Age and sex structures** and you can get individual
+breakdown: go to **Age and sex structures** and you can get individual
 countries from there.
 
 <figure markdown>
 ![WorldPop's age and sex structures dataset page for Portugal](../images/training/worldpop-age-sex-structures.jpg)
-<figcaption>WorldPop's per-country age/sex breakdowns — useful if you want to target a specific demographic, not just total population.</figcaption>
+<figcaption>WorldPop's per-country age/sex breakdowns, useful for targeting a specific demographic.</figcaption>
 </figure>
 
-The filename encodes exactly what's inside it — country code, gender, age
-band, year and resolution — so you can tell at a glance which file has,
-for example, working-age women.
+The filename encodes exactly what's inside it: country code, gender, age
+band, year and resolution. You can tell at a glance which file has, for
+example, working-age women.
 
 ## Tutorial: manual national index-score entry
 
-This class of indicators — the four Contextual-dimension factors, EPLEX
+This class of indicators (the four Contextual-dimension factors: EPLEX
 Score, Workplace Discrimination, Regulatory Frameworks and Financial
-Inclusion — is calculated using a national score. It assigns one number
+Inclusion) is calculated using a national score. It assigns one number
 to the whole dataset based on, for example, what the workplace
 discrimination environment is like. You need to do your research, find
 out for your country what level of enablement there is in the
@@ -467,7 +468,7 @@ Inclusion default score for every country in one table.
 While the table above is specific to Saint Lucia, the same kinds of
 sources exist for most countries:
 
-1. **World Bank — Women, Business and the Law (WBL)**: indices on
+1. **World Bank, Women, Business and the Law (WBL)**: indices on
    workplace discrimination, regulatory frameworks and financial
    inclusion.
 2. **ILO EPLEX**: employment protection legislation index.
@@ -490,11 +491,11 @@ sources exist for most countries:
 ### Data attribution
 
 GeoE3 pulls from whichever external datasets and services your workflow
-and inputs actually use — typically some combination of OpenStreetMap,
+and inputs actually use: typically some combination of OpenStreetMap,
 OpenRouteService, GHSL (European Commission JRC), Ookla Open Data,
 Space2Stats, ACLED and VIIRS Nighttime Lights. When you publish or share
 an analysis, check and include the attribution, citation text and
-license/terms for whichever of these you actually used — they're not all
+license/terms for whichever of these you actually used. They're not all
 the same license.
 
 !!! success "Recap"
@@ -505,8 +506,8 @@ the same license.
     - For a regional-scale project, ticking **Fetch S2S data** during
       project setup covers most of your data needs in one step.
     - For national or local-scale projects, you'll do more manual
-      sourcing — Geofabrik for OSM extracts, GADM for clean admin
+      sourcing: Geofabrik for OSM extracts, GADM for clean admin
       boundaries, HDX and WorldPop for everything else.
-    - Check data licenses before you redistribute results — GADM in
+    - Check data licenses before you redistribute results. GADM in
       particular restricts commercial/redistribution use without
       permission.

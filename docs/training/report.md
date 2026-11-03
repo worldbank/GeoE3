@@ -8,7 +8,7 @@
 
 Alongside producing all the different outputs, we also get a PDF report
 that gets produced. You can pull that up at any time by right-clicking
-the analysis node and saying **Show Analysis Report** — it will take a
+the analysis node and saying **Show Analysis Report**. It will take a
 few minutes to generate. This report is a summary of the entire
 analysis: it tries to cover the high-level results, then describe the
 methodology, and then provide some more detailed analysis results. The
@@ -50,9 +50,9 @@ out of reach, e.g. a cell with no road network access.
 ## Reading the By-Population Maps
 
 We also have a legend that's used for describing places where results
-are combined with population — high-density population with low
-enablement through to high enablement with low density of population —
-the same 15-class bivariate legend covered on [Viewing Your
+are combined with population: high-density population with low
+enablement through to high enablement with low density of population.
+It's the same 15-class bivariate legend covered on [Viewing Your
 Results](insights.md).
 
 <figure markdown>
@@ -101,7 +101,7 @@ are the same products available from **Add GeoE3 Aggregates to Map** on
 
 One other thing worth knowing: if you go into **Settings → Options →
 GeoE3**, there's a box you can tick, **Subnational score matrix**. It's
-an advanced option and it's not on by default — turning it on gets you
+an advanced option and it's not on by default. Turning it on gets you
 an additional table in the report, every region and its scoring against
 every factor, that gives you a way to visualize the economic environment
 across all the different subnational boundaries and quickly pick out
@@ -114,7 +114,7 @@ interesting factors.
 
 <figure markdown>
 ![The report's Subnational Score Matrix page: a coloured grid of admin zones x factors](../images/report/report-matrix-grid.png){ width="85%" }
-<figcaption>In this Portugal example run, one factor was red for every single region — that turned out to be a Contextual factor (Regulatory Frameworks, column 4) set to a low value for the whole country. Column 15 (FCV) sits blank throughout: no ACLED or proxy data was supplied for this run, so that factor was excluded rather than scored.</figcaption>
+<figcaption>In this Portugal example run, one factor was red for every single region. That turned out to be a Contextual factor (Regulatory Frameworks, column 4) set to a low value for the whole country. Column 15 (FCV) sits blank throughout: no ACLED or proxy data was supplied for this run, so that factor was excluded rather than scored.</figcaption>
 </figure>
 
 ## Factor Score Patterns
