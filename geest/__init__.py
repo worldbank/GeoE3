@@ -293,7 +293,7 @@ class GeoE3Plugin:
         self._remove_stale_toolbar_actions()
 
         icon = QIcon(resources_path("resources", "geoe3-main.svg"))
-        self.run_action = QAction(icon, "GeoE3 Settings", self.iface.mainWindow())
+        self.run_action = QAction(icon, "Hide GeoE3 Panel", self.iface.mainWindow())
         self.run_action.setObjectName("GeoE3RunAction")
         self.run_action.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.run_action)
