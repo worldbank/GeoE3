@@ -1327,6 +1327,7 @@ class TreePanel(QWidget):
             with open(save_path, "w") as f:
                 json.dump(json_data, f, indent=4)
             log_message(f"Saved JSON model to {save_path}")
+            self._update_run_all_button_state()
         except Exception as e:
             log_message(f"Error saving JSON: {str(e)}", level=Qgis.Critical)
 
@@ -1471,6 +1472,70 @@ class TreePanel(QWidget):
         # Force viewport repaint
         self.treeView.viewport().update()
         self.treeView.update()
+
+        self._update_run_all_button_state()
+
+    #: getStatus() values that do not block Run All - anything else
+    #: (chiefly "Required and not configured" and "Not configured
+    #: (optional)") does, since the analysis can't produce a complete
+    #: result around an indicator left in either of those states.
+    #: "Workflow failed" is allowed through deliberately, so a user can
+    #: still retry a failed run without first having to touch anything.
+    RUN_ALL_ALLOWED_STATUSES = {
+        "Configured, not run",
+        "Excluded from analysis",
+        "Completed successfully",
+        "Workflow failed",
+    }
+
+    def _collect_run_all_blockers(self):
+        """Every indicator whose status would block Run All.
+
+        Returns:
+            list[str]: Display names of the blocking indicators.
+        """
+        root_item = self.model.get_analysis_item()
+        if not root_item:
+            return []
+        blockers = []
+        for dim_idx in range(root_item.childCount()):
+            dimension = root_item.child(dim_idx)
+            if not dimension:
+                continue
+            for factor_idx in range(dimension.childCount()):
+                factor = dimension.child(factor_idx)
+                if not factor:
+                    continue
+                for indicator_idx in range(factor.childCount()):
+                    indicator = factor.child(indicator_idx)
+                    if indicator and indicator.getStatus() not in TreePanel.RUN_ALL_ALLOWED_STATUSES:
+                        blockers.append(indicator.data(0) or indicator.attribute("id", "Indicator"))
+        return blockers
+
+    def _update_run_all_button_state(self):
+        """Enable Run All only once every indicator is configured, disabled, or complete.
+
+        Surfaces which indicator(s) are blocking via a tooltip on the
+        button and the same inline warning banner used for the road
+        network issue, rather than letting the user discover a
+        half-finished run after the fact.
+        """
+        blockers = self._collect_run_all_blockers()
+        if blockers:
+            names = ", ".join(blockers)
+            self.prepare_analysis_button.setEnabled(False)
+            self.prepare_analysis_button.setText("🚫 Run all")
+            self.prepare_analysis_button.setToolTip(f"Run All is disabled - not yet configured: {names}")
+            self.show_validation_error(
+                "Analysis Not Ready",
+                f"Configure or disable the following before running: {names}.",
+            )
+        else:
+            self.prepare_analysis_button.setEnabled(True)
+            self.prepare_analysis_button.setText("▶️ Run all")
+            self.prepare_analysis_button.setToolTip("")
+            if self.warning_message_label.text().startswith("<b>Analysis Not Ready:</b>"):
+                self.hide_validation_warning()
 
     def load_json_from_file(self):
         """Prompt the user to load a JSON file and update the tree."""
@@ -2126,6 +2191,7 @@ class TreePanel(QWidget):
             item: The item to disable.
         """
         item.disable()
+        self._update_run_all_button_state()
 
     def enable_item(self, item):
         """Enable the item and its children.
@@ -2134,6 +2200,7 @@ class TreePanel(QWidget):
             item: The item to enable.
         """
         item.enable()
+        self._update_run_all_button_state()
 
     def show_attributes(self, item):
         """Show the attributes of the item in a table.

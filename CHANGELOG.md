@@ -1020,6 +1020,23 @@ version per the policy above.
   the weighted combination this same way; `queue_workflow_task()` now
   checks `is_enabled()` too.
 
+### Added
+
+- **"Run All" is now disabled until every indicator in the tree is
+  configured, disabled, or already complete.** Previously it was always
+  clickable, so a run could reach a factor/dimension aggregation with
+  some of its indicators still missing required inputs. Hovering the
+  disabled button shows which indicator(s) are blocking, and the same
+  inline banner used for the road network issue explains it too.
+  "Not configured (optional)" still blocks (every item must be one of
+  configured/disabled/complete - optional isn't a fourth option);
+  "Workflow failed" does not, so a failed run can still be retried
+  without first having to touch anything.
+  `TreePanel._collect_run_all_blockers()`/`_update_run_all_button_state()`,
+  called after `apply_women_considerations_logic()`,
+  `save_json_to_working_directory()` (covers every config dialog), and
+  the tree's Enable/Disable context menu actions.
+
 ## [2.0.6] - 2026-10-13
 
 ### Added
