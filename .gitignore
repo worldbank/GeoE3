@@ -105,6 +105,8 @@ test_osm_roads_output.xml
 # Presentation build artifacts
 docs/presentations/*.html
 docs/presentations/*.pdf
+docs/presentations/*.pptx
+docs/presentations/pdf/
 .claude
 qgis_memory_chart.png
 
