@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """Regression test for GeoE3Dock.open_associated_qgis_project().
 
-Reproduces the "dreaded network layer error": after a country pack
-import, re-opening the generated QGIS project silently overwrote the
-correctly-saved road_network_layer_path with a different layer.
+Previously reproduced the "dreaded network layer error": QgsProject.read()
+adds a project's layers one at a time, and the road network combo's
+filtered layer list (every line layer qualifies) resettled mid-load,
+auto-selecting whichever layer was current once all layers were in - firing
+road_network_layer_path_changed unblocked and silently overwriting the
+correctly-saved path with the wrong layer.
 
-Root cause - QgsProject.read() adds the project's layers one at a time.
-The road network combo's filtered layer list (every line layer
-qualifies) resettles mid-load, auto-selecting whichever layer is current
-once all layers are in. That auto-select fires
-road_network_layer_path_changed unblocked, so it silently overwrites the
-correct saved path with the wrong layer (e.g. an OSM-derived line layer
-sharing the real road network's schema).
+RoadNetworkPanel no longer has a live combo - it shows a read-only label
+and only ever emits road_network_layer_path_changed from one explicit,
+synchronous action (see _finalize_road_layer_selection()). So reading a
+QGIS project, however many decoy layers it adds along the way, can no
+longer touch road_network_layer_path at all.
 """
 import os
 import tempfile
@@ -36,9 +37,9 @@ class TestOpenAssociatedQgisProjectRoadNetworkRace(unittest.TestCase):
         self.dock = GeoE3Dock(parent=PARENT, json_file=resources_path("resources", "model.json"))
 
         self.correct_layer = QgsVectorLayer("LineString?crs=EPSG:32620", "road_network", "memory")
-        self.wrong_layer = QgsVectorLayer("LineString?crs=EPSG:4326", "Active_Transport_Network", "memory")
+        self.decoy_layer = QgsVectorLayer("LineString?crs=EPSG:4326", "Active_Transport_Network", "memory")
         self.assertTrue(self.correct_layer.isValid())
-        self.assertTrue(self.wrong_layer.isValid())
+        self.assertTrue(self.decoy_layer.isValid())
         QgsProject.instance().addMapLayer(self.correct_layer)
 
         self.analysis_item = self.dock.tree_widget.model.get_analysis_item()
@@ -53,13 +54,12 @@ class TestOpenAssociatedQgisProjectRoadNetworkRace(unittest.TestCase):
         self.dock.deleteLater()
         QgsProject.instance().clear()
 
-    def test_road_network_path_survives_a_mid_read_auto_select(self):
+    def test_road_network_path_survives_a_mid_read_decoy_layer(self):
         def fake_read(path, *args, **kwargs):
             # Simulate QGIS adding a second, schema-identical line layer
-            # mid-read, and the combo auto-selecting it as the project's
-            # layer list settles - the exact race that corrupted the model.
-            QgsProject.instance().addMapLayer(self.wrong_layer)
-            self.dock.road_network_widget.road_layer_combo.setLayer(self.wrong_layer)
+            # mid-read - the exact kind of layer that used to get
+            # auto-selected by the (now removed) road network combo.
+            QgsProject.instance().addMapLayer(self.decoy_layer)
             return True
 
         with patch.object(QgsProject.instance(), "read", side_effect=fake_read):
@@ -70,8 +70,8 @@ class TestOpenAssociatedQgisProjectRoadNetworkRace(unittest.TestCase):
             self.correct_layer.source(),
         )
         self.assertEqual(
-            self.dock.road_network_widget.road_layer_combo.currentLayer(),
-            self.correct_layer,
+            self.dock.road_network_widget.road_network_layer_path(),
+            self.correct_layer.source(),
         )
 
 

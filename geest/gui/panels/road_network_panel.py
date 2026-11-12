@@ -67,7 +67,7 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         self._reference_layer = None
         self._crs = None  # Study area CRS
         self._message_bar = None  # Will be set by parent dock
-        self._reprojected_layers = {}  # Cache: source_path -> reprojected_layer
+        self._current_layer_path = ""  # What's actually saved in model.json
         self.setupUi(self)
         log_message("Loading setup panel")
         self.initUI()
@@ -164,7 +164,7 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
             crs: Study area CRS (from study_area.gpkg, not QGIS project CRS).
         """
         self._crs = crs
-        self.update_road_layer_status()  # Re-validate with new CRS
+        self._refresh_status_label()  # Re-validate with new CRS
 
     def set_message_bar(self, message_bar):
         """⚙️ Set message bar reference.
@@ -188,10 +188,11 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         # self.folder_status_label.setPixmap(
         #     QPixmap(resources_path("resources", "icons", "failed.svg"))
         # )
-        self.road_layer_combo.setFilters(QgsMapLayerProxyModel.Filter.LineLayer)
-        self.road_layer_combo.currentIndexChanged.connect(self.emit_road_layer_change)
-        self.road_layer_combo.currentIndexChanged.connect(self.update_road_layer_status)
-        self.load_road_layer_button.clicked.connect(self.load_road_layer)
+        self.network_layer_combo.setFilters(QgsMapLayerProxyModel.Filter.LineLayer)
+        self.change_network_layer_button.clicked.connect(self.on_change_network_layer_clicked)
+        self.browse_network_layer_button.clicked.connect(self._browse_for_network_layer_file)
+        self.ok_network_layer_button.clicked.connect(self.on_network_layer_ok_clicked)
+        self.cancel_network_layer_button.clicked.connect(self.on_network_layer_cancel_clicked)
         self.download_active_transport_button.clicked.connect(self.download_active_transport_button_clicked)
         self.description.setTextFormat(Qt.TextFormat.RichText)
         self.description.linkActivated.connect(self.open_link_in_browser)
@@ -210,9 +211,7 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         self.progress_bar.setVisible(False)
         self.child_progress_bar.setVisible(False)
 
-        self.update_road_layer_status()
-
-        self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
+        self._refresh_status_label()
 
         # Start with next button disabled until a valid road layer is selected
         self._update_next_button_state()
@@ -221,126 +220,154 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         """Open the given URL in the user's default web browser using QDesktopServices."""
         QDesktopServices.openUrl(QUrl(url))
 
-    def update_road_layer_status(self):
-        """Update status icon, tooltip, and auto-reproject if CRS mismatch detected.
+    def on_change_network_layer_clicked(self):
+        """Swap the read-only label/button for the inline picker row.
 
-        Validates:
-        - Layer exists and is selected
-        - Layer is valid and can be loaded
-        - Layer CRS matches study area CRS (if study area CRS is set)
-
-        If CRS mismatch is detected for a dropdown-selected layer, automatically
-        reprojects the layer and updates the combo box selection.
-
-        Shows appropriate icon and tooltip for each validation state.
+        network_layer_combo has no signal connected to it anywhere (its
+        currentLayer() is only ever read once, on Ok) - sitting there
+        hidden the rest of the time is harmless, nothing is listening to
+        it that could write to the model on its own.
         """
-        road_layer = self.road_layer_combo.currentLayer()
+        if not self.working_directory:
+            QMessageBox.critical(self, "Error", "Open or create a GeoE3 project first.")
+            return
+        self._enter_edit_mode()
 
-        # Case 1: No layer selected
-        if not road_layer:
+    def _enter_edit_mode(self):
+        """Show the combo/browse/Ok/Cancel row, hide the read-only label/button."""
+        self.current_layer_label.setVisible(False)
+        self.change_network_layer_button.setVisible(False)
+        self.network_layer_combo.setVisible(True)
+        self.browse_network_layer_button.setVisible(True)
+        self.ok_network_layer_button.setVisible(True)
+        self.cancel_network_layer_button.setVisible(True)
+
+    def _exit_edit_mode(self):
+        """Hide the combo/browse/Ok/Cancel row, show the read-only label/button again."""
+        self.network_layer_combo.setVisible(False)
+        self.browse_network_layer_button.setVisible(False)
+        self.ok_network_layer_button.setVisible(False)
+        self.cancel_network_layer_button.setVisible(False)
+        self.current_layer_label.setVisible(True)
+        self.change_network_layer_button.setVisible(True)
+
+    def _browse_for_network_layer_file(self):
+        """Load a layer from disk and select it in the inline combo."""
+        file_dialog = QFileDialog(self)
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        file_dialog.setNameFilter("Shapefile (*.shp);;GeoPackage (*.gpkg)")
+        if not file_dialog.exec():
+            return
+
+        file_path = file_dialog.selectedFiles()[0]
+        layer_name = os.path.splitext(os.path.basename(file_path))[0]
+        layer = QgsVectorLayer(file_path, layer_name, "ogr")
+        if not layer.isValid():
+            QMessageBox.critical(self, "Error", "Could not load the selected file as a layer.")
+            return
+
+        QgsProject.instance().addMapLayer(layer)
+        self.network_layer_combo.setLayer(layer)
+
+    def on_network_layer_ok_clicked(self):
+        """Commit whatever the inline combo currently shows, then exit edit mode."""
+        layer = self.network_layer_combo.currentLayer()
+        if layer is not None:
+            self._finalize_road_layer_selection(layer)
+        self._exit_edit_mode()
+
+    def on_network_layer_cancel_clicked(self):
+        """Discard the in-progress pick and exit edit mode without committing anything."""
+        self._exit_edit_mode()
+
+    def _finalize_road_layer_selection(self, layer):
+        """Validate, reproject if needed, and commit a user-chosen road network layer.
+
+        This is the only place that emits road_network_layer_path_changed -
+        always from one explicit, synchronous action (a file pick, an OSM
+        download finishing, or the picker dialog's Ok), never from a
+        combo reacting to ambient QGIS/project signals.
+
+        Args:
+            layer: The QgsVectorLayer the user chose.
+        """
+        if QgsWkbTypes.geometryType(layer.wkbType()) != QgsWkbTypes.GeometryType.LineGeometry:
+            geometry_name = QgsWkbTypes.displayString(layer.wkbType())
+            QMessageBox.critical(
+                self,
+                "Error",
+                "Road network layer must be a line (polyline) layer.\n"
+                f"Selected file contains: {geometry_name} geometry.\n"
+                "Please select a line/polyline layer.",
+            )
+            return
+
+        final_layer, final_path = self._reproject_if_needed(layer)
+        if final_layer is None:
+            self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
+            self.layer_status_label.setToolTip("Failed to reproject the selected layer.")
+            return
+
+        self._current_layer_path = final_path
+        self._refresh_status_label()
+        self.road_network_layer_path_changed.emit(final_path)
+
+    def _reproject_if_needed(self, layer):
+        """Reproject layer to the study area CRS if needed, reusing an existing file if present.
+
+        Args:
+            layer: Source QgsVectorLayer.
+
+        Returns:
+            tuple: (final_layer, final_path) - (None, None) on failure.
+        """
+        if not self._crs or layer.crs() == self._crs:
+            return layer, layer.source()
+
+        output_name = self._generate_reprojected_filename(layer, self._crs)
+        expected_path = os.path.join(self.working_directory, "study_area", f"{output_name}.gpkg")
+        if os.path.exists(expected_path):
+            existing = QgsVectorLayer(expected_path, output_name, "ogr")
+            if existing.isValid() and existing.crs() == self._crs:
+                log_message(f"Reusing existing reprojected layer: {expected_path}", level=Qgis.Info)
+                QgsProject.instance().addMapLayer(existing)
+                return existing, existing.source()
+
+        log_message(
+            f"Road network CRS ({layer.crs().authid()}) doesn't match study area CRS "
+            f"({self._crs.authid()}). Reprojecting...",
+            level=Qgis.Info,
+        )
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
+        try:
+            success, reprojected_path, reprojected_layer = self._reproject_layer_to_file(layer, output_name=output_name)
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        if not success:
+            log_message("Failed to reproject road network layer", level=Qgis.Critical)
+            return None, None
+        return reprojected_layer, reprojected_path
+
+    def _refresh_status_label(self):
+        """Reflect self._current_layer_path in the label, icon and Next button."""
+        if not self._current_layer_path:
+            self.current_layer_label.setText("Not set")
             self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
             self.layer_status_label.setToolTip("No road network layer selected")
-        # Case 2: Layer invalid
-        elif not road_layer.isValid():
-            self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
-            self.layer_status_label.setToolTip("Layer is invalid or cannot be loaded")
-        # Case 3: No study area CRS set yet
-        elif not self._crs:
-            self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "info.svg")))
-            self.layer_status_label.setToolTip(f"Layer CRS: {road_layer.crs().authid()}")
-        # Case 4: CRS matches - all good
-        elif road_layer.crs() == self._crs:
-            self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "completed-success.svg")))
-            self.layer_status_label.setToolTip(f"✓ CRS matches study area: {self._crs.authid()}")
         else:
-            # Case 5: CRS mismatch - check if reprojected version already exists
-            existing_reprojected = self._find_existing_reprojected_layer(road_layer, self._crs)
-
-            if existing_reprojected:
-                # Use existing reprojected layer instead of creating new one
-                log_message(
-                    f"Using existing reprojected layer: {existing_reprojected.name()}",
-                    level=Qgis.Info,
-                )
-                self.road_layer_combo.blockSignals(True)
-                self.road_layer_combo.setLayer(existing_reprojected)
-                self.road_layer_combo.blockSignals(False)
-                self.layer_status_label.setPixmap(
-                    QPixmap(resources_path("resources", "icons", "completed-success.svg"))
-                )
-                self.layer_status_label.setToolTip(f"✓ Using existing reprojected layer: {existing_reprojected.name()}")
-                self.emit_road_layer_change()
-            else:
-                # Case 6: CRS mismatch - auto-reproject with unique filename
-                log_message(
-                    f"CRS mismatch detected: {road_layer.crs().authid()} != {self._crs.authid()}",
-                    level=Qgis.Warning,
-                )
-
-                # Keep red icon during reprojection
-                self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
-                self.layer_status_label.setToolTip("Reprojecting layer, please wait...")
-
-                # Set waiting cursor to indicate processing
-                QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
-                QApplication.processEvents()  # Update UI to show red icon + tooltip
-
-                try:
-                    # Perform automatic reprojection
-                    reprojected_layer = self.reproject_selected_layer(road_layer)
-
-                    if reprojected_layer:
-                        # Block signals to prevent recursion
-                        self.road_layer_combo.blockSignals(True)
-                        self.road_layer_combo.setLayer(reprojected_layer)
-                        self.road_layer_combo.blockSignals(False)
-
-                        # Update success icon
-                        self.layer_status_label.setPixmap(
-                            QPixmap(resources_path("resources", "icons", "completed-success.svg"))
-                        )
-                        self.layer_status_label.setToolTip(
-                            f"✓ Reprojected to study area CRS: {self._crs.authid()}\n"
-                            f"Saved to: study_area/road_network_reprojected.gpkg"
-                        )
-
-                        # Emit change to update saved path in model
-                        self.emit_road_layer_change()
-
-                        log_message(
-                            "Successfully reprojected road network layer",
-                            level=Qgis.Info,
-                        )
-                    else:
-                        # Reprojection failed - keep red icon with error message
-                        self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "failed.svg")))
-                        self.layer_status_label.setToolTip(
-                            f"❌ Failed to reproject layer\n"
-                            f"Layer CRS: {road_layer.crs().authid()}\n"
-                            f"Study area CRS: {self._crs.authid()}\n"
-                            f"Please select a layer in the correct CRS or reproject manually."
-                        )
-
-                finally:
-                    # Always restore cursor, even if error occurs
-                    QApplication.restoreOverrideCursor()
-
-        # Update next button state based on layer validity
+            base_path = (
+                self._current_layer_path.split("|")[0] if "|" in self._current_layer_path else self._current_layer_path
+            )
+            self.current_layer_label.setText(os.path.basename(base_path))
+            self.current_layer_label.setToolTip(self._current_layer_path)
+            self.layer_status_label.setPixmap(QPixmap(resources_path("resources", "icons", "completed-success.svg")))
+            self.layer_status_label.setToolTip(f"✓ {self._current_layer_path}")
         self._update_next_button_state()
 
-    def emit_road_layer_change(self):
-        """⚙️ Emit road layer change."""
-        road_layer = self.road_layer_combo.currentLayer()
-        if road_layer:
-            self.road_network_layer_path_changed.emit(road_layer.source())
-        else:
-            self.road_network_layer_path_changed.emit("")
-
     def _update_next_button_state(self):
-        """Enable or disable next button based on road layer validity."""
-        road_layer = self.road_layer_combo.currentLayer()
-        has_valid_layer = road_layer is not None and road_layer.isValid()
-        self.next_button.setEnabled(has_valid_layer)
+        """Enable or disable next button based on whether a road layer is set."""
+        self.next_button.setEnabled(bool(self._current_layer_path))
 
     def _generate_reprojected_filename(self, source_layer, target_crs):
         """Generate unique filename based on original layer name and target CRS.
@@ -363,39 +390,6 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         crs_suffix = target_crs.authid().replace(":", "_")
         return f"{safe_name}_reprojected_{crs_suffix}"
 
-    def _find_existing_reprojected_layer(self, source_layer, target_crs):
-        """Check if this layer has already been reprojected to target CRS.
-
-        Searches QGIS project for an existing layer that:
-        1. Has a source path containing the original layer's base name
-        2. Has a source path containing the target CRS suffix
-        3. Actually has the target CRS
-
-        Args:
-            source_layer: The original QgsVectorLayer.
-            target_crs: The target QgsCoordinateReferenceSystem.
-
-        Returns:
-            QgsVectorLayer or None: Existing reprojected layer if found, None otherwise.
-        """
-        source_path = source_layer.source()
-        source_name = os.path.splitext(os.path.basename(source_path))[0]
-        target_suffix = target_crs.authid().replace(":", "_")
-
-        for layer in QgsProject.instance().mapLayers().values():
-            if layer == source_layer:
-                continue  # Skip the source layer itself
-            layer_source = layer.source()
-            # Check if this is a reprojected version of our source
-            if source_name in layer_source and target_suffix in layer_source:
-                if layer.crs() == target_crs:
-                    log_message(
-                        f"Found existing reprojected layer: {layer.name()} ({layer_source})",
-                        level=Qgis.Info,
-                    )
-                    return layer
-        return None
-
     def on_next_button_clicked(self):
         """⚙️ On next button clicked."""
         self.switch_to_next_tab.emit()
@@ -410,14 +404,12 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         Returns:
             The result of the operation.
         """
-        if self.road_layer_combo.currentLayer() is None:
-            return None
-        return self.road_layer_combo.currentLayer().source()
+        return self._current_layer_path or None
 
     def _reproject_layer_to_file(self, source_layer, output_name="road_network_reprojected"):
         """Reproject a layer to study area CRS and save to study_area directory.
 
-        Helper method used by both load_road_layer() and reproject_selected_layer().
+        Low-level helper used by _reproject_if_needed().
 
         Args:
             source_layer: QgsVectorLayer to reproject
@@ -482,152 +474,6 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
             log_message(f"Reprojection error: {str(e)}", level=Qgis.Critical)
             return False, None, None
 
-    def load_road_layer(self):
-        """Load a road network layer from a file with auto-reprojection if needed.
-
-        If the loaded layer's CRS doesn't match the study area CRS, it will be
-        automatically reprojected and saved to working_directory/study_area/
-        with a unique filename based on the original layer name.
-        """
-        file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        file_dialog.setNameFilter("Shapefile (*.shp);;GeoPackage (*.gpkg)")
-
-        if not file_dialog.exec():
-            return
-
-        file_path = file_dialog.selectedFiles()[0]
-        layer_name = os.path.splitext(os.path.basename(file_path))[0]
-        layer = QgsVectorLayer(file_path, layer_name, "ogr")
-
-        if not layer.isValid():
-            QMessageBox.critical(self, "Error", "Could not load the road network layer.")
-            return
-
-        # Check geometry type - only accept lines (using wkbType for compatibility)
-        if QgsWkbTypes.geometryType(layer.wkbType()) != QgsWkbTypes.GeometryType.LineGeometry:
-            geometry_name = QgsWkbTypes.displayString(layer.wkbType())
-            QMessageBox.critical(
-                self,
-                "Error",
-                "Road network layer must be a line (polyline) layer.\n"
-                f"Selected file contains: {geometry_name} geometry.\n"
-                "Please select a line/polyline layer.",
-            )
-            return
-
-        # Check if reprojection is needed
-        if self._crs and layer.crs() != self._crs:
-            # Check in-memory cache first
-            source_path = layer.source()
-            if source_path in self._reprojected_layers:
-                cached = self._reprojected_layers[source_path]
-                if cached and cached.isValid() and cached.crs() == self._crs:
-                    log_message(
-                        f"Using cached reprojected layer for: {layer.name()}",
-                        level=Qgis.Info,
-                    )
-                    layer = cached
-                else:
-                    # Cache invalid, remove it
-                    del self._reprojected_layers[source_path]
-
-            # Check if reprojected layer already exists in project
-            if layer.crs() != self._crs:
-                existing = self._find_existing_reprojected_layer(layer, self._crs)
-                if existing:
-                    log_message(
-                        f"Using existing reprojected layer: {existing.name()}",
-                        level=Qgis.Info,
-                    )
-                    self._reprojected_layers[source_path] = existing
-                    layer = existing
-                else:
-                    # Need to reproject
-                    log_message(
-                        f"Road network CRS ({layer.crs().authid()}) doesn't match "
-                        f"study area CRS ({self._crs.authid()}). Auto-reprojecting...",
-                        level=Qgis.Info,
-                    )
-
-                    # Generate unique filename
-                    output_name = self._generate_reprojected_filename(layer, self._crs)
-
-                    # Use helper method for reprojection
-                    success, reprojected_path, reprojected_layer = self._reproject_layer_to_file(
-                        layer, output_name=output_name
-                    )
-
-                    if success and reprojected_layer:
-                        self._reprojected_layers[source_path] = reprojected_layer
-                        layer = reprojected_layer
-                    else:
-                        # Error already shown by helper method
-                        return
-
-        # Load layer into QGIS and select it
-        QgsProject.instance().addMapLayer(layer)
-        self.road_layer_combo.setLayer(layer)
-
-    def reproject_selected_layer(self, layer):
-        """Automatically reproject a layer selected from dropdown.
-
-        Called when user selects a layer with different CRS than study area CRS.
-        This method is triggered automatically by update_road_layer_status().
-
-        Checks for existing reprojected layers in QGIS project and in-memory cache
-        before creating new reprojection.
-
-        Args:
-            layer: QgsVectorLayer with mismatched CRS
-
-        Returns:
-            Reprojected QgsVectorLayer if successful, None if failed
-        """
-        source_path = layer.source()
-
-        # Check in-memory cache first
-        if source_path in self._reprojected_layers:
-            cached = self._reprojected_layers[source_path]
-            if cached and cached.isValid() and cached.crs() == self._crs:
-                log_message(
-                    f"Using cached reprojected layer for: {layer.name()}",
-                    level=Qgis.Info,
-                )
-                return cached
-
-        # Check if reprojected layer already exists in project
-        existing = self._find_existing_reprojected_layer(layer, self._crs)
-        if existing:
-            self._reprojected_layers[source_path] = existing
-            return existing
-
-        # Generate unique filename based on original layer name and target CRS
-        output_name = self._generate_reprojected_filename(layer, self._crs)
-
-        log_message(
-            f"Auto-reprojecting dropdown selection: {layer.name()} "
-            f"from {layer.crs().authid()} to {self._crs.authid()}",
-            level=Qgis.Info,
-        )
-
-        success, reprojected_path, reprojected_layer = self._reproject_layer_to_file(layer, output_name=output_name)
-
-        if success and reprojected_layer:
-            # Cache the reprojected layer
-            self._reprojected_layers[source_path] = reprojected_layer
-            log_message(
-                f"Successfully reprojected road network layer to {reprojected_path}",
-                level=Qgis.Info,
-            )
-            return reprojected_layer
-        else:
-            log_message(
-                "Failed to reproject road network layer",
-                level=Qgis.Critical,
-            )
-            return None
-
     def _warn_road_network_broken(self, message: str) -> None:
         """Log and surface a user-visible warning about a broken road network reference.
 
@@ -644,71 +490,35 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
             )
 
     def restore_layer_from_path(self, layer_path):
-        """Restore layer selection from saved path in model.json.
+        """Reflect a path already saved in model.json in the read-only label.
 
-        This method is called when switching to the road network panel
-        or opening an existing project to sync the UI with the saved state.
+        This only ever updates the label/icon - it never touches QGIS's
+        layer registry and never emits road_network_layer_path_changed, so
+        calling it (when switching to this panel, opening a project, or
+        after a project switch) can never write anything back.
 
         Args:
             layer_path (str): Path to road network layer (may include |layername=)
         """
         if not layer_path:
+            self._current_layer_path = ""
+            self._refresh_status_label()
             return
 
-        base_path = layer_path.split("|")[0] if "|" in layer_path else layer_path
-
-        # Case 1: Layer already loaded in QGIS - just select it
-        existing_layers = [
-            layer
+        already_loaded = any(
+            hasattr(layer, "source") and layer.source() == layer_path
             for layer in QgsProject.instance().mapLayers().values()
-            if hasattr(layer, "source") and layer.source() == layer_path
-        ]
-
-        if existing_layers:
-            # Block signals: this is restoring the UI to match data already
-            # persisted in model.json, not a new selection to write back. An
-            # unguarded setLayer() here fires currentIndexChanged -> emits
-            # road_network_layer_path_changed -> writes to the model, and
-            # when this runs during a project switch (the combo's filtered
-            # layer list still settling as QgsProject's layers change over)
-            # a stale layer from the PREVIOUS project can be "current" at
-            # that instant, overwriting the new project's own correct path
-            # with the old project's one.
-            self.road_layer_combo.blockSignals(True)
-            self.road_layer_combo.setLayer(existing_layers[0])
-            self.road_layer_combo.blockSignals(False)
-            log_message(
-                f"Restored road network from existing layer: {layer_path}",
-                level=Qgis.Info,
-            )
-            self.update_road_layer_status()
-            return
-
-        # Case 2: Layer not in QGIS - need to load from disk
-        if not os.path.exists(base_path):
-            self._warn_road_network_broken(f"Road network layer file not found: {base_path}")
-            # Clear the path from model since file doesn't exist
-            self.road_network_layer_path_changed.emit("")
-            return
-
-        # Load the layer - use filename as layer name
+        )
         base_path = layer_path.split("|")[0] if "|" in layer_path else layer_path
-        layer_name = os.path.splitext(os.path.basename(base_path))[0]
-        layer = QgsVectorLayer(layer_path, layer_name, "ogr")
-        if not layer.isValid():
-            self._warn_road_network_broken(f"Road network layer could not be loaded: {layer_path}")
-            # Clear the path from model since layer is invalid
-            self.road_network_layer_path_changed.emit("")
+        if not already_loaded and not os.path.exists(base_path):
+            self._warn_road_network_broken(f"Road network layer file not found: {base_path}")
+            self._current_layer_path = ""
+            self._refresh_status_label()
             return
 
-        # Add to QGIS and select in combo box (blockSignals: see the
-        # matching comment on the Case 1 branch above)
-        QgsProject.instance().addMapLayer(layer)
-        self.road_layer_combo.blockSignals(True)
-        self.road_layer_combo.setLayer(layer)
-        self.road_layer_combo.blockSignals(False)
-        log_message(f"Restored road network layer from path: {layer_path}", level=Qgis.Info)
-        self.update_road_layer_status()
+        self._current_layer_path = layer_path
+        self._refresh_status_label()
+        log_message(f"Restored road network display from path: {layer_path}", level=Qgis.Info)
 
     def load_reference_layer(self):
         """Load reference (admin boundary) layer from file."""
@@ -819,9 +629,9 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
             layer_name = os.path.splitext(os.path.basename(network_layer_path))[0]
             layer = QgsVectorLayer(network_layer_path_with_layer, layer_name, "ogr")
             if layer.isValid():
-                # Load the layer in QGIS and select it
+                # Load the layer in QGIS and commit it as the road network
                 QgsProject.instance().addMapLayer(layer)
-                self.road_layer_combo.setLayer(layer)
+                self._finalize_road_layer_selection(layer)
                 if self._message_bar:
                     self._message_bar.pushMessage(
                         "GEOE3",
@@ -959,11 +769,9 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
         if not layer.isValid():
             QMessageBox.critical(self, "Error", "Could not load the active transport network layer.")
             return
-        # Load the layer in QGIS
+        # Load the layer in QGIS and commit it as the road network
         QgsProject.instance().addMapLayer(layer)
-        # Select the downloaded layer in the combo so the model persists the path.
-        self.road_layer_combo.setLayer(layer)
-        self.emit_road_layer_change()
+        self._finalize_road_layer_selection(layer)
         self.progress_bar.setVisible(False)
         self.child_progress_bar.setVisible(False)
         self.enable_widgets()
@@ -1001,8 +809,11 @@ class RoadNetworkPanel(FORM_CLASS, QWidget):
 
         # log_message(f"Description Label Font Size: {font_size}")
         self.description.setFont(QFont("Arial", font_size))
-        self.description4.setFont(QFont("Arial", font_size))
         self.description6.setFont(QFont("Arial", font_size))
-        self.road_layer_combo.setFont(QFont("Arial", font_size))
-        self.load_road_layer_button.setFont(QFont("Arial", font_size))
+        self.current_layer_label.setFont(QFont("Arial", font_size))
+        self.change_network_layer_button.setFont(QFont("Arial", font_size))
+        self.network_layer_combo.setFont(QFont("Arial", font_size))
+        self.browse_network_layer_button.setFont(QFont("Arial", font_size))
+        self.ok_network_layer_button.setFont(QFont("Arial", font_size))
+        self.cancel_network_layer_button.setFont(QFont("Arial", font_size))
         self.download_active_transport_button.setFont(QFont("Arial", font_size))

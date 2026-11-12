@@ -1227,6 +1227,17 @@ class TreePanel(QWidget):
         Args:
             network_layer_path: Network layer path, or empty/None to clear it.
         """
+        if not self.working_directory:
+            self.show_validation_error(
+                "Road Network Issue",
+                "No GeoE3 project is open yet, so this selection cannot be saved. "
+                "Open or create a project, then select the road network layer again.",
+            )
+            log_message(
+                "Refusing to set road_network_layer_path - no working directory open yet.",
+                level=Qgis.Warning,
+            )
+            return
         analysis_item = self.model.rootItem.child(0)
         if network_layer_path:
             base_path = network_layer_path.split("|")[0] if "|" in network_layer_path else network_layer_path

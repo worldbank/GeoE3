@@ -15,7 +15,7 @@ single step begins.
 
 ## [Unreleased]
 
-## [2.1.0] - 2026-10-16
+## [2.1.1] - 2026-11-12
 
 Everything below accumulated on top of the last tagged release, v2.0.6;
 none of it has been released yet, so it is kept under this single pending
@@ -944,6 +944,54 @@ version per the policy above.
   `UPDATE` 27 times over. It now runs once per workflow; per-area
   rasterizing, masking, and VRT-combining (needed to keep the output raster
   sparse rather than one dense bounding-box raster) are unchanged.
+
+### Fixed
+
+- **Road network layer selection was silently lost or leaked across
+  projects.** Three related bugs, all traced from the same root cause -
+  the Road Network panel's `QgsMapLayerComboBox` lived for the whole
+  session and reacted to *any* change in QGIS's layer registry, not just
+  the user explicitly picking something:
+  - Picking a layer before a GeoE3 project was open wrote it onto the
+    in-memory default template (not the real project), then only logged
+    a warning that the save was skipped - the pick vanished the moment a
+    real project loaded. `TreePanel.set_road_network_layer_path()` now
+    refuses the write outright and shows a visible warning instead.
+  - Opening a different GeoE3 project while the previous one's layers
+    were still trickling out of the registry let the combo auto-select
+    one of them and write it into whichever project's `model.json`
+    happened to still be "current" at that instant - corrupting one
+    project's road network reference with another's layer (observed
+    live: a reprojected copy of one country's cycle-path layer ending up
+    as another's road network, silently zeroing out its Active
+    Transport/multi-buffer-point indicators).
+  - `RoadNetworkPanel.reproject_selected_layer()`'s in-memory
+    `_reprojected_layers` cache could outlive the QGIS layer it wrapped,
+    crashing with `RuntimeError: wrapped C/C++ object of type
+    QgsVectorLayer has been deleted` the next time it was consulted.
+
+  Root-caused to the always-live combo itself, so it's been replaced:
+  `RoadNetworkPanel` now shows a read-only label fed from `model.json`,
+  with a "Load / Change Network Layer" row (inline combo + browse + Ok/
+  Cancel, no popup) that only writes on an explicit Ok -
+  `_finalize_road_layer_selection()` is the only place
+  `road_network_layer_path_changed` is ever emitted from. The
+  `_reprojected_layers` cache is gone; reprojection reuse is now a
+  deterministic disk-path check scoped to the current project's own
+  `study_area/` folder instead of a QGIS-session-wide registry scan.
+- `GeoE3Dock`'s three `restore_layer_from_path()` call sites were gated
+  behind `if saved_path:`, so a project whose stored road network path
+  was genuinely empty never got that reflected in the panel - it kept
+  showing whatever the previously-viewed project's layer was. The guard
+  is removed; an empty path is now a real state the label displays.
+
+### Changed
+
+- Road Network panel layout: status badge, path label, and the
+  "Load / Change Network Layer" button (and its inline combo/Ok/Cancel
+  replacements) are centered and full-width, matching the OSM download
+  button. Dropped the redundant "Select a road network layer for the
+  study area." instruction label.
 
 ## [2.0.6] - 2026-10-13
 
