@@ -993,6 +993,23 @@ version per the policy above.
   button. Dropped the redundant "Select a road network layer for the
   study area." instruction label.
 
+### Fixed
+
+- **Active Transport Network showed "Not configured (optional)" (missing
+  the usual "Configured, not run" icon) even when properly configured.**
+  `JsonTreeItem.getStatus()`'s special-case check for this indicator only
+  recognised the `use_osm_transport_polyline_per_cell` analysis_mode
+  string, but Active Transport's actual default mode (see
+  `geest/resources/model.json`) is `use_polyline_per_cell` - the workflow
+  that runs it (`polyline_per_cell_workflow.py`) already treats both
+  modes as interchangeable, falling back through five candidate keys
+  including `road_network_layer_path`, but `getStatus()` never learned
+  that: for the real default mode it fell through to the generic
+  vector-input check, which only looks at
+  `polyline_per_cell_layer_source`/`polyline_per_cell_shapefile`, never
+  the road network fallback. `getStatus()` now checks the same candidate
+  keys the workflow does, for either mode string.
+
 ## [2.0.6] - 2026-10-13
 
 ### Added

@@ -618,12 +618,28 @@ class JsonTreeItem:
                 if not csv_file_path:
                     return "Not configured (optional)"
 
-            # Active transport can use a dedicated layer source or fallback road network path.
-            if self.isIndicator() and analysis_mode == "use_osm_transport_polyline_per_cell":
-                transport_layer_source = str(data.get("osm_transport_polyline_per_cell_layer_source", "") or "").strip()
-                transport_shapefile = str(data.get("osm_transport_polyline_per_cell_shapefile", "") or "").strip()
-                road_network_layer_path = str(data.get("road_network_layer_path", "") or "").strip()
-                if not any([transport_layer_source, transport_shapefile, road_network_layer_path]):
+            # Active transport can be configured under either analysis_mode
+            # (use_polyline_per_cell is the default - see model.json - or
+            # use_osm_transport_polyline_per_cell), via a dedicated layer
+            # source, or via the fallback road network path.
+            # polyline_per_cell_workflow.py's own candidate_keys fallback
+            # chain is the source of truth for what "configured" means here -
+            # keep this list in sync with it.
+            if self.isIndicator() and analysis_mode in (
+                "use_polyline_per_cell",
+                "use_osm_transport_polyline_per_cell",
+            ):
+                configured = any(
+                    str(data.get(key, "") or "").strip()
+                    for key in (
+                        "polyline_per_cell_layer_source",
+                        "polyline_per_cell_shapefile",
+                        "osm_transport_polyline_per_cell_layer_source",
+                        "osm_transport_polyline_per_cell_shapefile",
+                        "road_network_layer_path",
+                    )
+                )
+                if not configured:
                     return "Not configured (optional)"
 
             # Test for algs requiring vector inputs
@@ -637,6 +653,7 @@ class JsonTreeItem:
                 "use_nighttime_lights",  # Nighttime lights use raster, not vector
                 "use_s2s_urban_rural_share",  # S2S-based, joins population by H3 key
                 "use_csv_to_point_layer",  # CSV indicators use CSV file key, not vector layer keys
+                "use_polyline_per_cell",  # Active transport - checked above with its own fallback keys
                 "use_osm_transport_polyline_per_cell",  # OSM transport can use dedicated fallback keys
             ]:
                 if not data.get(qgis_layer_source_key, False) and not data.get(qgis_layer_shapefile_key, False):
