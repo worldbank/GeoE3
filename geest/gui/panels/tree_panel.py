@@ -2709,6 +2709,23 @@ class TreePanel(QWidget):
             )
             return
 
+        # apply_women_considerations_logic() only sets is_enabled() (greys out
+        # the row, hides the context menu) - it never touches analysis_mode,
+        # so without this check an EPLEX indicator stayed queued and actually
+        # ran (producing a real result) even while women's mode had it
+        # visibly disabled. aggregation_workflow_base.py already excludes
+        # disabled children from the weighted combination the same way.
+        if role == "indicator" and not item.is_enabled():
+            attributes["factor_weighting"] = 0.0
+            attributes["result"] = "Excluded from analysis"
+            attributes["result_file"] = ""
+            log_message(
+                f"Skipping {item.attribute('id')} because it is disabled.",
+                tag="GeoE3",
+                level=Qgis.Info,
+            )
+            return
+
         # Validate road network layer if needed (skip for Regional scale - uses simple buffer)
         analysis_mode = attributes.get("analysis_mode", "")
         analysis_scale = self.model.get_analysis_item().attributes().get("analysis_scale", "national")

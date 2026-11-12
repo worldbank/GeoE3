@@ -1009,6 +1009,16 @@ version per the policy above.
   `polyline_per_cell_layer_source`/`polyline_per_cell_shapefile`, never
   the road network fallback. `getStatus()` now checks the same candidate
   keys the workflow does, for either mode string.
+- **EPLEX could still run and produce a real result while women's
+  considerations were enabled**, even though it showed visibly disabled
+  in the tree. `apply_women_considerations_logic()` only flips
+  `is_enabled()` (greys the row out, hides its context menu) - it never
+  touches `analysis_mode` or weighting. `queue_workflow_task()` only
+  skipped indicators explicitly set to `"Do Not Use"`, so a
+  women's-mode-disabled EPLEX indicator was still queued and run.
+  `aggregation_workflow_base.py` already excludes disabled children from
+  the weighted combination this same way; `queue_workflow_task()` now
+  checks `is_enabled()` too.
 
 ## [2.0.6] - 2026-10-13
 
