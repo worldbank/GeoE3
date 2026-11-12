@@ -1026,16 +1026,20 @@ version per the policy above.
   configured, disabled, or already complete.** Previously it was always
   clickable, so a run could reach a factor/dimension aggregation with
   some of its indicators still missing required inputs. Hovering the
-  disabled button shows which indicator(s) are blocking, and the same
-  inline banner used for the road network issue explains it too.
+  disabled button names the blocking indicator(s), and the item info
+  panel shows the same list with each one's own actual status icon -
+  the identical icon the tree itself already shows next to it, not a
+  separate top-of-panel banner, and no action button since the fix is
+  always "open that indicator" (something the tree already offers).
   "Not configured (optional)" still blocks (every item must be one of
   configured/disabled/complete - optional isn't a fourth option);
   "Workflow failed" does not, so a failed run can still be retried
   without first having to touch anything.
   `TreePanel._collect_run_all_blockers()`/`_update_run_all_button_state()`,
-  called after `apply_women_considerations_logic()`,
-  `save_json_to_working_directory()` (covers every config dialog), and
-  the tree's Enable/Disable context menu actions.
+  `ItemInfoPanel.show_run_all_blocked()`, called after
+  `apply_women_considerations_logic()`, `save_json_to_working_directory()`
+  (covers every config dialog), and the tree's Enable/Disable context
+  menu actions.
 - "Download all resources" moved out of the Run All split button's menu
   into its own button, deliberately never gated by the Run All check
   above - downloading is often how an indicator gets configured in the

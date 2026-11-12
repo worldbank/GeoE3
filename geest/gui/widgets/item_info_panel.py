@@ -19,8 +19,8 @@ pattern anyway: a dock panel next to the controls the user is already
 looking at beats a floating label on the map.
 """
 
-from qgis.PyQt.QtCore import Qt, pyqtSignal
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtCore import Qt, QUrl, pyqtSignal
+from qgis.PyQt.QtGui import QIcon, QPixmap, QTextDocument
 from qgis.PyQt.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -649,6 +649,39 @@ class ItemInfoPanel(QWidget):
         # Same reasoning as show_item(): the tree's selection clearing
         # (e.g. the user clicking empty space) shouldn't interrupt a
         # progress display that's still showing a run in progress.
+        if self._progress_active:
+            return
+        self._show_item_page()
+
+    def show_run_all_blocked(self, blockers) -> None:
+        """Show which indicator(s) are blocking Run All, each with its own status icon.
+
+        Takes over the item page the same way clear()/show_progress() do -
+        there's nothing useful to show about a tree selection while Run
+        All is disabled, and the icon next to each name is the exact same
+        one the tree itself shows for that indicator, so the hint matches
+        what the user already sees there rather than introducing a
+        second, different way of saying "this needs attention".
+
+        Args:
+            blockers: Sequence of (name, icon_path) pairs for every
+                indicator currently blocking Run All.
+        """
+        self._current_technique_key = None
+        self._output_stops = []
+        self._current_output_index = 0
+        self._sparkline_eligible = False
+        self._active_page = 0
+        self.item_icon_label.clear()
+        self.item_heading_label.setText("Run All is disabled")
+        doc = self.item_meta_label.document()
+        rows = []
+        for i, (name, icon_path) in enumerate(blockers):
+            resource_name = f"run_all_blocker_{i}"
+            doc.addResource(QTextDocument.ResourceType.ImageResource, QUrl(resource_name), QPixmap(icon_path))
+            rows.append(f'<img src="{resource_name}" width="14" height="14"> {name}')
+        self.item_meta_label.setHtml("Not yet configured:<br>" + "<br>".join(rows))
+        self.more_link.setVisible(False)
         if self._progress_active:
             return
         self._show_item_page()

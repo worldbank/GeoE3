@@ -10,7 +10,9 @@ Run All must stay disabled while any indicator is "Required and not
 configured" or "Not configured (optional)" - the analysis can't produce
 a complete result around either. "Workflow failed" is deliberately
 allowed through, so a user can retry a failed run without first having
-to touch anything.
+to touch anything. Each blocker is shown in the item info panel with its
+own status icon - the same one the tree itself already shows for that
+indicator - not a separate top-of-panel banner.
 """
 import types
 import unittest
@@ -109,7 +111,7 @@ class TestCollectRunAllBlockers(unittest.TestCase):
 
         blockers = TreePanel._collect_run_all_blockers(self.panel)
 
-        self.assertEqual(blockers, ["Needs_Setup"])
+        self.assertEqual(blockers, [("Needs_Setup", "Required and not configured")])
 
     def test_an_optional_and_unconfigured_indicator_blocks(self):
         root = _build_tree(
@@ -119,13 +121,13 @@ class TestCollectRunAllBlockers(unittest.TestCase):
 
         blockers = TreePanel._collect_run_all_blockers(self.panel)
 
-        self.assertEqual(blockers, ["Optional_Not_Set"])
+        self.assertEqual(blockers, [("Optional_Not_Set", "Not configured (optional)")])
 
 
 class TestUpdateRunAllButtonState(unittest.TestCase):
     def setUp(self):
         self.panel = MagicMock()
-        self.panel.warning_message_label.text.return_value = ""
+        self.panel.item_info_panel.item_heading_label.text.return_value = ""
         # _update_run_all_button_state() calls self._collect_run_all_blockers()
         # internally - bind the real implementation onto the mock so that
         # resolves to actual logic instead of an auto-mocked stub.
@@ -137,9 +139,9 @@ class TestUpdateRunAllButtonState(unittest.TestCase):
         TreePanel._update_run_all_button_state(self.panel)
 
         self.panel.prepare_analysis_button.setEnabled.assert_called_once_with(True)
-        self.panel.show_validation_error.assert_not_called()
+        self.panel.item_info_panel.show_run_all_blocked.assert_not_called()
 
-    def test_blockers_disable_the_button_and_show_the_banner(self):
+    def test_blockers_disable_the_button_and_populate_the_info_panel(self):
         self.panel.model.get_analysis_item.return_value = _build_tree(
             [{"id": "Needs_Setup", "analysis_mode": "", "factor_weighting": 1.0}],
         )
@@ -147,24 +149,28 @@ class TestUpdateRunAllButtonState(unittest.TestCase):
         TreePanel._update_run_all_button_state(self.panel)
 
         self.panel.prepare_analysis_button.setEnabled.assert_called_once_with(False)
-        self.panel.show_validation_error.assert_called_once()
-        self.assertIn("Needs_Setup", self.panel.show_validation_error.call_args[0][1])
+        self.panel.item_info_panel.show_run_all_blocked.assert_called_once()
+        (icon_pairs,) = self.panel.item_info_panel.show_run_all_blocked.call_args[0]
+        self.assertEqual(len(icon_pairs), 1)
+        name, icon_path = icon_pairs[0]
+        self.assertEqual(name, "Needs_Setup")
+        self.assertTrue(icon_path.endswith("required-not-configured.svg"))
 
-    def test_clearing_blockers_hides_only_our_own_banner_message(self):
-        self.panel.warning_message_label.text.return_value = "<b>Analysis Not Ready:</b> Configure X."
+    def test_clearing_blockers_clears_only_our_own_info_panel_message(self):
+        self.panel.item_info_panel.item_heading_label.text.return_value = "Run All is disabled"
         self.panel.model.get_analysis_item.return_value = _build_tree([])
 
         TreePanel._update_run_all_button_state(self.panel)
 
-        self.panel.hide_validation_warning.assert_called_once()
+        self.panel.item_info_panel.clear.assert_called_once()
 
-    def test_clearing_blockers_leaves_an_unrelated_banner_alone(self):
-        self.panel.warning_message_label.text.return_value = "<b>Road Network Issue:</b> file not found."
+    def test_clearing_blockers_leaves_an_unrelated_selection_alone(self):
+        self.panel.item_info_panel.item_heading_label.text.return_value = "Some Selected Indicator"
         self.panel.model.get_analysis_item.return_value = _build_tree([])
 
         TreePanel._update_run_all_button_state(self.panel)
 
-        self.panel.hide_validation_warning.assert_not_called()
+        self.panel.item_info_panel.clear.assert_not_called()
 
 
 if __name__ == "__main__":

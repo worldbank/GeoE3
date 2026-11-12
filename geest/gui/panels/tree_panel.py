@@ -1492,11 +1492,22 @@ class TreePanel(QWidget):
         "Workflow failed",
     }
 
+    #: Icon file (under geest/resources/icons/) matching each blocking
+    #: status - the exact same icon JsonTreeItem.getStatusIcon() shows
+    #: next to that indicator in the tree, so the info panel's hint
+    #: matches what the user already sees there rather than introducing
+    #: a second, different way of saying "this needs attention".
+    _BLOCKER_ICON_BY_STATUS = {
+        "Required and not configured": "required-not-configured.svg",
+        "Not configured (optional)": "not-configured.svg",
+    }
+
     def _collect_run_all_blockers(self):
         """Every indicator whose status would block Run All.
 
         Returns:
-            list[str]: Display names of the blocking indicators.
+            list[tuple[str, str]]: (display name, status) for each
+            blocking indicator.
         """
         root_item = self.model.get_analysis_item()
         if not root_item:
@@ -1512,34 +1523,45 @@ class TreePanel(QWidget):
                     continue
                 for indicator_idx in range(factor.childCount()):
                     indicator = factor.child(indicator_idx)
-                    if indicator and indicator.getStatus() not in TreePanel.RUN_ALL_ALLOWED_STATUSES:
-                        blockers.append(indicator.data(0) or indicator.attribute("id", "Indicator"))
+                    if not indicator:
+                        continue
+                    status = indicator.getStatus()
+                    if status not in TreePanel.RUN_ALL_ALLOWED_STATUSES:
+                        name = indicator.data(0) or indicator.attribute("id", "Indicator")
+                        blockers.append((name, status))
         return blockers
 
     def _update_run_all_button_state(self):
         """Enable Run All only once every indicator is configured, disabled, or complete.
 
         Surfaces which indicator(s) are blocking via a tooltip on the
-        button and the same inline warning banner used for the road
-        network issue, rather than letting the user discover a
-        half-finished run after the fact.
+        button and the item info panel, each shown with its own actual
+        status icon - no separate action button, the fix is always
+        "open that indicator and configure or disable it", which the
+        tree itself already offers.
         """
         blockers = self._collect_run_all_blockers()
         if blockers:
-            names = ", ".join(blockers)
+            names = ", ".join(name for name, _ in blockers)
             self.prepare_analysis_button.setEnabled(False)
             self.prepare_analysis_button.setText("🚫 Run all")
             self.prepare_analysis_button.setToolTip(f"Run All is disabled - not yet configured: {names}")
-            self.show_validation_error(
-                "Analysis Not Ready",
-                f"Configure or disable the following before running: {names}.",
-            )
+            icon_pairs = [
+                (
+                    name,
+                    resources_path(
+                        "resources", "icons", TreePanel._BLOCKER_ICON_BY_STATUS.get(status, "unspecified.svg")
+                    ),
+                )
+                for name, status in blockers
+            ]
+            self.item_info_panel.show_run_all_blocked(icon_pairs)
         else:
             self.prepare_analysis_button.setEnabled(True)
             self.prepare_analysis_button.setText("▶️ Run all")
             self.prepare_analysis_button.setToolTip("")
-            if self.warning_message_label.text().startswith("<b>Analysis Not Ready:</b>"):
-                self.hide_validation_warning()
+            if self.item_info_panel.item_heading_label.text() == "Run All is disabled":
+                self.item_info_panel.clear()
 
     def load_json_from_file(self):
         """Prompt the user to load a JSON file and update the tree."""

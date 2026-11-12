@@ -666,5 +666,28 @@ class TestItemInfoPanelAnalysisCarouselLabels(unittest.TestCase):
         self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
 
 
+class TestShowRunAllBlocked(unittest.TestCase):
+    def setUp(self):
+        self.panel = ItemInfoPanel()
+        self.panel.show()
+
+    def test_shows_a_heading_and_one_row_per_blocker(self):
+        icon_path = resources_path("resources", "icons", "required-not-configured.svg")
+
+        self.panel.show_run_all_blocked([("Needs_Setup", icon_path), ("Also_Needs_Setup", icon_path)])
+
+        self.assertEqual(self.panel.item_heading_label.text(), "Run All is disabled")
+        html = self.panel.item_meta_label.toHtml()
+        self.assertIn("Needs_Setup", html)
+        self.assertIn("Also_Needs_Setup", html)
+
+    def test_hides_the_methodology_link(self):
+        icon_path = resources_path("resources", "icons", "required-not-configured.svg")
+
+        self.panel.show_run_all_blocked([("Needs_Setup", icon_path)])
+
+        self.assertFalse(self.panel.more_link.isVisible())
+
+
 if __name__ == "__main__":
     unittest.main()
