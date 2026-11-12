@@ -150,6 +150,7 @@ nav:
   - Home: index.md
   - Training Walkthrough:
     - training/index.md
+    - 2-Hour Workshop Guide: training/workshop.md
     - Installation: training/installation.md
     - The Interface: training/interface.md
     - The Model: training/the-model.md
