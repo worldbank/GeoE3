@@ -1048,11 +1048,11 @@ version per the policy above.
 
 ### Removed
 
-- The Help panel's embedded-docs attempt (`QWebEngineView`) is gone -
-  it only ever imported from `PyQt5.QtWebEngineWidgets`, which can't
-  succeed under this project's PyQt6/Qt6 stack, so every real run
-  already fell through to the "Open in Browser" fallback regardless.
-  The panel now always shows that button, pointed at
+- The Help panel/tab is gone. Its only remaining job was an
+  "Open in Browser" button (the embedded-docs `QWebEngineView` attempt
+  never worked under this project's PyQt6/Qt6 stack, so every real run
+  already fell through to that button regardless), so the "Help"
+  button in the tree view now opens the published docs directly:
   `https://worldbank.github.io/GeoE3/` (previously a stale
   `GEOE3/README.html` URL that only the dead embedded path used).
 

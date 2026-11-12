@@ -24,8 +24,8 @@ from qgis.core import (
 )
 from qgis.gui import QgsMessageBar
 from qgis.PyQt import sip
-from qgis.PyQt.QtCore import QModelIndex, QPoint, QSettings, Qt, QTimer, pyqtSignal, pyqtSlot
-from qgis.PyQt.QtGui import QMovie
+from qgis.PyQt.QtCore import QModelIndex, QPoint, QSettings, Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
+from qgis.PyQt.QtGui import QDesktopServices, QMovie
 from qgis.PyQt.QtWidgets import (
     QAction,
     QApplication,
@@ -74,6 +74,9 @@ from geest.gui.dialogs import (
 from geest.gui.views import JsonTreeModel, JsonTreeView
 from geest.gui.widgets import ItemInfoPanel, SolidMenu
 from geest.utilities import log_message, open_with_system_handler, resources_path, theme_stylesheet
+
+#: GeoE3's published documentation site (mkdocs, GitHub Pages).
+HELP_URL = "https://worldbank.github.io/GeoE3/"
 
 
 class TreePanel(QWidget):
@@ -331,7 +334,7 @@ class TreePanel(QWidget):
         button_bar.addWidget(self.project_button)
 
         self.help_button = QPushButton("Help")
-        self.help_button.clicked.connect(self.switch_to_next_tab)
+        self.help_button.clicked.connect(self.open_help)
         button_bar.addWidget(self.help_button)
         # The two progress bars live inside item_info_panel now (see
         # above) - aliased onto self so the ~30 existing
@@ -783,6 +786,10 @@ class TreePanel(QWidget):
         self.item_info_panel.clear()
         QSettings().setValue("geoe3/pie_data", "")
         self.switch_to_next_tab.emit()
+
+    def open_help(self):
+        """⚙️ Open the published GeoE3 documentation in the default browser."""
+        QDesktopServices.openUrl(QUrl(HELP_URL))
 
     def clear_item(self):
         """Clear the outputs for a single item (non-recursive).

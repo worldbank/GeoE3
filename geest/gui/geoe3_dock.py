@@ -18,7 +18,6 @@ from geest.core.settings import setting
 from geest.gui.panels import (
     CreateProjectPanel,
     CreditsPanel,
-    HelpPanel,
     ImportProjectPanel,
     IntroPanel,
     OpenProjectPanel,
@@ -44,8 +43,7 @@ S2S_PANEL = 5
 ORS_PANEL = 6
 ROAD_NETWORK_PANEL = 7
 TREE_PANEL = 8
-HELP_PANEL = 9
-IMPORT_PROJECT_PANEL = 10
+IMPORT_PROJECT_PANEL = 9
 
 
 class GeoE3Dock(QDockWidget):
@@ -105,7 +103,6 @@ class GeoE3Dock(QDockWidget):
         self.s2s_widget: S2SPanel = S2SPanel()
         self.ors_widget: OrsPanel = OrsPanel()
         self.tree_widget: TreePanel = TreePanel(json_file=self.json_file)
-        help_widget: HelpPanel = HelpPanel()
 
         try:
             # INTRO_PANEL = 0
@@ -276,10 +273,6 @@ class GeoE3Dock(QDockWidget):
             tree_layout.addWidget(self.tree_widget)
             self.stacked_widget.addWidget(tree_panel)
             self.tree_widget.set_message_bar(self.message_bar)  # Pass dock message bar for error notifications
-            self.tree_widget.switch_to_next_tab.connect(
-                # Switch to the next tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(HELP_PANEL)
-            )
             self.tree_widget.switch_to_network_tab.connect(
                 # Switch to the road network tab when the button is clicked
                 # This is also called from the context menu in the tree_panel
@@ -299,19 +292,7 @@ class GeoE3Dock(QDockWidget):
                 ]
             )
 
-            # HELP_PANEL = 8
-            # Create and add the "Help" panel (HelpPanel)
-            help_panel: QWidget = QWidget()
-            help_layout: QVBoxLayout = QVBoxLayout(help_panel)
-            help_layout.setContentsMargins(0, 0, 0, 0)  # Minimize padding
-            help_layout.addWidget(help_widget)
-            self.stacked_widget.addWidget(help_panel)
-            help_widget.switch_to_previous_tab.connect(
-                # Switch to the previous tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
-            )
-
-            # IMPORT_PROJECT_PANEL = 10
+            # IMPORT_PROJECT_PANEL = 9
             # Create and add the "Import Country Pack" panel
 
             import_project_panel: QWidget = QWidget()
@@ -502,8 +483,6 @@ class GeoE3Dock(QDockWidget):
         elif index == TREE_PANEL:
             log_message("Switched to Tree panel")
             # self.tree_widget.set_working_directory(self.setup_widget.working_dir)
-        elif index == HELP_PANEL:
-            log_message("Switched to Help panel")
         elif index == IMPORT_PROJECT_PANEL:
             log_message("Switched to Import Country Pack panel")
 
