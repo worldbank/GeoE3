@@ -1,0 +1,181 @@
+/* SPDX-FileCopyrightText: Kartoza
+   SPDX-License-Identifier: MIT
+
+   Marp theme for GeoE3 presentations. Colour and type values are copied
+   from docs/stylesheets/tokens.css, the single source of truth shared
+   with the mkdocs site and the plugin's own PDF reports/info panel
+   (geest/core/reports/base_report.py: NAVY, CYAN, CHARCOAL, GREY, MIST,
+   RULE). Keep the two files in sync if the palette ever changes. */
+
+/* @theme geoe3 */
+
+:root {
+  --brand-blue: #009FDA;
+  --brand-amber: #EEB348;
+  --brand-grey: #8A8B8B;
+  --text-default: #002244;
+  --text-muted: #6E7B85;
+  --rule-line: #D6DEE4;
+  --surface-cloud: #EEF4F8;
+  --surface-white: #FFFFFF;
+  --font-sans: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --status-success: #3C7D54;
+  --status-success-tint: #EAF3EC;
+  --status-warn: #EEB348;
+  --status-warn-tint: #FCF3E0;
+}
+
+section {
+  font-family: var(--font-sans);
+  color: var(--text-default);
+  background: var(--surface-white);
+  padding: 50px 64px;
+  font-size: 28px;
+  line-height: 1.45;
+}
+
+section.lead {
+  background: var(--text-default);
+  color: var(--surface-white);
+  justify-content: center;
+}
+section.lead h1 { color: var(--surface-white); }
+section.lead h2 { color: var(--brand-blue); font-weight: 600; }
+section.lead p { color: var(--surface-cloud); }
+
+section.divider {
+  background: var(--text-default);
+  color: var(--surface-white);
+  justify-content: center;
+}
+section.divider h1 {
+  color: var(--surface-white);
+  font-size: 2.2em;
+  border: none;
+}
+section.divider h1::before {
+  content: none;
+}
+section.divider .step-number {
+  color: var(--brand-blue);
+  font-size: 0.4em;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+h1 {
+  color: var(--text-default);
+  font-size: 1.6em;
+  font-weight: 800;
+  border-bottom: 4px solid var(--brand-blue);
+  padding-bottom: 0.2em;
+  margin-top: 0;
+}
+
+h2 {
+  color: var(--brand-blue);
+  font-size: 1.15em;
+  font-weight: 700;
+}
+
+h3 {
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75em;
+  letter-spacing: 0.08em;
+}
+
+a { color: var(--brand-blue); }
+
+strong { color: var(--text-default); }
+
+code {
+  font-family: var(--font-mono);
+  background: var(--surface-cloud);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+blockquote {
+  border-left: 4px solid var(--brand-amber);
+  background: var(--status-warn-tint);
+  padding: 0.6em 1em;
+  margin: 0.6em 0;
+  font-style: normal;
+}
+
+table {
+  font-size: 0.75em;
+  border-collapse: collapse;
+}
+th {
+  background: var(--text-default);
+  color: var(--surface-white);
+}
+th, td {
+  border: 1px solid var(--rule-line);
+  padding: 0.35em 0.6em;
+}
+tr:nth-child(even) td { background: var(--surface-cloud); }
+
+ol, ul { padding-left: 1em; }
+li { margin-bottom: 0.2em; }
+
+/* Paint-by-numbers step list: big numbered chips instead of bullets */
+section.steps ol {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: step;
+}
+section.steps ol li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2.2em;
+  margin-bottom: 0.55em;
+}
+section.steps ol li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.05em;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: var(--brand-blue);
+  color: var(--surface-white);
+  font-weight: 800;
+  font-size: 0.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+section.recap {
+  background: var(--status-success-tint);
+  border-top: 10px solid var(--status-success);
+}
+section.recap h1 { color: var(--status-success); border-color: var(--status-success); }
+
+header, footer {
+  color: var(--text-muted);
+  font-size: 0.42em;
+}
+footer { display: flex; align-items: center; gap: 0.5em; }
+
+section::after {
+  color: var(--text-muted);
+  font-size: 0.5em;
+}
+
+img[alt~="center"] { display: block; margin: 0 auto; }
+
+/* Figure captions under screenshots */
+section .caption {
+  color: var(--text-muted);
+  font-size: 0.55em;
+  text-align: center;
+  margin-top: -0.3em;
+}

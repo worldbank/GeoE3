@@ -4,6 +4,32 @@ This directory contains presentation materials for the GEOE3 project.
 
 ## Available Presentations
 
+### GeoE3 — From Install to Insight
+
+**File**: `geoe3-training-session.md` (theme: `geoe3-theme.css`)
+**Format**: Marp, branded with the GeoE3/Kartoza palette from
+`docs/stylesheets/tokens.css`
+**Duration**: ~2 hours, hands-on
+**Audience**: Anyone running their first full GeoE3 analysis
+
+A paint-by-numbers walkthrough of a complete GeoE3 analysis, start to
+finish: the interface, the model, getting data, configuring every
+dimension, running the analysis, and interpreting the results. Built to
+be followed along live in QGIS, not just watched.
+
+Pre-rendered exports live in `geoe3-training-session.pdf` and
+`geoe3-training-session.pptx`. Speaker notes: see
+`TRAINING-SESSION-PRESENTER-NOTES.md` below. A condensed, printable
+version of the same running order is also published in the mkdocs site
+at `docs/training/workshop.md`.
+
+**Companion videos**: `orientation-video-script.md` (13–15 min, sent
+ahead of the session — what to prepare and what to expect) and
+`review-results-video-script.md` (12–15 min, watched after a run — how
+to read the score map, the bivariate legend, the PDF report, and the
+correlation heatmap). Both are narration scripts for screen-recordings,
+not slide decks; PDF exports are in `pdf/`.
+
 ### Benchmarking and Profiling
 
 **File**: `benchmarking-and-profiling.md`
@@ -20,6 +46,27 @@ A comprehensive presentation covering:
 - Hands-on demonstrations and exercises
 
 ## Viewing the Presentations
+
+The GeoE3 training deck uses a custom theme, so pass `--theme-set`
+when building it directly:
+
+```bash
+# Generate HTML
+marp geoe3-training-session.md --theme-set geoe3-theme.css \
+  -o geoe3-training-session.html --allow-local-files
+
+# Generate PDF (point --browser-path at a local Chromium if the
+# bundled download isn't available in your environment)
+marp geoe3-training-session.md --theme-set geoe3-theme.css --pdf \
+  -o geoe3-training-session.pdf --allow-local-files
+
+# Generate PPTX
+marp geoe3-training-session.md --theme-set geoe3-theme.css --pptx \
+  -o geoe3-training-session.pptx --allow-local-files
+```
+
+For `benchmarking-and-profiling.md` (default Marp theme, no
+`--theme-set` needed):
 
 ### Option 1: Marp CLI (Recommended)
 
