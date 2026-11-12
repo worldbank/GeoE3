@@ -1046,6 +1046,16 @@ version per the policy above.
   first place, so disabling it alongside Run All would have locked the
   user out of the one action that could resolve why Run All is disabled.
 
+### Removed
+
+- The Help panel's embedded-docs attempt (`QWebEngineView`) is gone -
+  it only ever imported from `PyQt5.QtWebEngineWidgets`, which can't
+  succeed under this project's PyQt6/Qt6 stack, so every real run
+  already fell through to the "Open in Browser" fallback regardless.
+  The panel now always shows that button, pointed at
+  `https://worldbank.github.io/GeoE3/` (previously a stale
+  `GEOE3/README.html` URL that only the dead embedded path used).
+
 ## [2.0.6] - 2026-10-13
 
 ### Added
