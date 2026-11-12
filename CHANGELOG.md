@@ -1036,6 +1036,11 @@ version per the policy above.
   called after `apply_women_considerations_logic()`,
   `save_json_to_working_directory()` (covers every config dialog), and
   the tree's Enable/Disable context menu actions.
+- "Download all resources" moved out of the Run All split button's menu
+  into its own button, deliberately never gated by the Run All check
+  above - downloading is often how an indicator gets configured in the
+  first place, so disabling it alongside Run All would have locked the
+  user out of the one action that could resolve why Run All is disabled.
 
 ## [2.0.6] - 2026-10-13
 

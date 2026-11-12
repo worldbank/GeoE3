@@ -311,16 +311,20 @@ class TreePanel(QWidget):
         run_incomplete_action.triggered.connect(self.run_incomplete)
         prepare_analysis_menu.addAction(run_incomplete_action)
 
-        # Add "Download all resources" action
-        download_all_resources_action = QAction("Download all resources", self)
-        download_all_resources_action.triggered.connect(self.download_all_resources)
-        prepare_analysis_menu.addAction(download_all_resources_action)
-
         # Set the menu on the tool button
         self.prepare_analysis_button.setMenu(prepare_analysis_menu)
 
         # Add the button to the button bar
         button_bar.addWidget(self.prepare_analysis_button)
+
+        # Its own button, deliberately never gated by
+        # _update_run_all_button_state() - downloading is often how an
+        # indicator gets configured in the first place, so disabling it
+        # alongside Run All would lock the user out of the one action
+        # that could resolve why Run All is disabled.
+        self.download_all_resources_button = QPushButton("⬇️ Download all resources")
+        self.download_all_resources_button.clicked.connect(self.download_all_resources)
+        button_bar.addWidget(self.download_all_resources_button)
 
         self.project_button = QPushButton("Project")
         self.project_button.clicked.connect(self.switch_to_setup_tab)
