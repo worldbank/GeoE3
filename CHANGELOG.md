@@ -1071,20 +1071,24 @@ version per the policy above.
 - An integrity-check ontology now runs before a project is considered
   usable: on project load, before Run All, before Run Incomplete, and
   before running a single indicator. Each precondition is scoped to
-  exactly what it should block - a missing working directory, or one that can't be written to,
-  or an incomplete study area grid blocks every run outright; an unset
-  or unreachable network layer only blocks runs that actually touch an
-  indicator needing one (`use_multi_buffer_point`,
+  exactly what it should block - a missing working directory, one that
+  can't be written to, or an incomplete study area grid blocks every
+  run outright; an unset or unreachable network layer only blocks runs
+  that actually touch an indicator needing one (`use_multi_buffer_point`,
   `use_polyline_per_cell`, `use_osm_transport_polyline_per_cell`); a
   single indicator's own broken data source only skips that indicator.
   Every problem shows as a plain-language message with its own icon in
-  the info panel at the bottom of the tree - never a popup.
+  the info panel at the bottom of the tree - never a popup. The tree's
+  right-click "Run Item Workflow" action is pre-disabled (with a
+  tooltip explaining why) for exactly the same reasons, rather than
+  letting the user click it and then showing the block.
   `geest/core/integrity_checks.py` (`check_working_directory()`,
   `check_grid_completeness()`, `check_network_layer()`,
   `indicator_needs_road_network()`); wired into
-  `TreePanel._collect_integrity_problems()`/`_block_run_if_needed()`,
-  called from `working_directory_changed()`, `run_all()`,
-  `run_incomplete()`, and `run_item()`; displayed via the new
+  `TreePanel._collect_integrity_problems()`/`_block_run_if_needed()`/
+  `_run_item_action_state()`, called from `working_directory_changed()`,
+  `run_all()`, `run_incomplete()`, `run_item()`, and the context menu's
+  `update_action_text()`; displayed via the new
   `ItemInfoPanel.show_blocked()` (`show_run_all_blocked()` now delegates
   to it). A new [Troubleshooting](https://worldbank.github.io/GeoE3/troubleshooting/)
   docs page covers every scenario, each with the same icon shown in the

@@ -1679,15 +1679,18 @@ class TreePanel(QWidget):
 
         run_item_action = QAction("Run Item Workflow", self)
 
-        # If shift is pressed, change the text to "Rerun Item Workflow"
+        # If shift is pressed, change the text to "Rerun Item Workflow", and
+        # disable the action altogether if this item (or any descendant
+        # that would actually run) fails an integrity check - the exact
+        # same scope run_item() itself checks before starting, so clicking
+        # a greyed-out action is never possible in the first place.
         def update_action_text():
-            """🔄 Update action text."""
-            text = (
-                "Rerun Item Workflow"
-                if QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier
-                else "Run Item Workflow"
-            )
-            run_item_action.setText(text)
+            """🔄 Update action text and enabled state."""
+            shift_pressed = bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier)
+            run_item_action.setText("Rerun Item Workflow" if shift_pressed else "Run Item Workflow")
+            enabled, tooltip = self._run_item_action_state(item, shift_pressed)
+            run_item_action.setEnabled(enabled)
+            run_item_action.setToolTip(tooltip)
 
         # Update initially
         update_action_text()
@@ -2964,6 +2967,27 @@ class TreePanel(QWidget):
             return False
         self.item_info_panel.show_blocked(heading, "", [(p.message, p.icon) for p in problems])
         return True
+
+    def _run_item_action_state(self, item, shift_pressed: bool):
+        """Whether the context menu's "Run Item Workflow" action should be enabled for this item.
+
+        Same integrity-check scope run_item() itself would check before
+        starting - computed here too so the context menu action is
+        already disabled, rather than letting the user click it and then
+        showing why it didn't start.
+
+        Args:
+            item: The tree item the context menu was opened on.
+            shift_pressed: Whether Shift is held (a "rerun" includes
+                already-completed descendant indicators in scope; a plain
+                run doesn't).
+
+        Returns:
+            (enabled, tooltip) - tooltip is "" when enabled.
+        """
+        indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
+        problems = self._collect_integrity_problems(indicators_in_scope)
+        return not problems, "; ".join(p.message for p in problems)
 
     def run_item(self, item, shift_pressed):
         """Run the item and the ones below it.

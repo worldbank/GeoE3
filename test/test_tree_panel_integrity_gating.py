@@ -144,5 +144,58 @@ class TestRunEntryPointsRespectIntegrityBlocking(unittest.TestCase):
         self.panel.item_info_panel.show_progress.assert_called_once()
 
 
+class TestRunItemActionState(unittest.TestCase):
+    """The context menu's "Run Item Workflow" action must already be
+    disabled for an item (or any descendant) failing an integrity check -
+    not merely blocked after the user clicks it.
+    """
+
+    def setUp(self):
+        self.panel = MagicMock()
+        self.panel.working_directory = None
+        self.panel.road_network_layer_path = MagicMock(return_value=None)
+        _bind(self.panel, "_run_item_action_state", "_collect_integrity_problems")
+
+    def test_enabled_with_no_problems(self):
+        enabled, tooltip = TreePanel._run_item_action_state(
+            self.panel, _indicator("use_nighttime_lights"), shift_pressed=False
+        )
+
+        self.assertTrue(enabled)
+        self.assertEqual(tooltip, "")
+
+    def test_disabled_when_a_global_problem_exists(self):
+        self.panel.working_directory = "/does/not/exist/geoe3-integrity-test-dir"
+
+        enabled, tooltip = TreePanel._run_item_action_state(
+            self.panel, _indicator("use_nighttime_lights"), shift_pressed=False
+        )
+
+        self.assertFalse(enabled)
+        self.assertIn("no longer exists", tooltip)
+
+    def test_disabled_when_this_item_needs_the_network_layer_and_it_is_unset(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            self.panel.working_directory = tmp_dir
+
+            enabled, tooltip = TreePanel._run_item_action_state(
+                self.panel, _indicator("use_multi_buffer_point"), shift_pressed=False
+            )
+
+        self.assertFalse(enabled)
+        self.assertIn("network", tooltip.lower())
+
+    def test_enabled_when_this_item_does_not_need_the_network_layer(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            self.panel.working_directory = tmp_dir
+
+            enabled, tooltip = TreePanel._run_item_action_state(
+                self.panel, _indicator("use_nighttime_lights"), shift_pressed=False
+            )
+
+        self.assertTrue(enabled)
+        self.assertEqual(tooltip, "")
+
+
 if __name__ == "__main__":
     unittest.main()
