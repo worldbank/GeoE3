@@ -7,6 +7,7 @@ This module contains functionality for study area report.
 from qgis.core import QgsLayout, QgsProject, QgsVectorLayer
 from qgis.PyQt.QtCore import Qt
 
+from geest.core.h3_utils import h3_cell_area_km2
 from geest.utilities import log_message, resources_path
 
 from .base_report import CHARCOAL, CONTENT_W, CYAN, GREY, HEADER_H, MARGIN, MIST, NAVY, BaseReport
@@ -124,6 +125,11 @@ class StudyAreaReport(BaseReport):
             "ghsl_settlements"
         ] = """
         The Global Human Settlement Layer is used to identify settled areas within the study region. Study area polygons are marked with whether they intersect GHSL settlement data, which is used in various analysis workflows.
+        """
+        self.page_descriptions[
+            "grid_summary"
+        ] = """
+        Key facts about the study area and the analysis grid built from it.
         """
         self._cleanup_done = False
 
@@ -335,6 +341,109 @@ class StudyAreaReport(BaseReport):
             )
         return current_page + 1
 
+    def _grid_facts(self) -> list:
+        """Key facts about the study area and its analysis grid, for the closing summary page.
+
+        Everything here is read straight from the GeoPackage - area
+        names from study_area_polygons, grid type/resolution/cell size
+        from study_area_grid - so this report stays self-contained from
+        the GeoPackage alone, the same as the rest of this module,
+        rather than also needing model.json.
+
+        Returns:
+            A list of (label, value) pairs, or [] if the grid isn't
+            available.
+        """
+        grid_layer = self.layers.get("study_area_grid") if self.layers else None
+        if not grid_layer or not grid_layer.isValid():
+            return []
+        cell_count = grid_layer.featureCount()
+        if cell_count == 0:
+            return []
+
+        first_feature = next(grid_layer.getFeatures(), None)
+        field_names = {field.name() for field in grid_layer.fields()}
+        h3_resolution = None
+        if first_feature is not None and "h3_resolution" in field_names:
+            h3_resolution = first_feature["h3_resolution"]
+
+        facts = []
+
+        polygons_layer = self.layers.get("study_area_polygons") if self.layers else None
+        area_names = []
+        if polygons_layer and polygons_layer.isValid():
+            polygon_field_names = {field.name() for field in polygons_layer.fields()}
+            if "area_name" in polygon_field_names:
+                area_names = sorted({feat["area_name"] for feat in polygons_layer.getFeatures() if feat["area_name"]})
+        if area_names:
+            label = "Study area" if len(area_names) == 1 else f"Study areas ({len(area_names)})"
+            facts.append((label, ", ".join(area_names)))
+
+        facts.append(("Number of grid cells", f"{cell_count:,}"))
+
+        if h3_resolution:
+            facts.append(("Grid type", "H3 hexagonal"))
+            facts.append(("H3 resolution", str(h3_resolution)))
+            cell_area_km2 = h3_cell_area_km2(int(h3_resolution))
+            facts.append(("Average cell area", f"{cell_area_km2:,.3f} km²"))
+            facts.append(("Total analysis area", f"{cell_count * cell_area_km2:,.0f} km²"))
+        else:
+            facts.append(("Grid type", "Square"))
+            if first_feature is not None and first_feature.hasGeometry():
+                cell_size_m = first_feature.geometry().boundingBox().width()
+                facts.append(("Grid cell size", f"{cell_size_m:,.0f} m × {cell_size_m:,.0f} m"))
+                total_area_km2 = cell_count * (cell_size_m**2) / 1_000_000
+                facts.append(("Total analysis area", f"{total_area_km2:,.0f} km²"))
+
+        crs = grid_layer.crs()
+        crs_label = f"{crs.authid()} — {crs.description()}" if crs.authid() else crs.description()
+        if crs_label:
+            facts.append(("Coordinate reference system", crs_label))
+
+        return facts
+
+    def make_grid_summary_page(self, current_page: int) -> int:
+        """Add the closing page: key facts about the study area and the analysis grid.
+
+        Mirrors AnalysisReport.make_study_area_summary_page() - the two
+        reports show the same kind of "how was this built" facts, one at
+        study-area-creation time and the other after the analysis runs.
+
+        Returns:
+            The next free page number (unchanged if the page was skipped).
+        """
+        facts = self._grid_facts()
+        if not facts:
+            log_message("No grid facts available - grid summary page skipped", tag="GeoE3")
+            return current_page
+
+        self.make_page(
+            title="Grid Summary",
+            description_key="grid_summary",
+            current_page=current_page,
+            show_header_and_footer=True,
+        )
+
+        row_top = HEADER_H + 30
+        row_pitch = 14
+        for i, (label, value) in enumerate(facts):
+            y = row_top + i * row_pitch
+            if i % 2 == 0:
+                self._rect(MARGIN, y - 2, CONTENT_W, row_pitch - 2, MIST, current_page)
+            self._label(label, MARGIN + 6, y, 85, 8, current_page, size=10.5, color=GREY)
+            self._label(
+                value,
+                MARGIN + 95,
+                y,
+                CONTENT_W - 95 - 6,
+                8,
+                current_page,
+                size=11.5,
+                color=NAVY,
+                bold=True,
+            )
+        return current_page + 1
+
     def create_layout(self):
         """
         Create a QGIS layout (report) with a styled cover, credits, a summary
@@ -393,3 +502,9 @@ class StudyAreaReport(BaseReport):
                     map_height_mm=195,
                 )
             current_page += 1
+
+        # Closes the report, same as AnalysisReport's own study area
+        # summary page - key facts about the study area and the grid
+        # built from it, so a reader can judge its resolution and scope
+        # without opening the GeoPackage themselves.
+        self.make_grid_summary_page(current_page)

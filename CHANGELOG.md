@@ -1117,6 +1117,14 @@ version per the policy above.
   changed (`changed_indicator_guids`, a list of IDs) so
   `edit_factor_aggregation()` can finish clearing their on-disk state
   and invalidate their ancestors too.
+- The Study Area Creation Report now closes with a "Grid Summary" page,
+  the same kind of "how was this built" facts as the Analysis Report's
+  own closing page: study area name(s), grid cell count, grid type
+  (square or H3 hexagonal), cell size or H3 resolution/average hex
+  area, total analysis area, and coordinate reference system - read
+  straight from the GeoPackage, so this report stays self-contained
+  from it alone (no model.json dependency). `StudyAreaReport._grid_facts()`/
+  `make_grid_summary_page()`.
 
 ## [2.0.6] - 2026-10-13
 
