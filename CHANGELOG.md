@@ -1056,6 +1056,16 @@ version per the policy above.
   `https://worldbank.github.io/GeoE3/` (previously a stale
   `GEOE3/README.html` URL that only the dead embedded path used).
 
+### Fixed
+
+- Restoring a country pack bundle could leave reconstructed layers with
+  QGIS's arbitrary auto-styling instead of the pack's own style. `QgsVectorLayer.loadNamedStyle()` actually
+  returns `(errorMessage, resultFlag)`, not `(success, message)` - three
+  call sites unpacked it the wrong way round, so every real failure was
+  silently swallowed (an empty error string is falsy) and reported as a
+  success instead. Fixed in `import_country_pack_task.py`,
+  `tree_panel.py`, and `create_project_panel.py`.
+
 ## [2.0.6] - 2026-10-13
 
 ### Added

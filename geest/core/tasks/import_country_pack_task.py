@@ -204,9 +204,14 @@ class ImportCountryPackTask(QgsTask):
                     # rather than leaving QGIS's arbitrary auto-styling.
                     qml_path = result_qml_path(source.layer_name, result_roles)
                     if qml_path and os.path.exists(qml_path):
-                        success, message = layer.loadNamedStyle(qml_path)
+                        # loadNamedStyle() returns (errorMessage, resultFlag),
+                        # not (success, message) - unpacking it the other way
+                        # round meant failures were silently ignored (an
+                        # empty error string is falsy) and layers kept QGIS's
+                        # arbitrary auto-styling instead of the real one.
+                        error_message, success = layer.loadNamedStyle(qml_path)
                         if not success:
-                            log_message(f"Could not style '{source.layer_name}': {message}", tag="GeoE3")
+                            log_message(f"Could not style '{source.layer_name}': {error_message}", tag="GeoE3")
 
                     project.addMapLayer(layer, False)
                     group.addLayer(layer)

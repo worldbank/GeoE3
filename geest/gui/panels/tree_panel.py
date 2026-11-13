@@ -2574,11 +2574,15 @@ class TreePanel(QWidget):
                 continue
 
             source_qml = resources_path("resources", "qml", f"{layer_name}.qml")
-            result = layer.loadNamedStyle(source_qml)
-            if result[0]:  # loadNamedStyle returns (success, error_message)
+            # loadNamedStyle() returns (errorMessage, resultFlag), not
+            # (success, error_message) - reading it the other way round
+            # meant failures were silently ignored (an empty error string
+            # is falsy) and layers kept QGIS's arbitrary auto-styling.
+            error_message, success = layer.loadNamedStyle(source_qml)
+            if success:
                 log_message(f"Successfully applied QML style to layer '{layer_name}'")
             else:
-                log_message(f"Failed to apply QML style: {result[1]}")
+                log_message(f"Failed to apply QML style: {error_message}")
 
             # Check if a layer with the same data source exists in the correct group
             existing_layer = None
