@@ -1102,6 +1102,21 @@ version per the policy above.
   unusable too, says plainly that the data model is corrupted rather
   than guessing at a repair). `save_model_json_atomically()`,
   `load_model_json_with_repair()`.
+- Editing an analysis/factor's aggregation type, mask layer, or an
+  indicator's datasource/analysis_mode now invalidates every previously
+  computed result that depended on it - clearing on-disk outputs, the
+  grid column, and the "result"/"result_file" attributes for the item
+  edited and every ancestor whose cached aggregate included it (a
+  factor aggregated from a since-reconfigured indicator used to keep
+  showing "Completed successfully" with its old, now-wrong score).
+  Weighting-only changes still don't invalidate anything, matching how
+  re-running an indicator already only invalidates its own ancestors.
+  `TreePanel._config_fingerprint()`/`_invalidate_if_config_changed()`,
+  called from `edit_analysis_aggregation()`/`edit_dimension_aggregation()`;
+  `FactorAggregationDialog` now tracks which indicators it actually
+  changed (`changed_indicator_guids`, a list of IDs) so
+  `edit_factor_aggregation()` can finish clearing their on-disk state
+  and invalidate their ancestors too.
 
 ## [2.0.6] - 2026-10-13
 

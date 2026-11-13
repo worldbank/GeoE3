@@ -100,6 +100,11 @@ class FactorAggregationDialog(CustomBaseDialog):
             for guid in self.guids
             if self.tree_item.getItemByGuid(guid) is not None
         }
+        #: GUIDs _clear_changed_indicator_results() actually cleared -
+        #: read by the caller (TreePanel) afterwards to also clear each
+        #: one's on-disk outputs/grid column and invalidate its
+        #: ancestors, neither of which this dialog has access to.
+        self.changed_indicator_guids = []
 
         self.weighting_column_visible = len(self.guids) > 1
 
@@ -613,7 +618,13 @@ class FactorAggregationDialog(CustomBaseDialog):
         return {key: value for key, value in attributes.items() if key not in excluded_keys}
 
     def _clear_changed_indicator_results(self) -> None:
-        """Clear result state for indicators whose configuration changed in this dialog."""
+        """Clear result state for indicators whose configuration changed in this dialog.
+
+        Populates self.changed_indicator_guids so the caller can also
+        clear each one's on-disk outputs/grid column and invalidate its
+        ancestors - this method only has the in-memory model to work with.
+        """
+        self.changed_indicator_guids = []
         for guid in self.guids:
             indicator_item = self.tree_item.getItemByGuid(guid)
             if indicator_item is None:
@@ -627,6 +638,7 @@ class FactorAggregationDialog(CustomBaseDialog):
 
             if previous_normalized != current_normalized:
                 indicator_item.clear(recursive=False)
+                self.changed_indicator_guids.append(guid)
 
     def save_use_state_to_model(self) -> None:
         """Persist the Use checkbox state to indicator factor_weighting values."""

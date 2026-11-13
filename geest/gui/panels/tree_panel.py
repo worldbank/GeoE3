@@ -4,6 +4,7 @@
 This module contains functionality for tree panel.
 """
 
+import copy
 import json
 import os
 import shutil
@@ -2659,15 +2660,76 @@ class TreePanel(QWidget):
                 _ = geoe3_group.addLayer(layer)
                 log_message(f"Added layer: {layer.name()} to group: {geoe3_group.name()}")
 
+    #: Attribute keys that never affect whether a previously computed
+    #: result is still valid. Weighting is applied during aggregation,
+    #: after an indicator's own result already exists, and the rest are
+    #: the bookkeeping fields this exact invalidation logic itself
+    #: writes - a change to ONLY these never invalidates anything.
+    _WEIGHTING_AND_BOOKKEEPING_KEYS = {
+        "result",
+        "result_file",
+        "error",
+        "error_file",
+        "execution_start_time",
+        "execution_end_time",
+        "factor_weighting",
+        "default_factor_weighting",
+        "dimension_weighting",
+        "default_dimension_weighting",
+        "analysis_weighting",
+        "default_analysis_weighting",
+    }
+
+    @staticmethod
+    def _config_fingerprint(attributes: dict) -> dict:
+        """Attributes relevant to whether a previously computed result is still valid.
+
+        Besides the weighting/bookkeeping exclusions, drops any key
+        holding an empty-ish value (None/""/0/"None"/"none") - several
+        config dialogs unconditionally rewrite radio-button-backed
+        fields (e.g. AnalysisAggregationDialog's mask_mode) on every OK
+        click regardless of whether the user touched them, so a key
+        that was simply absent before must fingerprint the same as that
+        key now explicitly present with its default/empty value - never
+        as "the configuration changed".
+
+        Args:
+            attributes: An item's attributes() dict.
+
+        Returns:
+            The subset relevant to result validity.
+        """
+        empty_values = (None, "", 0, 0.0, "None", "none")
+        return {
+            key: value
+            for key, value in attributes.items()
+            if key not in TreePanel._WEIGHTING_AND_BOOKKEEPING_KEYS and value not in empty_values
+        }
+
+    def _invalidate_if_config_changed(self, item, previous_attributes: dict) -> None:
+        """Clear item's outputs and invalidate its ancestors if its own config changed since previous_attributes.
+
+        Args:
+            item: The tree item whose dialog just closed.
+            previous_attributes: A deep copy of item.attributes() taken
+                before the dialog was opened.
+        """
+        if self._config_fingerprint(previous_attributes) == self._config_fingerprint(item.attributes()):
+            return
+        self._clear_single_item_outputs(item)
+        item.invalidateAncestors()
+
     def edit_analysis_aggregation(self, analysis_item):
         """Open the AnalysisAggregationDialog for editing the weightings of factors in the analysis.
 
         Args:
             analysis_item: The analysis item to edit.
         """
+        previous_attributes = copy.deepcopy(analysis_item.attributes())
         dialog = AnalysisAggregationDialog(analysis_item, parent=self)
         if dialog.exec():  # If OK was clicked
             dialog.saveWeightingsToModel()
+            self._invalidate_if_config_changed(analysis_item, previous_attributes)
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def edit_dimension_aggregation(self, dimension_item):
@@ -2676,6 +2738,7 @@ class TreePanel(QWidget):
         Args:
             dimension_item: The dimension item to edit.
         """
+        previous_attributes = copy.deepcopy(dimension_item.attributes())
         dimension_name = dimension_item.data(0)
         dimension_data = dimension_item.attributes()
         if not dimension_data:
@@ -2683,6 +2746,7 @@ class TreePanel(QWidget):
         dialog = DimensionAggregationDialog(dimension_name, dimension_data, dimension_item, parent=self)
         if dialog.exec():  # If OK was clicked
             dialog.saveWeightingsToModel()
+            self._invalidate_if_config_changed(dimension_item, previous_attributes)
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def edit_factor_aggregation(self, factor_item, selected_guids=None):
@@ -2705,6 +2769,17 @@ class TreePanel(QWidget):
         )
         if dialog.exec():  # If OK was clicked
             dialog.save_weightings_to_model()
+            # The dialog already cleared each changed indicator's
+            # in-memory result (_clear_changed_indicator_results()) -
+            # finish the job with the on-disk outputs/grid column it
+            # can't reach from there, and invalidate every ancestor
+            # whose cached aggregate included that indicator's old
+            # result.
+            for guid in dialog.changed_indicator_guids:
+                indicator_item = factor_item.getItemByGuid(guid)
+                if indicator_item is not None:
+                    self._clear_single_item_outputs(indicator_item)
+                    indicator_item.invalidateAncestors()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def start_workflows(self, workflow_type=None):
