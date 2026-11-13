@@ -667,20 +667,50 @@ class ItemInfoPanel(QWidget):
             blockers: Sequence of (name, icon_path) pairs for every
                 indicator currently blocking Run All.
         """
+        self.show_blocked("Run All is disabled", "Not yet configured:", blockers)
+
+    def _icon_rows_html(self, rows) -> str:
+        """Render (text, icon_path) pairs as "<img> text" lines, each icon embedded as its own resource.
+
+        Args:
+            rows: Sequence of (text, icon_path) pairs.
+
+        Returns:
+            HTML, one `<img> text` line per row, "<br>"-separated.
+        """
+        doc = self.item_meta_label.document()
+        lines = []
+        for i, (text, icon_path) in enumerate(rows):
+            resource_name = f"info_panel_row_{i}"
+            doc.addResource(QTextDocument.ResourceType.ImageResource, QUrl(resource_name), QPixmap(icon_path))
+            lines.append(f'<img src="{resource_name}" width="14" height="14"> {text}')
+        return "<br>".join(lines)
+
+    def show_blocked(self, heading: str, intro: str, rows) -> None:
+        """Show a list of problems, each with its own icon, in place of the item page.
+
+        Used both for Run All's own configuredness blockers and for the
+        integrity-check ontology (missing/unwritable working directory,
+        incomplete study area grid, unset network layer, a corrupted
+        model.json) - every "this can't run until you fix X" message in
+        the app funnels through here rather than a popup or a top-of-
+        panel banner, so the user only ever has one place to look.
+
+        Args:
+            heading: Replaces the usual item heading (e.g. "Run All is
+                disabled", "This project needs attention").
+            intro: One line introducing the list below it (can be "").
+            rows: Sequence of (message, icon_path) pairs.
+        """
         self._current_technique_key = None
         self._output_stops = []
         self._current_output_index = 0
         self._sparkline_eligible = False
         self._active_page = 0
         self.item_icon_label.clear()
-        self.item_heading_label.setText("Run All is disabled")
-        doc = self.item_meta_label.document()
-        rows = []
-        for i, (name, icon_path) in enumerate(blockers):
-            resource_name = f"run_all_blocker_{i}"
-            doc.addResource(QTextDocument.ResourceType.ImageResource, QUrl(resource_name), QPixmap(icon_path))
-            rows.append(f'<img src="{resource_name}" width="14" height="14"> {name}')
-        self.item_meta_label.setHtml("Not yet configured:<br>" + "<br>".join(rows))
+        self.item_heading_label.setText(heading)
+        rows_html = self._icon_rows_html(rows)
+        self.item_meta_label.setHtml(f"{intro}<br>{rows_html}" if intro else rows_html)
         self.more_link.setVisible(False)
         if self._progress_active:
             return

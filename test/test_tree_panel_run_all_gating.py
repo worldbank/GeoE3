@@ -128,10 +128,21 @@ class TestUpdateRunAllButtonState(unittest.TestCase):
     def setUp(self):
         self.panel = MagicMock()
         self.panel.item_info_panel.item_heading_label.text.return_value = ""
+        # No working directory/network path set up for these tests - every
+        # integrity check below returns [] (check_working_directory(None),
+        # check_grid_completeness(None) etc. are no-ops with no project
+        # open), so these tests exercise only the pre-existing
+        # configuredness-blocker behaviour. See
+        # test_tree_panel_integrity_gating.py for the integrity-problem
+        # side of this method.
+        self.panel.working_directory = None
+        self.panel.road_network_layer_path = MagicMock(return_value=None)
         # _update_run_all_button_state() calls self._collect_run_all_blockers()
-        # internally - bind the real implementation onto the mock so that
-        # resolves to actual logic instead of an auto-mocked stub.
+        # and self._collect_integrity_problems() internally - bind the real
+        # implementations onto the mock so they resolve to actual logic
+        # instead of an auto-mocked stub.
         self.panel._collect_run_all_blockers = types.MethodType(TreePanel._collect_run_all_blockers, self.panel)
+        self.panel._collect_integrity_problems = types.MethodType(TreePanel._collect_integrity_problems, self.panel)
 
     def test_no_blockers_enables_the_button(self):
         self.panel.model.get_analysis_item.return_value = _build_tree([])
@@ -139,7 +150,7 @@ class TestUpdateRunAllButtonState(unittest.TestCase):
         TreePanel._update_run_all_button_state(self.panel)
 
         self.panel.prepare_analysis_button.setEnabled.assert_called_once_with(True)
-        self.panel.item_info_panel.show_run_all_blocked.assert_not_called()
+        self.panel.item_info_panel.show_blocked.assert_not_called()
 
     def test_blockers_disable_the_button_and_populate_the_info_panel(self):
         self.panel.model.get_analysis_item.return_value = _build_tree(
@@ -149,10 +160,12 @@ class TestUpdateRunAllButtonState(unittest.TestCase):
         TreePanel._update_run_all_button_state(self.panel)
 
         self.panel.prepare_analysis_button.setEnabled.assert_called_once_with(False)
-        self.panel.item_info_panel.show_run_all_blocked.assert_called_once()
-        (icon_pairs,) = self.panel.item_info_panel.show_run_all_blocked.call_args[0]
-        self.assertEqual(len(icon_pairs), 1)
-        name, icon_path = icon_pairs[0]
+        self.panel.item_info_panel.show_blocked.assert_called_once()
+        heading, intro, rows = self.panel.item_info_panel.show_blocked.call_args[0]
+        self.assertEqual(heading, "Run All is disabled")
+        self.assertEqual(intro, "Not yet configured:")
+        self.assertEqual(len(rows), 1)
+        name, icon_path = rows[0]
         self.assertEqual(name, "Needs_Setup")
         self.assertTrue(icon_path.endswith("required-not-configured.svg"))
 

@@ -689,5 +689,45 @@ class TestShowRunAllBlocked(unittest.TestCase):
         self.assertFalse(self.panel.more_link.isVisible())
 
 
+class TestShowBlocked(unittest.TestCase):
+    """show_blocked() is the general-purpose version show_run_all_blocked()
+    now delegates to - used for the integrity-check ontology (grid/network/
+    working-directory/model.json problems), not just Run All gating.
+    """
+
+    def setUp(self):
+        self.panel = ItemInfoPanel()
+        self.panel.show()
+
+    def test_shows_the_given_heading_and_intro_and_one_row_per_problem(self):
+        icon_path = resources_path("resources", "icons", "integrity-grid-incomplete.svg")
+
+        self.panel.show_blocked(
+            "This project needs attention",
+            "Before you can run anything:",
+            [("Your study area grid is not complete.", icon_path)],
+        )
+
+        self.assertEqual(self.panel.item_heading_label.text(), "This project needs attention")
+        html = self.panel.item_meta_label.toHtml()
+        self.assertIn("Before you can run anything:", html)
+        self.assertIn("Your study area grid is not complete.", html)
+
+    def test_empty_intro_omits_the_intro_line(self):
+        icon_path = resources_path("resources", "icons", "integrity-network-layer.svg")
+
+        self.panel.show_blocked("Can't run this indicator", "", [("Your network layer is not set.", icon_path)])
+
+        html = self.panel.item_meta_label.toHtml()
+        self.assertIn("Your network layer is not set.", html)
+
+    def test_hides_the_methodology_link(self):
+        icon_path = resources_path("resources", "icons", "integrity-model-corrupt.svg")
+
+        self.panel.show_blocked("Heading", "", [("message", icon_path)])
+
+        self.assertFalse(self.panel.more_link.isVisible())
+
+
 if __name__ == "__main__":
     unittest.main()

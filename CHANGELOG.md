@@ -15,7 +15,7 @@ single step begins.
 
 ## [Unreleased]
 
-## [2.1.1] - 2026-11-12
+## [2.2.0] - 2026-11-13
 
 Everything below accumulated on top of the last tagged release, v2.0.6;
 none of it has been released yet, so it is kept under this single pending
@@ -1065,6 +1065,39 @@ version per the policy above.
   silently swallowed (an empty error string is falsy) and reported as a
   success instead. Fixed in `import_country_pack_task.py`,
   `tree_panel.py`, and `create_project_panel.py`.
+
+### Added
+
+- An integrity-check ontology now runs before a project is considered
+  usable: on project load, before Run All, before Run Incomplete, and
+  before running a single indicator. Each precondition is scoped to
+  exactly what it should block - a missing working directory, or one that can't be written to,
+  or an incomplete study area grid blocks every run outright; an unset
+  or unreachable network layer only blocks runs that actually touch an
+  indicator needing one (`use_multi_buffer_point`,
+  `use_polyline_per_cell`, `use_osm_transport_polyline_per_cell`); a
+  single indicator's own broken data source only skips that indicator.
+  Every problem shows as a plain-language message with its own icon in
+  the info panel at the bottom of the tree - never a popup.
+  `geest/core/integrity_checks.py` (`check_working_directory()`,
+  `check_grid_completeness()`, `check_network_layer()`,
+  `indicator_needs_road_network()`); wired into
+  `TreePanel._collect_integrity_problems()`/`_block_run_if_needed()`,
+  called from `working_directory_changed()`, `run_all()`,
+  `run_incomplete()`, and `run_item()`; displayed via the new
+  `ItemInfoPanel.show_blocked()` (`show_run_all_blocked()` now delegates
+  to it). A new [Troubleshooting](https://worldbank.github.io/GeoE3/troubleshooting/)
+  docs page covers every scenario, each with the same icon shown in the
+  app.
+- `model.json` saves are now atomic (write to a temp file, then rename
+  into place) and keep a backup of the previous good copy
+  (`model.json.bak`) - a crash mid-write used to be able to leave a
+  truncated `model.json` that can't be parsed, with nothing to recover from. If
+  the primary file is ever found corrupted on load, GeoE3 now restores
+  the backup automatically and tells you so (and if the backup is
+  unusable too, says plainly that the data model is corrupted rather
+  than guessing at a repair). `save_model_json_atomically()`,
+  `load_model_json_with_repair()`.
 
 ## [2.0.6] - 2026-10-13
 

@@ -61,6 +61,13 @@ from geest.core.analysis_outputs import ANALYSIS_OUTPUT_STOPS
 from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD
 from geest.core.country_pack import all_sources
 from geest.core.i18n import tr
+from geest.core.integrity_checks import (
+    check_grid_completeness,
+    check_network_layer,
+    check_working_directory,
+    load_model_json_with_repair,
+    save_model_json_atomically,
+)
 from geest.core.reports import AnalysisReport, StudyAreaReport
 from geest.core.settings import set_setting, setting
 from geest.core.tasks import AnalysisReportTask, CountryPackTask
@@ -1125,6 +1132,16 @@ class TreePanel(QWidget):
         # Collapse any factors that have only a single indicator
         self.treeView.collapse_single_nodes()
 
+        # load_json() may have had to repair model.json from its backup -
+        # a one-time, non-blocking notice (no button is disabled for it),
+        # shown here so the user sees it without having to click anything.
+        load_problems = getattr(self, "_model_load_problems", [])
+        if load_problems:
+            self.item_info_panel.show_blocked(
+                "Your project needed repair", "", [(p.message, p.icon) for p in load_problems]
+            )
+        self._update_run_all_button_state()
+
     def check_study_area_gpkg_health(self, reason: str = "") -> None:
         """Run a GeoPackage health check (with in-place self-heal) in the background.
 
@@ -1333,20 +1350,19 @@ class TreePanel(QWidget):
             return
         try:
             json_data = self.model.to_json()
-
             save_path = os.path.join(self.working_directory, "model.json")
-            with open(save_path, "w") as f:
-                json.dump(json_data, f, indent=4)
+            save_model_json_atomically(save_path, json_data)
             log_message(f"Saved JSON model to {save_path}")
             self._update_run_all_button_state()
         except Exception as e:
             log_message(f"Error saving JSON: {str(e)}", level=Qgis.Critical)
 
     def load_json(self):
-        """Load the JSON data from the file."""
-        with open(self.json_file, "r") as f:
-            self.json_data = json.load(f)
-            log_message(f"Loaded JSON data from {self.json_file}")
+        """Load the JSON data from the file, repairing from its backup if the file is corrupted."""
+        self.json_data, self._model_load_problems = load_model_json_with_repair(self.json_file)
+        if self.json_data is None:
+            raise ValueError(f"Could not load or repair {self.json_file}")
+        log_message(f"Loaded JSON data from {self.json_file}")
 
     def reload_and_apply_women_considerations_logic(self):
         """Reload model.json and apply women considerations logic.
@@ -1538,8 +1554,34 @@ class TreePanel(QWidget):
                         blockers.append((name, status))
         return blockers
 
+    def _collect_integrity_problems(self, indicator_items):
+        """Preconditions that block any run outright - the working directory, the
+        study area grid, and (only when something in scope actually needs it)
+        the network layer.
+
+        Separate from _collect_run_all_blockers() (per-indicator
+        configuredness) since these apply regardless of whether any
+        indicator is individually "configured" - a broken grid or an
+        unwritable folder blocks everything, not just Run All.
+
+        Args:
+            indicator_items: JsonTreeItem indicators in scope for this run
+                (used only for the network-layer check - whether any of
+                them actually needs it).
+
+        Returns:
+            list[Problem]: see geest.core.integrity_checks.
+        """
+        return (
+            check_working_directory(self.working_directory)
+            + check_grid_completeness(self.working_directory)
+            + check_network_layer(self.road_network_layer_path(), [item.attributes() for item in indicator_items])
+        )
+
     def _update_run_all_button_state(self):
-        """Enable Run All only once every indicator is configured, disabled, or complete.
+        """Enable Run All only once every indicator is configured, disabled, or complete,
+        and nothing more fundamental (working directory, study area grid, network
+        layer) is blocking every run outright.
 
         Surfaces which indicator(s) are blocking via a tooltip on the
         button and the item info panel, each shown with its own actual
@@ -1547,22 +1589,33 @@ class TreePanel(QWidget):
         "open that indicator and configure or disable it", which the
         tree itself already offers.
         """
-        blockers = self._collect_run_all_blockers()
-        if blockers:
-            names = ", ".join(name for name, _ in blockers)
+        root_item = self.model.get_analysis_item()
+        indicator_items = (
+            root_item.getDescendantIndicators(include_completed=True, include_disabled=False) if root_item else []
+        )
+        integrity_problems = self._collect_integrity_problems(indicator_items)
+        configuredness_blockers = self._collect_run_all_blockers()
+        if integrity_problems or configuredness_blockers:
+            names = ", ".join(name for name, _ in configuredness_blockers)
             self.prepare_analysis_button.setEnabled(False)
             self.prepare_analysis_button.setText("🚫 Run all")
-            self.prepare_analysis_button.setToolTip(f"Run All is disabled - not yet configured: {names}")
-            icon_pairs = [
+            reasons = [p.message for p in integrity_problems]
+            if names:
+                reasons.append(f"not yet configured: {names}")
+            self.prepare_analysis_button.setToolTip("Run All is disabled - " + "; ".join(reasons))
+            rows = [(p.message, p.icon) for p in integrity_problems]
+            rows += [
                 (
                     name,
                     resources_path(
                         "resources", "icons", TreePanel._BLOCKER_ICON_BY_STATUS.get(status, "unspecified.svg")
                     ),
                 )
-                for name, status in blockers
+                for name, status in configuredness_blockers
             ]
-            self.item_info_panel.show_run_all_blocked(icon_pairs)
+            self.item_info_panel.show_blocked(
+                "Run All is disabled", "Not yet configured:" if configuredness_blockers else "", rows
+            )
         else:
             self.prepare_analysis_button.setEnabled(True)
             self.prepare_analysis_button.setText("▶️ Run all")
@@ -2890,6 +2943,28 @@ class TreePanel(QWidget):
         # Hook up the status message signal to the status label
         task.status_message.connect(self.task_status_updated)
 
+    def _block_run_if_needed(self, indicator_items, heading) -> bool:
+        """Check integrity preconditions before a run starts, showing why in the info panel if blocked.
+
+        Called before Run All, Run Incomplete, and a single-item run -
+        before any of them shows the progress UI, so a blocked run never
+        gets as far as starting at all.
+
+        Args:
+            indicator_items: JsonTreeItem indicators in scope for this run
+                (only used for the network-layer check).
+            heading: Info panel heading to show if blocked.
+
+        Returns:
+            True if the run must not start (the info panel already
+            explains why); False if it's clear to proceed.
+        """
+        problems = self._collect_integrity_problems(indicator_items)
+        if not problems:
+            return False
+        self.item_info_panel.show_blocked(heading, "", [(p.message, p.icon) for p in problems])
+        return True
+
     def run_item(self, item, shift_pressed):
         """Run the item and the ones below it.
 
@@ -2901,6 +2976,10 @@ class TreePanel(QWidget):
             shift_pressed (bool): Whether the shift key is pressed.
 
         """
+        indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
+        if self._block_run_if_needed(indicators_in_scope, f"Can't run '{item.data(0)}'"):
+            return
+
         self.items_to_run = 0
         self.workflow_scope_item = item
         self._open_report_when_done = False
@@ -3523,8 +3602,16 @@ class TreePanel(QWidget):
         # Assuming column 1 is where status updates are shown
         item.setData(1, status)
 
+    def _all_indicators(self, include_completed: bool):
+        root_item = self.model.get_analysis_item()
+        if not root_item:
+            return []
+        return root_item.getDescendantIndicators(include_completed=include_completed, include_disabled=False)
+
     def run_all(self):
         """Run all workflows in the tree, regardless of their status."""
+        if self._block_run_if_needed(self._all_indicators(include_completed=True), "Can't run all"):
+            return
         self.run_only_incomplete = False
         self.workflow_scope_item = None
         self._open_report_when_done = True
@@ -3539,6 +3626,8 @@ class TreePanel(QWidget):
         It iterates over the entire tree, collecting nodes with the 'indicator' role, and
         processes each one whilst showing an animated icon.
         """
+        if self._block_run_if_needed(self._all_indicators(include_completed=False), "Can't run incomplete indicators"):
+            return
         self.run_only_incomplete = True
         self.workflow_scope_item = None
         self._open_report_when_done = False
