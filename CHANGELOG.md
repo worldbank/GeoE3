@@ -1126,6 +1126,18 @@ version per the policy above.
   from it alone (no model.json dependency). `StudyAreaReport._grid_facts()`/
   `make_grid_summary_page()`.
 
+### Fixed
+
+- Restoring a country pack bundle showed internal technical keys in the
+  QGIS legend instead of the original project's layer names (an
+  indicator's `id` slug, a fixed project-level key like `road_network`,
+  or a `{id}_result` key) - `model.json` already carries the original
+  title next to each key (an indicator's `indicator` field, a
+  factor/dimension's `name` field, or a project-level input's own
+  tracked `{prefix}_layer_name`), it just wasn't being read for the
+  legend. `layer_display_names()` in `country_pack_import.py`, used by
+  `ImportCountryPackTask._load_layers_into_project()`.
+
 ## [2.0.6] - 2026-10-13
 
 ### Added

@@ -17,6 +17,7 @@ from geest.core.country_pack_import import (
     _indicator_import_targets,
     _project_level_import_targets,
     import_country_pack,
+    layer_display_names,
     result_layer_roles,
     result_qml_path,
     sync_layer_metadata_fields,
@@ -146,6 +147,7 @@ class ImportCountryPackTask(QgsTask):
         indicator_targets = _indicator_import_targets(model, self.pack_path)
         project_targets = _project_level_import_targets(model)
         result_roles = result_layer_roles(model)
+        display_names = layer_display_names(model, indicator_targets, project_targets)
 
         # Names it after the destination folder rather than the country
         # (unlike build_country_pack()'s *_geoe3.gpkg) - the admin0 name
@@ -179,8 +181,15 @@ class ImportCountryPackTask(QgsTask):
         for group, sources in grouped_sources:
             for source in sources:
                 try:
+                    # source.layer_name stays the pack's internal/table key
+                    # throughout (qml_path lookup, indicator_targets/
+                    # project_targets lookup below) - display_name is only
+                    # ever used for what the legend actually shows, so the
+                    # original project's layer names come back instead of
+                    # that technical key.
+                    display_name = display_names.get(source.layer_name, source.layer_name)
                     if source.kind == "raster":
-                        layer = QgsRasterLayer(source.path, source.layer_name)
+                        layer = QgsRasterLayer(source.path, display_name)
                     elif source.kind == "csv":
                         # file:// URIs need an absolute path - source.path is
                         # normally already absolute (working_directory comes
@@ -190,9 +199,9 @@ class ImportCountryPackTask(QgsTask):
                             f"file:///{quote(os.path.abspath(source.path))}?type=csv&delimiter=,"
                             f"&xField={source.x_field}&yField={source.y_field}&crs=EPSG:4326"
                         )
-                        layer = QgsVectorLayer(uri, source.layer_name, "delimitedtext")
+                        layer = QgsVectorLayer(uri, display_name, "delimitedtext")
                     else:
-                        layer = QgsVectorLayer(source.path, source.layer_name, "ogr")
+                        layer = QgsVectorLayer(source.path, display_name, "ogr")
                     if not layer.isValid():
                         log_message(f"Skipping invalid layer '{source.layer_name}' ({source.path})", tag="GeoE3")
                         continue
