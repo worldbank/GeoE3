@@ -15,7 +15,7 @@ single step begins.
 
 ## [Unreleased]
 
-## [2.1.0] - 2026-10-16
+## [2.2.0] - 2026-11-13
 
 Everything below accumulated on top of the last tagged release, v2.0.6;
 none of it has been released yet, so it is kept under this single pending
@@ -944,6 +944,187 @@ version per the policy above.
   `UPDATE` 27 times over. It now runs once per workflow; per-area
   rasterizing, masking, and VRT-combining (needed to keep the output raster
   sparse rather than one dense bounding-box raster) are unchanged.
+
+### Fixed
+
+- **Road network layer selection was silently lost or leaked across
+  projects.** Three related bugs, all traced from the same root cause -
+  the Road Network panel's `QgsMapLayerComboBox` lived for the whole
+  session and reacted to *any* change in QGIS's layer registry, not just
+  the user explicitly picking something:
+  - Picking a layer before a GeoE3 project was open wrote it onto the
+    in-memory default template (not the real project), then only logged
+    a warning that the save was skipped - the pick vanished the moment a
+    real project loaded. `TreePanel.set_road_network_layer_path()` now
+    refuses the write outright and shows a visible warning instead.
+  - Opening a different GeoE3 project while the previous one's layers
+    were still trickling out of the registry let the combo auto-select
+    one of them and write it into whichever project's `model.json`
+    happened to still be "current" at that instant - corrupting one
+    project's road network reference with another's layer (observed
+    live: a reprojected copy of one country's cycle-path layer ending up
+    as another's road network, silently zeroing out its Active
+    Transport/multi-buffer-point indicators).
+  - `RoadNetworkPanel.reproject_selected_layer()`'s in-memory
+    `_reprojected_layers` cache could outlive the QGIS layer it wrapped,
+    crashing with `RuntimeError: wrapped C/C++ object of type
+    QgsVectorLayer has been deleted` the next time it was consulted.
+
+  Root-caused to the always-live combo itself, so it's been replaced:
+  `RoadNetworkPanel` now shows a read-only label fed from `model.json`,
+  with a "Load / Change Network Layer" row (inline combo + browse + Ok/
+  Cancel, no popup) that only writes on an explicit Ok -
+  `_finalize_road_layer_selection()` is the only place
+  `road_network_layer_path_changed` is ever emitted from. The
+  `_reprojected_layers` cache is gone; reprojection reuse is now a
+  deterministic disk-path check scoped to the current project's own
+  `study_area/` folder instead of a QGIS-session-wide registry scan.
+- `GeoE3Dock`'s three `restore_layer_from_path()` call sites were gated
+  behind `if saved_path:`, so a project whose stored road network path
+  was genuinely empty never got that reflected in the panel - it kept
+  showing whatever the previously-viewed project's layer was. The guard
+  is removed; an empty path is now a real state the label displays.
+
+### Changed
+
+- Road Network panel layout: status badge, path label, and the
+  "Load / Change Network Layer" button (and its inline combo/Ok/Cancel
+  replacements) are centered and full-width, matching the OSM download
+  button. Dropped the redundant "Select a road network layer for the
+  study area." instruction label.
+
+### Fixed
+
+- **Active Transport Network showed "Not configured (optional)" (missing
+  the usual "Configured, not run" icon) even when properly configured.**
+  `JsonTreeItem.getStatus()`'s special-case check for this indicator only
+  recognised the `use_osm_transport_polyline_per_cell` analysis_mode
+  string, but Active Transport's actual default mode (see
+  `geest/resources/model.json`) is `use_polyline_per_cell` - the workflow
+  that runs it (`polyline_per_cell_workflow.py`) already treats both
+  modes as interchangeable, falling back through five candidate keys
+  including `road_network_layer_path`, but `getStatus()` never learned
+  that: for the real default mode it fell through to the generic
+  vector-input check, which only looks at
+  `polyline_per_cell_layer_source`/`polyline_per_cell_shapefile`, never
+  the road network fallback. `getStatus()` now checks the same candidate
+  keys the workflow does, for either mode string.
+- **EPLEX could still run and produce a real result while women's
+  considerations were enabled**, even though it showed visibly disabled
+  in the tree. `apply_women_considerations_logic()` only flips
+  `is_enabled()` (greys the row out, hides its context menu) - it never
+  touches `analysis_mode` or weighting. `queue_workflow_task()` only
+  skipped indicators explicitly set to `"Do Not Use"`, so a
+  women's-mode-disabled EPLEX indicator was still queued and run.
+  `aggregation_workflow_base.py` already excludes disabled children from
+  the weighted combination this same way; `queue_workflow_task()` now
+  checks `is_enabled()` too.
+
+### Added
+
+- **"Run All" is now disabled until every indicator in the tree is
+  configured, disabled, or already complete.** Previously it was always
+  clickable, so a run could reach a factor/dimension aggregation with
+  some of its indicators still missing required inputs. Hovering the
+  disabled button names the blocking indicator(s), and the item info
+  panel shows the same list with each one's own actual status icon -
+  the identical icon the tree itself already shows next to it, not a
+  separate top-of-panel banner, and no action button since the fix is
+  always "open that indicator" (something the tree already offers).
+  "Not configured (optional)" still blocks (every item must be one of
+  configured/disabled/complete - optional isn't a fourth option);
+  "Workflow failed" does not, so a failed run can still be retried
+  without first having to touch anything.
+  `TreePanel._collect_run_all_blockers()`/`_update_run_all_button_state()`,
+  `ItemInfoPanel.show_run_all_blocked()`, called after
+  `apply_women_considerations_logic()`, `save_json_to_working_directory()`
+  (covers every config dialog), and the tree's Enable/Disable context
+  menu actions.
+- "Download all resources" moved out of the Run All split button's menu
+  into its own button, deliberately never gated by the Run All check
+  above - downloading is often how an indicator gets configured in the
+  first place, so disabling it alongside Run All would have locked the
+  user out of the one action that could resolve why Run All is disabled.
+
+### Removed
+
+- The Help panel/tab is gone. Its only remaining job was an
+  "Open in Browser" button (the embedded-docs `QWebEngineView` attempt
+  never worked under this project's PyQt6/Qt6 stack, so every real run
+  already fell through to that button regardless), so the "Help"
+  button in the tree view now opens the published docs directly:
+  `https://worldbank.github.io/GeoE3/` (previously a stale
+  `GEOE3/README.html` URL that only the dead embedded path used).
+
+### Fixed
+
+- Restoring a country pack bundle could leave reconstructed layers with
+  QGIS's arbitrary auto-styling instead of the pack's own style. `QgsVectorLayer.loadNamedStyle()` actually
+  returns `(errorMessage, resultFlag)`, not `(success, message)` - three
+  call sites unpacked it the wrong way round, so every real failure was
+  silently swallowed (an empty error string is falsy) and reported as a
+  success instead. Fixed in `import_country_pack_task.py`,
+  `tree_panel.py`, and `create_project_panel.py`.
+
+### Added
+
+- An integrity-check ontology now runs before a project is considered
+  usable: on project load, before Run All, before Run Incomplete, and
+  before running a single indicator. Each precondition is scoped to
+  exactly what it should block - a missing working directory, one that
+  can't be written to, or an incomplete study area grid blocks every
+  run outright; an unset or unreachable network layer only blocks runs
+  that actually touch an indicator needing one (`use_multi_buffer_point`,
+  `use_polyline_per_cell`, `use_osm_transport_polyline_per_cell`); a
+  single indicator's own broken data source only skips that indicator.
+  Every problem shows as a plain-language message with its own icon in
+  the info panel at the bottom of the tree - never a popup. The tree's
+  right-click "Run Item Workflow" action is pre-disabled (with a
+  tooltip explaining why) for exactly the same reasons, rather than
+  letting the user click it and then showing the block.
+  `geest/core/integrity_checks.py` (`check_working_directory()`,
+  `check_grid_completeness()`, `check_network_layer()`,
+  `indicator_needs_road_network()`); wired into
+  `TreePanel._collect_integrity_problems()`/`_block_run_if_needed()`/
+  `_run_item_action_state()`, called from `working_directory_changed()`,
+  `run_all()`, `run_incomplete()`, `run_item()`, and the context menu's
+  `update_action_text()`; displayed via the new
+  `ItemInfoPanel.show_blocked()` (`show_run_all_blocked()` now delegates
+  to it). A new [Troubleshooting](https://worldbank.github.io/GeoE3/troubleshooting/)
+  docs page covers every scenario, each with the same icon shown in the
+  app.
+- `model.json` saves are now atomic (write to a temp file, then rename
+  into place) and keep a backup of the previous good copy
+  (`model.json.bak`) - a crash mid-write used to be able to leave a
+  truncated `model.json` that can't be parsed, with nothing to recover from. If
+  the primary file is ever found corrupted on load, GeoE3 now restores
+  the backup automatically and tells you so (and if the backup is
+  unusable too, says plainly that the data model is corrupted rather
+  than guessing at a repair). `save_model_json_atomically()`,
+  `load_model_json_with_repair()`.
+- Editing an analysis/factor's aggregation type, mask layer, or an
+  indicator's datasource/analysis_mode now invalidates every previously
+  computed result that depended on it - clearing on-disk outputs, the
+  grid column, and the "result"/"result_file" attributes for the item
+  edited and every ancestor whose cached aggregate included it (a
+  factor aggregated from a since-reconfigured indicator used to keep
+  showing "Completed successfully" with its old, now-wrong score).
+  Weighting-only changes still don't invalidate anything, matching how
+  re-running an indicator already only invalidates its own ancestors.
+  `TreePanel._config_fingerprint()`/`_invalidate_if_config_changed()`,
+  called from `edit_analysis_aggregation()`/`edit_dimension_aggregation()`;
+  `FactorAggregationDialog` now tracks which indicators it actually
+  changed (`changed_indicator_guids`, a list of IDs) so
+  `edit_factor_aggregation()` can finish clearing their on-disk state
+  and invalidate their ancestors too.
+- The Study Area Creation Report now closes with a "Grid Summary" page,
+  the same kind of "how was this built" facts as the Analysis Report's
+  own closing page: study area name(s), grid cell count, grid type
+  (square or H3 hexagonal), cell size or H3 resolution/average hex
+  area, total analysis area, and coordinate reference system - read
+  straight from the GeoPackage, so this report stays self-contained
+  from it alone (no model.json dependency). `StudyAreaReport._grid_facts()`/
+  `make_grid_summary_page()`.
 
 ## [2.0.6] - 2026-10-13
 

@@ -178,6 +178,33 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
         self.assertTrue(layers["FCV"].isValid())
         self.assertEqual(layers["FCV"].featureCount(), 2)
 
+    def test_already_computed_results_get_their_qml_style_applied(self):
+        """Regression test for a real bug: loadNamedStyle() returns
+        (errorMessage, resultFlag), not (success, message) - reading it
+        the other way round silently swallowed every failure (an empty
+        error string is falsy) and reported every real failure as a
+        success, so a reconstructed result layer kept QGIS's arbitrary
+        auto-styling instead of the pack's actual style.
+        """
+        model = self._model()
+        model["dimensions"][0]["factors"][0]["indicators"][1]["result_file"] = os.path.join(
+            TEST_DATA, "rasters", "raster.tif"
+        )
+
+        build_country_pack(working_directory=TEST_DATA, model=model, output_path=self.pack_path)
+
+        task = ImportCountryPackTask(self.pack_path, self.import_dir)
+        self.assertTrue(task.run())
+        task.finished(True)
+
+        result_layer = next(
+            layer for layer in QgsProject.instance().mapLayers().values() if layer.name() == "Generic_Raster_result"
+        )
+        # indicator.qml sets a singlebandpseudocolor renderer - a freshly
+        # loaded raster never gets that renderer on its own, so this only
+        # passes if the style file was actually applied.
+        self.assertEqual(result_layer.renderer().type(), "singlebandpseudocolor")
+
 
 if __name__ == "__main__":
     unittest.main()

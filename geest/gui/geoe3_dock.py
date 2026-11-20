@@ -18,7 +18,6 @@ from geest.core.settings import setting
 from geest.gui.panels import (
     CreateProjectPanel,
     CreditsPanel,
-    HelpPanel,
     ImportProjectPanel,
     IntroPanel,
     OpenProjectPanel,
@@ -44,8 +43,7 @@ S2S_PANEL = 5
 ORS_PANEL = 6
 ROAD_NETWORK_PANEL = 7
 TREE_PANEL = 8
-HELP_PANEL = 9
-IMPORT_PROJECT_PANEL = 10
+IMPORT_PROJECT_PANEL = 9
 
 
 class GeoE3Dock(QDockWidget):
@@ -105,7 +103,6 @@ class GeoE3Dock(QDockWidget):
         self.s2s_widget: S2SPanel = S2SPanel()
         self.ors_widget: OrsPanel = OrsPanel()
         self.tree_widget: TreePanel = TreePanel(json_file=self.json_file)
-        help_widget: HelpPanel = HelpPanel()
 
         try:
             # INTRO_PANEL = 0
@@ -255,14 +252,12 @@ class GeoE3Dock(QDockWidget):
                 # Switch to the next tab when the button is clicked
                 lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
             )
-            # We are only interested in storing the network layer path
-            # (and not the cycle path) as it is used for the native
-            # network analysis algorithms internally.
-            # Connect directly to the emitted path (not a re-fetch via
-            # road_network_layer_path()) - restore_layer_from_path() emits ""
-            # to clear a stale/missing reference, and re-fetching would read
-            # back whatever is still selected in the combo instead of that
-            # empty-string clear signal.
+            # road_network_layer_path_changed is only ever emitted from one
+            # place (RoadNetworkPanel._finalize_road_layer_selection(), via
+            # an explicit file pick, OSM download, or the layer picker
+            # dialog's Ok) - never from a live widget reacting to ambient
+            # QGIS/project signals. restore_layer_from_path() only updates
+            # the panel's own read-only label and never emits.
             self.road_network_widget.road_network_layer_path_changed.connect(
                 self.tree_widget.set_road_network_layer_path
             )
@@ -278,10 +273,6 @@ class GeoE3Dock(QDockWidget):
             tree_layout.addWidget(self.tree_widget)
             self.stacked_widget.addWidget(tree_panel)
             self.tree_widget.set_message_bar(self.message_bar)  # Pass dock message bar for error notifications
-            self.tree_widget.switch_to_next_tab.connect(
-                # Switch to the next tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(HELP_PANEL)
-            )
             self.tree_widget.switch_to_network_tab.connect(
                 # Switch to the road network tab when the button is clicked
                 # This is also called from the context menu in the tree_panel
@@ -301,19 +292,7 @@ class GeoE3Dock(QDockWidget):
                 ]
             )
 
-            # HELP_PANEL = 8
-            # Create and add the "Help" panel (HelpPanel)
-            help_panel: QWidget = QWidget()
-            help_layout: QVBoxLayout = QVBoxLayout(help_panel)
-            help_layout.setContentsMargins(0, 0, 0, 0)  # Minimize padding
-            help_layout.addWidget(help_widget)
-            self.stacked_widget.addWidget(help_panel)
-            help_widget.switch_to_previous_tab.connect(
-                # Switch to the previous tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
-            )
-
-            # IMPORT_PROJECT_PANEL = 10
+            # IMPORT_PROJECT_PANEL = 9
             # Create and add the "Import Country Pack" panel
 
             import_project_panel: QWidget = QWidget()
@@ -417,9 +396,8 @@ class GeoE3Dock(QDockWidget):
                 self.stacked_widget.setCurrentIndex(TREE_PANEL)  # Tree tab
                 self.road_network_widget.set_working_directory(geoe3_project)
                 saved_path = self.tree_widget.road_network_layer_path()
-                if saved_path:
-                    log_message(f"Restoring road network layer from model: {saved_path}")
-                    self.road_network_widget.restore_layer_from_path(saved_path)
+                log_message(f"Restoring road network layer from model: {saved_path}")
+                self.road_network_widget.restore_layer_from_path(saved_path)
                 if self.tree_widget.working_directory:
                     self.tree_widget.set_qgis_project_path(project_path)
 
@@ -445,19 +423,11 @@ class GeoE3Dock(QDockWidget):
             return
         log_message(f"Opening associated QGIS project: {qgis_path}", tag="GeoE3", level=Qgis.Info)
         self._suppress_qgis_project_changed = True
-        # Capture the road network path before QgsProject.read() touches
-        # anything - QGIS adds the project's layers one at a time while
-        # reading, and the road network combo's filtered layer list (every
-        # line layer qualifies) resettles mid-load, auto-selecting whichever
-        # layer ends up first once all layers are present. That auto-select
-        # fires road_network_layer_path_changed unblocked, silently
-        # overwriting the correct saved path with the wrong layer (e.g. an
-        # OSM-derived layer sharing the same schema as the real road
-        # network). Block the combo's signals for the read() call so that
-        # cascade can't reach the model, then force the combo back onto the
-        # path we know is correct.
+        # The road network panel only ever shows a read-only label fed from
+        # model.json (restore_layer_from_path() below) - there's no live
+        # widget reacting to QgsProject's layer registry here, so nothing
+        # can overwrite the saved path while read() loads the new layers.
         saved_road_network_path = self.tree_widget.road_network_layer_path()
-        self.road_network_widget.road_layer_combo.blockSignals(True)
         try:
             QgsProject.instance().read(qgis_path)
         except Exception as e:
@@ -467,10 +437,8 @@ class GeoE3Dock(QDockWidget):
                 level=Qgis.Critical,
             )
         finally:
-            self.road_network_widget.road_layer_combo.blockSignals(False)
             self._suppress_qgis_project_changed = False
-        if saved_road_network_path:
-            self.road_network_widget.restore_layer_from_path(saved_road_network_path)
+        self.road_network_widget.restore_layer_from_path(saved_road_network_path)
 
     def on_panel_changed(self, index: int) -> None:
         """
@@ -510,14 +478,11 @@ class GeoE3Dock(QDockWidget):
 
             # Restore saved road network layer from model
             saved_path = self.tree_widget.road_network_layer_path()
-            if saved_path:
-                log_message(f"Restoring road network layer from model: {saved_path}")
-                self.road_network_widget.restore_layer_from_path(saved_path)
+            log_message(f"Restoring road network layer from model: {saved_path}")
+            self.road_network_widget.restore_layer_from_path(saved_path)
         elif index == TREE_PANEL:
             log_message("Switched to Tree panel")
             # self.tree_widget.set_working_directory(self.setup_widget.working_dir)
-        elif index == HELP_PANEL:
-            log_message("Switched to Help panel")
         elif index == IMPORT_PROJECT_PANEL:
             log_message("Switched to Import Country Pack panel")
 
