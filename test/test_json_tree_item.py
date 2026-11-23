@@ -347,6 +347,77 @@ class TestJsonTreeItem(unittest.TestCase):
         found_item = parent.getItemByGuid(child.guid)
         self.assertIs(found_item, child)
 
+    def test_active_transport_status_recognizes_road_network_fallback(self):
+        """Active Transport Network's default mode is use_polyline_per_cell
+        (see model.json), which falls back to road_network_layer_path
+        exactly like use_osm_transport_polyline_per_cell does -
+        polyline_per_cell_workflow.py's own candidate_keys chain is the
+        source of truth for what "configured" means. getStatus() used to
+        only recognise the OSM-mode string, so an indicator configured via
+        the road network fallback showed "Not configured (optional)"
+        instead of "Configured, not run"."""
+        dimension = JsonTreeItem(
+            ["Dimension", "Configured", 1.0, {"id": "dim", "analysis_weighting": 1.0}],
+            role="dimension",
+        )
+        factor = JsonTreeItem(
+            ["Factor", "Configured", 1.0, {"id": "fac", "dimension_weighting": 1.0}],
+            role="factor",
+            parent=dimension,
+        )
+        indicator = JsonTreeItem(
+            [
+                "Active Transport Network",
+                "Configured",
+                1.0,
+                {
+                    "id": "Active_Transport_Network",
+                    "analysis_mode": "use_polyline_per_cell",
+                    "factor_weighting": 1.0,
+                    "road_network_layer_path": "/some/project/study_area/road_network.gpkg",
+                    "result": "",
+                    "result_file": "",
+                },
+            ],
+            role="indicator",
+            parent=factor,
+        )
+        dimension.appendChild(factor)
+        factor.appendChild(indicator)
+
+        self.assertEqual(indicator.getStatus(), "Configured, not run")
+
+    def test_active_transport_status_without_any_layer_is_still_unconfigured(self):
+        dimension = JsonTreeItem(
+            ["Dimension", "Configured", 1.0, {"id": "dim", "analysis_weighting": 1.0}],
+            role="dimension",
+        )
+        factor = JsonTreeItem(
+            ["Factor", "Configured", 1.0, {"id": "fac", "dimension_weighting": 1.0}],
+            role="factor",
+            parent=dimension,
+        )
+        indicator = JsonTreeItem(
+            [
+                "Active Transport Network",
+                "Configured",
+                1.0,
+                {
+                    "id": "Active_Transport_Network",
+                    "analysis_mode": "use_polyline_per_cell",
+                    "factor_weighting": 1.0,
+                    "result": "",
+                    "result_file": "",
+                },
+            ],
+            role="indicator",
+            parent=factor,
+        )
+        dimension.appendChild(factor)
+        factor.appendChild(indicator)
+
+        self.assertEqual(indicator.getStatus(), "Not configured (optional)")
+
 
 if __name__ == "__main__":
     unittest.main()

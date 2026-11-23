@@ -54,6 +54,34 @@ class TestSetRoadNetworkLayerPath(unittest.TestCase):
 
         self.analysis_item.setAttribute.assert_called_once_with("road_network_layer_path", "")
 
+    def test_no_working_directory_is_rejected_and_not_stored(self):
+        """A layer picked before any GeoE3 project is open must not be written.
+
+        Reproduces a reported bug: selecting the road network layer while no
+        working directory is associated yet wrote the path onto whatever
+        analysis_item happened to be in memory (e.g. the default template
+        model), only logging a warning that the save was skipped. Moments
+        later, opening/switching to the real project replaced the whole tree
+        model via loadJsonData(), silently discarding that write. The
+        selection must instead be refused up front, with a visible warning.
+        """
+        self.panel.working_directory = None
+        with tempfile.NamedTemporaryFile(suffix=".gpkg") as tmp:
+            TreePanel.set_road_network_layer_path(self.panel, tmp.name)
+
+        self.analysis_item.setAttribute.assert_not_called()
+        self.panel.save_json_to_working_directory.assert_not_called()
+        self.panel.show_validation_error.assert_called_once()
+
+    def test_no_working_directory_rejects_clear_too(self):
+        self.panel.working_directory = None
+
+        TreePanel.set_road_network_layer_path(self.panel, "")
+
+        self.analysis_item.setAttribute.assert_not_called()
+        self.panel.save_json_to_working_directory.assert_not_called()
+        self.panel.show_validation_error.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()

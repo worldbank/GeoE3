@@ -19,8 +19,8 @@ pattern anyway: a dock panel next to the controls the user is already
 looking at beats a floating label on the map.
 """
 
-from qgis.PyQt.QtCore import Qt, pyqtSignal
-from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtCore import Qt, QUrl, pyqtSignal
+from qgis.PyQt.QtGui import QIcon, QPixmap, QTextDocument
 from qgis.PyQt.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -649,6 +649,69 @@ class ItemInfoPanel(QWidget):
         # Same reasoning as show_item(): the tree's selection clearing
         # (e.g. the user clicking empty space) shouldn't interrupt a
         # progress display that's still showing a run in progress.
+        if self._progress_active:
+            return
+        self._show_item_page()
+
+    def show_run_all_blocked(self, blockers) -> None:
+        """Show which indicator(s) are blocking Run All, each with its own status icon.
+
+        Takes over the item page the same way clear()/show_progress() do -
+        there's nothing useful to show about a tree selection while Run
+        All is disabled, and the icon next to each name is the exact same
+        one the tree itself shows for that indicator, so the hint matches
+        what the user already sees there rather than introducing a
+        second, different way of saying "this needs attention".
+
+        Args:
+            blockers: Sequence of (name, icon_path) pairs for every
+                indicator currently blocking Run All.
+        """
+        self.show_blocked("Run All is disabled", "Not yet configured:", blockers)
+
+    def _icon_rows_html(self, rows) -> str:
+        """Render (text, icon_path) pairs as "<img> text" lines, each icon embedded as its own resource.
+
+        Args:
+            rows: Sequence of (text, icon_path) pairs.
+
+        Returns:
+            HTML, one `<img> text` line per row, "<br>"-separated.
+        """
+        doc = self.item_meta_label.document()
+        lines = []
+        for i, (text, icon_path) in enumerate(rows):
+            resource_name = f"info_panel_row_{i}"
+            doc.addResource(QTextDocument.ResourceType.ImageResource, QUrl(resource_name), QPixmap(icon_path))
+            lines.append(f'<img src="{resource_name}" width="14" height="14"> {text}')
+        return "<br>".join(lines)
+
+    def show_blocked(self, heading: str, intro: str, rows) -> None:
+        """Show a list of problems, each with its own icon, in place of the item page.
+
+        Used both for Run All's own configuredness blockers and for the
+        integrity-check ontology (missing/unwritable working directory,
+        incomplete study area grid, unset network layer, a corrupted
+        model.json) - every "this can't run until you fix X" message in
+        the app funnels through here rather than a popup or a top-of-
+        panel banner, so the user only ever has one place to look.
+
+        Args:
+            heading: Replaces the usual item heading (e.g. "Run All is
+                disabled", "This project needs attention").
+            intro: One line introducing the list below it (can be "").
+            rows: Sequence of (message, icon_path) pairs.
+        """
+        self._current_technique_key = None
+        self._output_stops = []
+        self._current_output_index = 0
+        self._sparkline_eligible = False
+        self._active_page = 0
+        self.item_icon_label.clear()
+        self.item_heading_label.setText(heading)
+        rows_html = self._icon_rows_html(rows)
+        self.item_meta_label.setHtml(f"{intro}<br>{rows_html}" if intro else rows_html)
+        self.more_link.setVisible(False)
         if self._progress_active:
             return
         self._show_item_page()

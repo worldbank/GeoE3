@@ -198,36 +198,12 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLabel" name="description4">
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Select a road network layer for the study area.</string>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::MarkdownText</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignJustify|Qt::AlignTop</set>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="buddy">
-          <cstring>road_layer_combo</cstring>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QVBoxLayout" name="verticalLayout_network">
          <property name="spacing">
           <number>6</number>
          </property>
-         <item>
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="layer_status_label">
            <property name="maximumSize">
             <size>
@@ -243,26 +219,126 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QgsMapLayerComboBox" name="road_layer_combo">
-           <property name="font">
-            <font>
-             <pointsize>16</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="load_road_layer_button">
+         <item alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="current_layer_label">
            <property name="font">
             <font>
              <pointsize>16</pointsize>
             </font>
            </property>
            <property name="text">
-            <string>...</string>
+            <string>Not set</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="change_network_layer_button">
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Load / Change Network Layer</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_networkPicker">
+           <item>
+            <widget class="QgsMapLayerComboBox" name="network_layer_combo">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="browse_network_layer_button">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>...</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_networkOkCancel">
+           <item>
+            <spacer name="horizontalSpacer_networkOkCancelLeft">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="ok_network_layer_button">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ok</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="cancel_network_layer_button">
+             <property name="visible">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>16</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Cancel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_networkOkCancelRight">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -330,8 +406,11 @@
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
-  <tabstop>road_layer_combo</tabstop>
-  <tabstop>load_road_layer_button</tabstop>
+  <tabstop>change_network_layer_button</tabstop>
+  <tabstop>network_layer_combo</tabstop>
+  <tabstop>browse_network_layer_button</tabstop>
+  <tabstop>ok_network_layer_button</tabstop>
+  <tabstop>cancel_network_layer_button</tabstop>
   <tabstop>download_active_transport_button</tabstop>
   <tabstop>previous_button</tabstop>
   <tabstop>next_button</tabstop>

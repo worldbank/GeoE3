@@ -4,6 +4,7 @@
 This module contains functionality for tree panel.
 """
 
+import copy
 import json
 import os
 import shutil
@@ -24,8 +25,8 @@ from qgis.core import (
 )
 from qgis.gui import QgsMessageBar
 from qgis.PyQt import sip
-from qgis.PyQt.QtCore import QModelIndex, QPoint, QSettings, Qt, QTimer, pyqtSignal, pyqtSlot
-from qgis.PyQt.QtGui import QMovie
+from qgis.PyQt.QtCore import QModelIndex, QPoint, QSettings, Qt, QTimer, QUrl, pyqtSignal, pyqtSlot
+from qgis.PyQt.QtGui import QDesktopServices, QMovie
 from qgis.PyQt.QtWidgets import (
     QAction,
     QApplication,
@@ -61,6 +62,13 @@ from geest.core.analysis_outputs import ANALYSIS_OUTPUT_STOPS
 from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD
 from geest.core.country_pack import all_sources
 from geest.core.i18n import tr
+from geest.core.integrity_checks import (
+    check_grid_completeness,
+    check_network_layer,
+    check_working_directory,
+    load_model_json_with_repair,
+    save_model_json_atomically,
+)
 from geest.core.reports import AnalysisReport, StudyAreaReport
 from geest.core.settings import set_setting, setting
 from geest.core.tasks import AnalysisReportTask, CountryPackTask
@@ -74,6 +82,9 @@ from geest.gui.dialogs import (
 from geest.gui.views import JsonTreeModel, JsonTreeView
 from geest.gui.widgets import ItemInfoPanel, SolidMenu
 from geest.utilities import log_message, open_with_system_handler, resources_path, theme_stylesheet
+
+#: GeoE3's published documentation site (mkdocs, GitHub Pages).
+HELP_URL = "https://worldbank.github.io/GeoE3/"
 
 
 class TreePanel(QWidget):
@@ -311,23 +322,27 @@ class TreePanel(QWidget):
         run_incomplete_action.triggered.connect(self.run_incomplete)
         prepare_analysis_menu.addAction(run_incomplete_action)
 
-        # Add "Download all resources" action
-        download_all_resources_action = QAction("Download all resources", self)
-        download_all_resources_action.triggered.connect(self.download_all_resources)
-        prepare_analysis_menu.addAction(download_all_resources_action)
-
         # Set the menu on the tool button
         self.prepare_analysis_button.setMenu(prepare_analysis_menu)
 
         # Add the button to the button bar
         button_bar.addWidget(self.prepare_analysis_button)
 
+        # Its own button, deliberately never gated by
+        # _update_run_all_button_state() - downloading is often how an
+        # indicator gets configured in the first place, so disabling it
+        # alongside Run All would lock the user out of the one action
+        # that could resolve why Run All is disabled.
+        self.download_all_resources_button = QPushButton("⬇️ Download all resources")
+        self.download_all_resources_button.clicked.connect(self.download_all_resources)
+        button_bar.addWidget(self.download_all_resources_button)
+
         self.project_button = QPushButton("Project")
         self.project_button.clicked.connect(self.switch_to_setup_tab)
         button_bar.addWidget(self.project_button)
 
         self.help_button = QPushButton("Help")
-        self.help_button.clicked.connect(self.switch_to_next_tab)
+        self.help_button.clicked.connect(self.open_help)
         button_bar.addWidget(self.help_button)
         # The two progress bars live inside item_info_panel now (see
         # above) - aliased onto self so the ~30 existing
@@ -780,6 +795,10 @@ class TreePanel(QWidget):
         QSettings().setValue("geoe3/pie_data", "")
         self.switch_to_next_tab.emit()
 
+    def open_help(self):
+        """⚙️ Open the published GeoE3 documentation in the default browser."""
+        QDesktopServices.openUrl(QUrl(HELP_URL))
+
     def clear_item(self):
         """Clear the outputs for a single item (non-recursive).
 
@@ -1114,6 +1133,16 @@ class TreePanel(QWidget):
         # Collapse any factors that have only a single indicator
         self.treeView.collapse_single_nodes()
 
+        # load_json() may have had to repair model.json from its backup -
+        # a one-time, non-blocking notice (no button is disabled for it),
+        # shown here so the user sees it without having to click anything.
+        load_problems = getattr(self, "_model_load_problems", [])
+        if load_problems:
+            self.item_info_panel.show_blocked(
+                "Your project needed repair", "", [(p.message, p.icon) for p in load_problems]
+            )
+        self._update_run_all_button_state()
+
     def check_study_area_gpkg_health(self, reason: str = "") -> None:
         """Run a GeoPackage health check (with in-place self-heal) in the background.
 
@@ -1227,6 +1256,17 @@ class TreePanel(QWidget):
         Args:
             network_layer_path: Network layer path, or empty/None to clear it.
         """
+        if not self.working_directory:
+            self.show_validation_error(
+                "Road Network Issue",
+                "No GeoE3 project is open yet, so this selection cannot be saved. "
+                "Open or create a project, then select the road network layer again.",
+            )
+            log_message(
+                "Refusing to set road_network_layer_path - no working directory open yet.",
+                level=Qgis.Warning,
+            )
+            return
         analysis_item = self.model.rootItem.child(0)
         if network_layer_path:
             base_path = network_layer_path.split("|")[0] if "|" in network_layer_path else network_layer_path
@@ -1311,19 +1351,19 @@ class TreePanel(QWidget):
             return
         try:
             json_data = self.model.to_json()
-
             save_path = os.path.join(self.working_directory, "model.json")
-            with open(save_path, "w") as f:
-                json.dump(json_data, f, indent=4)
+            save_model_json_atomically(save_path, json_data)
             log_message(f"Saved JSON model to {save_path}")
+            self._update_run_all_button_state()
         except Exception as e:
             log_message(f"Error saving JSON: {str(e)}", level=Qgis.Critical)
 
     def load_json(self):
-        """Load the JSON data from the file."""
-        with open(self.json_file, "r") as f:
-            self.json_data = json.load(f)
-            log_message(f"Loaded JSON data from {self.json_file}")
+        """Load the JSON data from the file, repairing from its backup if the file is corrupted."""
+        self.json_data, self._model_load_problems = load_model_json_with_repair(self.json_file)
+        if self.json_data is None:
+            raise ValueError(f"Could not load or repair {self.json_file}")
+        log_message(f"Loaded JSON data from {self.json_file}")
 
     def reload_and_apply_women_considerations_logic(self):
         """Reload model.json and apply women considerations logic.
@@ -1461,6 +1501,129 @@ class TreePanel(QWidget):
         self.treeView.viewport().update()
         self.treeView.update()
 
+        self._update_run_all_button_state()
+
+    #: getStatus() values that do not block Run All - anything else
+    #: (chiefly "Required and not configured" and "Not configured
+    #: (optional)") does, since the analysis can't produce a complete
+    #: result around an indicator left in either of those states.
+    #: "Workflow failed" is allowed through deliberately, so a user can
+    #: still retry a failed run without first having to touch anything.
+    RUN_ALL_ALLOWED_STATUSES = {
+        "Configured, not run",
+        "Excluded from analysis",
+        "Completed successfully",
+        "Workflow failed",
+    }
+
+    #: Icon file (under geest/resources/icons/) matching each blocking
+    #: status - the exact same icon JsonTreeItem.getStatusIcon() shows
+    #: next to that indicator in the tree, so the info panel's hint
+    #: matches what the user already sees there rather than introducing
+    #: a second, different way of saying "this needs attention".
+    _BLOCKER_ICON_BY_STATUS = {
+        "Required and not configured": "required-not-configured.svg",
+        "Not configured (optional)": "not-configured.svg",
+    }
+
+    def _collect_run_all_blockers(self):
+        """Every indicator whose status would block Run All.
+
+        Returns:
+            list[tuple[str, str]]: (display name, status) for each
+            blocking indicator.
+        """
+        root_item = self.model.get_analysis_item()
+        if not root_item:
+            return []
+        blockers = []
+        for dim_idx in range(root_item.childCount()):
+            dimension = root_item.child(dim_idx)
+            if not dimension:
+                continue
+            for factor_idx in range(dimension.childCount()):
+                factor = dimension.child(factor_idx)
+                if not factor:
+                    continue
+                for indicator_idx in range(factor.childCount()):
+                    indicator = factor.child(indicator_idx)
+                    if not indicator:
+                        continue
+                    status = indicator.getStatus()
+                    if status not in TreePanel.RUN_ALL_ALLOWED_STATUSES:
+                        name = indicator.data(0) or indicator.attribute("id", "Indicator")
+                        blockers.append((name, status))
+        return blockers
+
+    def _collect_integrity_problems(self, indicator_items):
+        """Preconditions that block any run outright - the working directory, the
+        study area grid, and (only when something in scope actually needs it)
+        the network layer.
+
+        Separate from _collect_run_all_blockers() (per-indicator
+        configuredness) since these apply regardless of whether any
+        indicator is individually "configured" - a broken grid or an
+        unwritable folder blocks everything, not just Run All.
+
+        Args:
+            indicator_items: JsonTreeItem indicators in scope for this run
+                (used only for the network-layer check - whether any of
+                them actually needs it).
+
+        Returns:
+            list[Problem]: see geest.core.integrity_checks.
+        """
+        return (
+            check_working_directory(self.working_directory)
+            + check_grid_completeness(self.working_directory)
+            + check_network_layer(self.road_network_layer_path(), [item.attributes() for item in indicator_items])
+        )
+
+    def _update_run_all_button_state(self):
+        """Enable Run All only once every indicator is configured, disabled, or complete,
+        and nothing more fundamental (working directory, study area grid, network
+        layer) is blocking every run outright.
+
+        Surfaces which indicator(s) are blocking via a tooltip on the
+        button and the item info panel, each shown with its own actual
+        status icon - no separate action button, the fix is always
+        "open that indicator and configure or disable it", which the
+        tree itself already offers.
+        """
+        root_item = self.model.get_analysis_item()
+        indicator_items = (
+            root_item.getDescendantIndicators(include_completed=True, include_disabled=False) if root_item else []
+        )
+        integrity_problems = self._collect_integrity_problems(indicator_items)
+        configuredness_blockers = self._collect_run_all_blockers()
+        if integrity_problems or configuredness_blockers:
+            names = ", ".join(name for name, _ in configuredness_blockers)
+            self.prepare_analysis_button.setEnabled(False)
+            self.prepare_analysis_button.setText("🚫 Run all")
+            reasons = [p.message for p in integrity_problems]
+            if names:
+                reasons.append(f"not yet configured: {names}")
+            self.prepare_analysis_button.setToolTip("Run All is disabled - " + "; ".join(reasons))
+            rows = [(p.message, p.icon) for p in integrity_problems]
+            rows += [
+                (
+                    name,
+                    resources_path(
+                        "resources", "icons", TreePanel._BLOCKER_ICON_BY_STATUS.get(status, "unspecified.svg")
+                    ),
+                )
+                for name, status in configuredness_blockers
+            ]
+            self.item_info_panel.show_blocked(
+                "Run All is disabled", "Not yet configured:" if configuredness_blockers else "", rows
+            )
+        else:
+            self.prepare_analysis_button.setEnabled(True)
+            self.prepare_analysis_button.setText("▶️ Run all")
+            self.prepare_analysis_button.setToolTip("")
+            if self.item_info_panel.item_heading_label.text() == "Run All is disabled":
+                self.item_info_panel.clear()
+
     def load_json_from_file(self):
         """Prompt the user to load a JSON file and update the tree."""
         json_file, _ = QFileDialog.getOpenFileName(
@@ -1517,15 +1680,18 @@ class TreePanel(QWidget):
 
         run_item_action = QAction("Run Item Workflow", self)
 
-        # If shift is pressed, change the text to "Rerun Item Workflow"
+        # If shift is pressed, change the text to "Rerun Item Workflow", and
+        # disable the action altogether if this item (or any descendant
+        # that would actually run) fails an integrity check - the exact
+        # same scope run_item() itself checks before starting, so clicking
+        # a greyed-out action is never possible in the first place.
         def update_action_text():
-            """🔄 Update action text."""
-            text = (
-                "Rerun Item Workflow"
-                if QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier
-                else "Run Item Workflow"
-            )
-            run_item_action.setText(text)
+            """🔄 Update action text and enabled state."""
+            shift_pressed = bool(QApplication.keyboardModifiers() & Qt.KeyboardModifier.ShiftModifier)
+            run_item_action.setText("Rerun Item Workflow" if shift_pressed else "Run Item Workflow")
+            enabled, tooltip = self._run_item_action_state(item, shift_pressed)
+            run_item_action.setEnabled(enabled)
+            run_item_action.setToolTip(tooltip)
 
         # Update initially
         update_action_text()
@@ -2115,6 +2281,7 @@ class TreePanel(QWidget):
             item: The item to disable.
         """
         item.disable()
+        self._update_run_all_button_state()
 
     def enable_item(self, item):
         """Enable the item and its children.
@@ -2123,6 +2290,7 @@ class TreePanel(QWidget):
             item: The item to enable.
         """
         item.enable()
+        self._update_run_all_button_state()
 
     def show_attributes(self, item):
         """Show the attributes of the item in a table.
@@ -2463,11 +2631,15 @@ class TreePanel(QWidget):
                 continue
 
             source_qml = resources_path("resources", "qml", f"{layer_name}.qml")
-            result = layer.loadNamedStyle(source_qml)
-            if result[0]:  # loadNamedStyle returns (success, error_message)
+            # loadNamedStyle() returns (errorMessage, resultFlag), not
+            # (success, error_message) - reading it the other way round
+            # meant failures were silently ignored (an empty error string
+            # is falsy) and layers kept QGIS's arbitrary auto-styling.
+            error_message, success = layer.loadNamedStyle(source_qml)
+            if success:
                 log_message(f"Successfully applied QML style to layer '{layer_name}'")
             else:
-                log_message(f"Failed to apply QML style: {result[1]}")
+                log_message(f"Failed to apply QML style: {error_message}")
 
             # Check if a layer with the same data source exists in the correct group
             existing_layer = None
@@ -2488,15 +2660,76 @@ class TreePanel(QWidget):
                 _ = geoe3_group.addLayer(layer)
                 log_message(f"Added layer: {layer.name()} to group: {geoe3_group.name()}")
 
+    #: Attribute keys that never affect whether a previously computed
+    #: result is still valid. Weighting is applied during aggregation,
+    #: after an indicator's own result already exists, and the rest are
+    #: the bookkeeping fields this exact invalidation logic itself
+    #: writes - a change to ONLY these never invalidates anything.
+    _WEIGHTING_AND_BOOKKEEPING_KEYS = {
+        "result",
+        "result_file",
+        "error",
+        "error_file",
+        "execution_start_time",
+        "execution_end_time",
+        "factor_weighting",
+        "default_factor_weighting",
+        "dimension_weighting",
+        "default_dimension_weighting",
+        "analysis_weighting",
+        "default_analysis_weighting",
+    }
+
+    @staticmethod
+    def _config_fingerprint(attributes: dict) -> dict:
+        """Attributes relevant to whether a previously computed result is still valid.
+
+        Besides the weighting/bookkeeping exclusions, drops any key
+        holding an empty-ish value (None/""/0/"None"/"none") - several
+        config dialogs unconditionally rewrite radio-button-backed
+        fields (e.g. AnalysisAggregationDialog's mask_mode) on every OK
+        click regardless of whether the user touched them, so a key
+        that was simply absent before must fingerprint the same as that
+        key now explicitly present with its default/empty value - never
+        as "the configuration changed".
+
+        Args:
+            attributes: An item's attributes() dict.
+
+        Returns:
+            The subset relevant to result validity.
+        """
+        empty_values = (None, "", 0, 0.0, "None", "none")
+        return {
+            key: value
+            for key, value in attributes.items()
+            if key not in TreePanel._WEIGHTING_AND_BOOKKEEPING_KEYS and value not in empty_values
+        }
+
+    def _invalidate_if_config_changed(self, item, previous_attributes: dict) -> None:
+        """Clear item's outputs and invalidate its ancestors if its own config changed since previous_attributes.
+
+        Args:
+            item: The tree item whose dialog just closed.
+            previous_attributes: A deep copy of item.attributes() taken
+                before the dialog was opened.
+        """
+        if self._config_fingerprint(previous_attributes) == self._config_fingerprint(item.attributes()):
+            return
+        self._clear_single_item_outputs(item)
+        item.invalidateAncestors()
+
     def edit_analysis_aggregation(self, analysis_item):
         """Open the AnalysisAggregationDialog for editing the weightings of factors in the analysis.
 
         Args:
             analysis_item: The analysis item to edit.
         """
+        previous_attributes = copy.deepcopy(analysis_item.attributes())
         dialog = AnalysisAggregationDialog(analysis_item, parent=self)
         if dialog.exec():  # If OK was clicked
             dialog.saveWeightingsToModel()
+            self._invalidate_if_config_changed(analysis_item, previous_attributes)
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def edit_dimension_aggregation(self, dimension_item):
@@ -2505,6 +2738,7 @@ class TreePanel(QWidget):
         Args:
             dimension_item: The dimension item to edit.
         """
+        previous_attributes = copy.deepcopy(dimension_item.attributes())
         dimension_name = dimension_item.data(0)
         dimension_data = dimension_item.attributes()
         if not dimension_data:
@@ -2512,6 +2746,7 @@ class TreePanel(QWidget):
         dialog = DimensionAggregationDialog(dimension_name, dimension_data, dimension_item, parent=self)
         if dialog.exec():  # If OK was clicked
             dialog.saveWeightingsToModel()
+            self._invalidate_if_config_changed(dimension_item, previous_attributes)
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def edit_factor_aggregation(self, factor_item, selected_guids=None):
@@ -2534,6 +2769,17 @@ class TreePanel(QWidget):
         )
         if dialog.exec():  # If OK was clicked
             dialog.save_weightings_to_model()
+            # The dialog already cleared each changed indicator's
+            # in-memory result (_clear_changed_indicator_results()) -
+            # finish the job with the on-disk outputs/grid column it
+            # can't reach from there, and invalidate every ancestor
+            # whose cached aggregate included that indicator's old
+            # result.
+            for guid in dialog.changed_indicator_guids:
+                indicator_item = factor_item.getItemByGuid(guid)
+                if indicator_item is not None:
+                    self._clear_single_item_outputs(indicator_item)
+                    indicator_item.invalidateAncestors()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def start_workflows(self, workflow_type=None):
@@ -2698,6 +2944,23 @@ class TreePanel(QWidget):
             )
             return
 
+        # apply_women_considerations_logic() only sets is_enabled() (greys out
+        # the row, hides the context menu) - it never touches analysis_mode,
+        # so without this check an EPLEX indicator stayed queued and actually
+        # ran (producing a real result) even while women's mode had it
+        # visibly disabled. aggregation_workflow_base.py already excludes
+        # disabled children from the weighted combination the same way.
+        if role == "indicator" and not item.is_enabled():
+            attributes["factor_weighting"] = 0.0
+            attributes["result"] = "Excluded from analysis"
+            attributes["result_file"] = ""
+            log_message(
+                f"Skipping {item.attribute('id')} because it is disabled.",
+                tag="GeoE3",
+                level=Qgis.Info,
+            )
+            return
+
         # Validate road network layer if needed (skip for Regional scale - uses simple buffer)
         analysis_mode = attributes.get("analysis_mode", "")
         analysis_scale = self.model.get_analysis_item().attributes().get("analysis_scale", "national")
@@ -2758,6 +3021,49 @@ class TreePanel(QWidget):
         # Hook up the status message signal to the status label
         task.status_message.connect(self.task_status_updated)
 
+    def _block_run_if_needed(self, indicator_items, heading) -> bool:
+        """Check integrity preconditions before a run starts, showing why in the info panel if blocked.
+
+        Called before Run All, Run Incomplete, and a single-item run -
+        before any of them shows the progress UI, so a blocked run never
+        gets as far as starting at all.
+
+        Args:
+            indicator_items: JsonTreeItem indicators in scope for this run
+                (only used for the network-layer check).
+            heading: Info panel heading to show if blocked.
+
+        Returns:
+            True if the run must not start (the info panel already
+            explains why); False if it's clear to proceed.
+        """
+        problems = self._collect_integrity_problems(indicator_items)
+        if not problems:
+            return False
+        self.item_info_panel.show_blocked(heading, "", [(p.message, p.icon) for p in problems])
+        return True
+
+    def _run_item_action_state(self, item, shift_pressed: bool):
+        """Whether the context menu's "Run Item Workflow" action should be enabled for this item.
+
+        Same integrity-check scope run_item() itself would check before
+        starting - computed here too so the context menu action is
+        already disabled, rather than letting the user click it and then
+        showing why it didn't start.
+
+        Args:
+            item: The tree item the context menu was opened on.
+            shift_pressed: Whether Shift is held (a "rerun" includes
+                already-completed descendant indicators in scope; a plain
+                run doesn't).
+
+        Returns:
+            (enabled, tooltip) - tooltip is "" when enabled.
+        """
+        indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
+        problems = self._collect_integrity_problems(indicators_in_scope)
+        return not problems, "; ".join(p.message for p in problems)
+
     def run_item(self, item, shift_pressed):
         """Run the item and the ones below it.
 
@@ -2769,6 +3075,10 @@ class TreePanel(QWidget):
             shift_pressed (bool): Whether the shift key is pressed.
 
         """
+        indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
+        if self._block_run_if_needed(indicators_in_scope, f"Can't run '{item.data(0)}'"):
+            return
+
         self.items_to_run = 0
         self.workflow_scope_item = item
         self._open_report_when_done = False
@@ -3391,8 +3701,16 @@ class TreePanel(QWidget):
         # Assuming column 1 is where status updates are shown
         item.setData(1, status)
 
+    def _all_indicators(self, include_completed: bool):
+        root_item = self.model.get_analysis_item()
+        if not root_item:
+            return []
+        return root_item.getDescendantIndicators(include_completed=include_completed, include_disabled=False)
+
     def run_all(self):
         """Run all workflows in the tree, regardless of their status."""
+        if self._block_run_if_needed(self._all_indicators(include_completed=True), "Can't run all"):
+            return
         self.run_only_incomplete = False
         self.workflow_scope_item = None
         self._open_report_when_done = True
@@ -3407,6 +3725,8 @@ class TreePanel(QWidget):
         It iterates over the entire tree, collecting nodes with the 'indicator' role, and
         processes each one whilst showing an animated icon.
         """
+        if self._block_run_if_needed(self._all_indicators(include_completed=False), "Can't run incomplete indicators"):
+            return
         self.run_only_incomplete = True
         self.workflow_scope_item = None
         self._open_report_when_done = False
