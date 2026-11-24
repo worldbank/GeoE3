@@ -1137,6 +1137,69 @@ version per the policy above.
   tracked `{prefix}_layer_name`), it just wasn't being read for the
   legend. `layer_display_names()` in `country_pack_import.py`, used by
   `ImportCountryPackTask._load_layers_into_project()`.
+- Reopening a project with already-computed results left the native
+  QGIS Layers panel empty and nothing visible on the map, even though
+  the GeoE3 panel's own tree still showed every item "Completed
+  successfully" - closing and reopening only rebuilt the plugin's tree
+  widget from `model.json`, it never re-added the matching output
+  layers to the QGIS project. `TreePanel._restore_completed_layers_to_map()`,
+  called from `working_directory_changed()`; shares the same
+  add-to-map logic as `on_workflow_completed()` via the new
+  `_add_item_result_to_map()`.
+- When `model.json` was corrupted beyond its backup's ability to
+  repair it, the project silently fell back to a blank default state
+  with a misleading "Your project needed repair" notice (implying the
+  repair had worked). That case now shows "Your project could not be
+  loaded" instead.
+- The EPLEX Score spin box silently rejected typed numbers on a
+  system whose locale uses a comma decimal separator - it now forces
+  a dot-decimal locale regardless of the OS setting.
+- Closing the OSM download panel (or switching away) while a download
+  task was still finishing crashed with `RuntimeError: wrapped C/C++
+  object of type QLabel has been deleted` - `DownloadTaskControls.
+  stop_spinner()` now tolerates its widgets already being gone.
+- A failed OSM/Overpass download (rate-limited or rejected query)
+  surfaced as an opaque GDAL "not recognized as being in a supported
+  file format" error instead of a clear message - the Overpass
+  response is now validated as real OSM XML before it ever reaches
+  GDAL's OSM driver. `OSMDataDownloaderBase._validate_osm_xml_response()`.
+- Disabling a single-indicator factor (e.g. FCV) didn't stick: it
+  showed as re-enabled again the next time the model reloaded, because
+  disabling it from the tree UI actually disables its promoted child
+  indicator, not the factor itself, and the weighting rebalance only
+  checked the factor's own `analysis_mode`.
+  `TreePanel._factor_is_manually_disabled()`.
+- Clicking Run right after changing a setting (e.g. the analysis
+  item's mask) could silently do nothing at all, with zero feedback,
+  whenever everything already in scope had a prior result and
+  `run_only_incomplete` skipped it - now shows "Nothing to run... hold
+  Shift to force a full re-run" instead.
+- Hardened against a Windows access-violation crash seen during
+  regional Active Transport and Fire Hazards runs: two independent
+  GDAL/OGR connections racing to open `study_area.gpkg` at the same
+  time (a workflow's `AreaIterator` read vs. a concurrent grid write)
+  could hand one of them a stale/freed dataset handle. `AreaIterator`
+  now opens its layers under the same lock grid writes already use.
+  `grid_column_utils.gpkg_access_lock()`.
+- A project whose study area creation failed partway through (no
+  usable `study_area.gpkg`) still reopened straight onto the
+  indicator tree "as if ready to run", because both reopen paths only
+  checked whether `model.json` existed, not whether study area setup
+  had actually finished. Both now reopen onto the Create Project
+  wizard instead. `integrity_checks.study_area_setup_complete()`.
+
+### Changed
+
+- Report footer/credits, README, SRS and the plugin's own `about`/
+  `author` metadata now say "World Bank Group" rather than "World
+  Bank" for the project's own authorship/credit lines (left citations
+  of external documents/indices, e.g. Women, Business and the Law and
+  the GeoWEAF methodology report, as published - those already read
+  "World Bank Group" where the source itself does).
+- The GitHub Pages landing page now explains the GeoWEAF framework
+  (dimensions diagram + links to the background page and the
+  methodology citation) instead of not mentioning it at all, and moved
+  the demo video below the feature cards per feedback from the field.
 
 ## [2.0.6] - 2026-10-13
 
