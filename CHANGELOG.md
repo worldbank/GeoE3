@@ -15,21 +15,12 @@ single step begins.
 
 ## [Unreleased]
 
-## [2.2.1] - 2026-11-24
+## [2.2.2] - 2026-11-24
 
-Fix-only sweep on top of the still-unreleased 2.2.0 below.
+Field-test follow-ups on top of 2.2.1 below, not yet released.
 
 ### Fixed
 
-- Restoring a country pack bundle showed internal technical keys in the
-  QGIS legend instead of the original project's layer names (an
-  indicator's `id` slug, a fixed project-level key like `road_network`,
-  or a `{id}_result` key) - `model.json` already carries the original
-  title next to each key (an indicator's `indicator` field, a
-  factor/dimension's `name` field, or a project-level input's own
-  tracked `{prefix}_layer_name`), it just wasn't being read for the
-  legend. `layer_display_names()` in `country_pack_import.py`, used by
-  `ImportCountryPackTask._load_layers_into_project()`.
 - A country pack bundle mixed CRSes - raw input rasters/vectors (a
   World Bank Data Catalog hazard raster, an OSM download) kept whatever
   CRS they arrived in (usually EPSG:4326) while everything else was in
@@ -60,6 +51,22 @@ Fix-only sweep on top of the still-unreleased 2.2.0 below.
   `constants.is_unconfigured_analysis_mode()`, which also still
   recognises the old `"Do Not Use"`/`""` values so projects saved
   before this version keep working unchanged.
+
+## [2.2.1] - 2026-11-24
+
+Fix-only sweep on top of the still-unreleased 2.2.0 below.
+
+### Fixed
+
+- Restoring a country pack bundle showed internal technical keys in the
+  QGIS legend instead of the original project's layer names (an
+  indicator's `id` slug, a fixed project-level key like `road_network`,
+  or a `{id}_result` key) - `model.json` already carries the original
+  title next to each key (an indicator's `indicator` field, a
+  factor/dimension's `name` field, or a project-level input's own
+  tracked `{prefix}_layer_name`), it just wasn't being read for the
+  legend. `layer_display_names()` in `country_pack_import.py`, used by
+  `ImportCountryPackTask._load_layers_into_project()`.
 - Reopening a project with already-computed results left the native
   QGIS Layers panel empty and nothing visible on the map, even though
   the GeoE3 panel's own tree still showed every item "Completed
