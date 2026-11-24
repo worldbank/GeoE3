@@ -51,7 +51,7 @@ _TEMPLATE_RESOURCE_PLACEHOLDERS = {
 
 # ---------------------------------------------------------------------------
 # Report design system — a clean, flat palette appropriate for a World Bank
-# publication (deliberately not vendor-branded).
+# Group publication (deliberately not vendor-branded).
 # ---------------------------------------------------------------------------
 NAVY = QColor("#002244")  # deep blue: header band, emphasis
 CYAN = QColor("#009FDA")  # accent: rules, chart bars
@@ -797,7 +797,7 @@ class BaseReport:
         )
         lead = self._label(
             "GeoE3 — Geospatial Enabling Environments for Employment — is an "
-            "open-source QGIS plugin developed by The World Bank to evaluate how "
+            "open-source QGIS plugin developed by The World Bank Group to evaluate how "
             "supportive locations are of employment and business opportunities.",
             MARGIN,
             HEADER_H + 10,
@@ -853,7 +853,7 @@ class BaseReport:
             "Developed by",
             "<p>Designed and directed by the <strong>Geospatial Operational Support "
             "Team (GOST)</strong> in the <strong>Development Economics Data Group "
-            "(DECDG)</strong> of The World Bank, and built together with "
+            "(DECDG)</strong> of The World Bank Group, and built together with "
             '<a href="https://kartoza.com">Kartoza</a>.</p>',
         )
         credit_card(
@@ -874,7 +874,7 @@ class BaseReport:
             "terms and citation requirements before republication.</p>",
         )
         self._label(
-            "Generated with GeoE3 for The World Bank",
+            "Generated with GeoE3 for The World Bank Group",
             MARGIN,
             230,
             CONTENT_W,

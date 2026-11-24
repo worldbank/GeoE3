@@ -32,7 +32,7 @@ close the gap.
   <img src="images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure: wind turbines, schools, clinics, transport, housing. Illustrates the spatial factors the GeoWEAF framework scores." style="max-width:360px;">
 </p>
 
-Developed by the World Bank, **GeoE3 (The Geospatial Enabling Environments
+Developed by the World Bank Group, **GeoE3 (The Geospatial Enabling Environments
 for Employment Spatial Tool)** is a powerful and user-friendly open-source
 spatial mapping tool that enables a comprehensive analysis of how various
 spatial factors influence employment and business opportunities in any

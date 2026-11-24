@@ -37,7 +37,7 @@ MAX_W_IN, MAX_H_IN = 6.25, 7.6
 
 REPLACEMENTS = {
     "{Project name}": "GeoE3 — Geospatial Enabling Environments for Employment",
-    "Kartoza (Pty) Ltd &amp; Kartoza Lda": "The World Bank · developed by Kartoza",
+    "Kartoza (Pty) Ltd &amp; Kartoza Lda": "The World Bank Group · developed by Kartoza",
     "{Type}": "Software Requirements Specification (SRS)",
     "{0.1}": "1.0.0",
     "{Name}": "Tim Sutton",
