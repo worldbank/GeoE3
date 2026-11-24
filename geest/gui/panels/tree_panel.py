@@ -2957,9 +2957,19 @@ class TreePanel(QWidget):
         attributes = item.attributes()
 
         if role == "indicator" and attributes.get("analysis_mode", "") == "Do Not Use":
-            attributes["factor_weighting"] = 0.0
-            attributes["result"] = "Excluded from analysis"
-            attributes["result_file"] = ""
+            # "Do Not Use" covers two different situations: the user
+            # explicitly disabled this indicator (disable() already
+            # zeroed its factor_weighting itself), or it simply hasn't
+            # been configured yet (factor_weighting is still at its
+            # normal default). Zeroing factor_weighting/marking it
+            # "Excluded from analysis" here used to conflate the two -
+            # running a factor whose children were merely unconfigured
+            # permanently excluded them from the analysis instead of
+            # just skipping this run, since getStatus() reads a zero
+            # factor_weighting as "Excluded from analysis" rather than
+            # "Required and not configured" (worldbank/GeoE3 field
+            # report, 2026-11-24). Just skip queuing it; nothing else
+            # here needs to change.
             log_message(
                 f"Skipping {item.attribute('id')} because it is set to 'Do Not Use'.",
                 tag="GeoE3",
