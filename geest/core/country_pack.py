@@ -696,6 +696,35 @@ def _float32_safe_nodata(path: str) -> Optional[float]:
     return FLOAT32_MAX if nodata > 0 else -FLOAT32_MAX
 
 
+def _study_area_target_srs(study_area_gpkg: str, study_area_layer: str) -> Optional[osr.SpatialReference]:
+    """The project's own CRS, read straight off the study area GeoPackage.
+
+    Every source bundled into a country pack is reprojected into this
+    CRS as it's written, rather than kept in whatever CRS it happened to
+    arrive in (a raw World Bank Data Catalog hazard raster or an OSM
+    download is EPSG:4326, while the project itself is usually a local
+    UTM zone) - a pack with every table in one consistent CRS is what a
+    generic tool (QGIS's Browser, a plain ogr2ogr/gdalinfo inspection)
+    expects; leaving some tables in their original CRS was confusing
+    even though each one was individually valid.
+
+    Args:
+        study_area_gpkg: Path to the study area GeoPackage.
+        study_area_layer: Name of the study area polygon layer to read
+            the CRS from.
+
+    Returns:
+        The layer's spatial reference, or None if it can't be
+        determined (no reprojection is attempted in that case - the
+        source's own CRS is kept, same as before this existed).
+    """
+    dataset = ogr.Open(study_area_gpkg)
+    if dataset is None:
+        return None
+    layer = dataset.GetLayerByName(study_area_layer)
+    return layer.GetSpatialRef() if layer else None
+
+
 def write_raster_source(
     source: PackSource,
     study_area_gpkg: str,
@@ -763,6 +792,18 @@ def write_raster_source(
                 "cutlineLayer": study_area_layer,
                 "cropToCutline": True,
             }
+        target_srs = _study_area_target_srs(study_area_gpkg, study_area_layer)
+        if target_srs is not None:
+            # Every raster lands in the project's own CRS instead of
+            # whichever one it arrived in (a raw World Bank Data Catalog
+            # hazard raster is EPSG:4326, the project is usually a local
+            # UTM zone) - "near" (nearest-neighbour) keeps every pixel's
+            # exact original value, matching the TILE_FORMAT=PNG8/Byte
+            # handling above - a smoothing resampler would blend
+            # discrete hazard class values into ones that were never in
+            # the source.
+            warp_kwargs["dstSRS"] = target_srs.ExportToWkt()
+            warp_kwargs["resampleAlg"] = "near"
         needs_float32 = _raster_needs_float32(source.path)
         if needs_float32:
             safe_nodata = _float32_safe_nodata(source.path)
@@ -905,15 +946,23 @@ def write_vector_source(
         # CRSes differ. Falls back to the file+layer form (the old,
         # same-CRS-only behaviour) only if the source's CRS genuinely
         # can't be determined.
-        target_srs = _source_vector_srs(base_path, source_layer_name, source.kind)
-        if target_srs is not None:
-            clip_options = ["-clipsrc", _clip_geometry_wkt(study_area_gpkg, study_area_layer, target_srs)]
+        source_srs_for_clip = _source_vector_srs(base_path, source_layer_name, source.kind)
+        if source_srs_for_clip is not None:
+            clip_options = ["-clipsrc", _clip_geometry_wkt(study_area_gpkg, study_area_layer, source_srs_for_clip)]
         else:
             clip_options = ["-clipsrc", study_area_gpkg, "-clipsrclayer", study_area_layer]
+
+    # Every table lands in the project's own CRS instead of whichever
+    # one it arrived in (an OSM download or ACLED CSV is EPSG:4326, the
+    # project is usually a local UTM zone) - see
+    # _study_area_target_srs()'s docstring.
+    target_srs = _study_area_target_srs(study_area_gpkg, study_area_layer)
     options = gdal.VectorTranslateOptions(
         format="GPKG",
         layerName=source.layer_name,
         accessMode="append" if append else None,
+        dstSRS=target_srs.ExportToWkt() if target_srs is not None else None,
+        reproject=target_srs is not None,
         options=clip_options + extra_options,
     )
     result = gdal.VectorTranslate(out_gpkg, source_ds, options=options)
