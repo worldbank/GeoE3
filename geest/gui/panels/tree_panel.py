@@ -1078,6 +1078,7 @@ class TreePanel(QWidget):
                 self.model.toggle_single_child_factors_visibility(hide_single_child=True)
                 self.treeView.expandAll()
                 log_message(f"Loaded model.json from {model_path}")
+                self._restore_completed_layers_to_map()
 
                 # If this is a first time use of the analysis project lets set some things up
                 analysis_item = self.model.get_analysis_item()
@@ -3327,6 +3328,18 @@ class TreePanel(QWidget):
         # strategy - always the plain (unmasked) product for "analysis",
         # same as on_item_clicked() and the carousel's "score" stop (see
         # _load_analysis_output()'s docstring for why).
+        self._add_item_result_to_map(item)
+
+        self._stop_item_spinner(item)
+
+    def _add_item_result_to_map(self, item) -> None:
+        """Add an item's computed layer to the map, using the render strategy for its role.
+
+        Shared by on_workflow_completed() (layer just finished computing) and
+        _restore_completed_layers_to_map() (project reopened - the geopackage
+        already has the result, it just was never re-added to this session's
+        QGIS project).
+        """
         if item.role == "dimension":
             column_name = f"dim_{item.attribute('id').lower().replace(' ', '_').replace('-', '_')}"
         elif item.role == "factor":
@@ -3343,7 +3356,30 @@ class TreePanel(QWidget):
         else:
             add_grid_layer_to_map(item, column_name, self.working_directory)
 
-        self._stop_item_spinner(item)
+    def _restore_completed_layers_to_map(self) -> None:
+        """Re-add every already-completed item's output layer to the QGIS project.
+
+        model.json records which items finished successfully, but closing
+        and reopening QGIS only rebuilds this panel's own tree widget from
+        that file - it never re-adds the matching output layers to
+        QgsProject, so a reopened project showed green checkmarks here with
+        an empty native Layers panel and nothing visible on the map.
+        """
+        analysis_item = self.model.get_analysis_item()
+        if not analysis_item:
+            return
+        completed_items = [
+            descendant
+            for descendant in (
+                analysis_item.getDescendantAnalyses()
+                + analysis_item.getDescendantDimensions()
+                + analysis_item.getDescendantFactors()
+                + analysis_item.getDescendantIndicators()
+            )
+            if descendant.getStatus() == "Completed successfully"
+        ]
+        for completed_item in completed_items:
+            self._add_item_result_to_map(completed_item)
 
     def _stop_item_spinner(self, item) -> None:
         """Stop the animated throbber on_workflow_started() placed on
