@@ -797,7 +797,7 @@ def write_raster_source(
             # Every raster lands in the project's own CRS instead of
             # whichever one it arrived in (a raw World Bank Data Catalog
             # hazard raster is EPSG:4326, the project is usually a local
-            # UTM zone) - "near" (nearest-neighbour) keeps every pixel's
+            # UTM zone) - "near" (nearest-neighbor) keeps every pixel's
             # exact original value, matching the TILE_FORMAT=PNG8/Byte
             # handling above - a smoothing resampler would blend
             # discrete hazard class values into ones that were never in

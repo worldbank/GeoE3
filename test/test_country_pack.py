@@ -921,7 +921,7 @@ class TestWriteSourcesReprojectIntoTheProjectCrs(unittest.TestCase):
         self.assertEqual(srs.GetAuthorityCode(None), "32620")
 
     def test_raster_values_are_unchanged_by_the_reprojection(self):
-        """Nearest-neighbour resampling, not the default smoothing
+        """Nearest-neighbor resampling, not the default smoothing
         resampler, so reprojecting doesn't blend discrete hazard values
         into ones that were never in the source."""
         source = PackSource("cyclone_test", self.raster_path, "raster", clip=False)

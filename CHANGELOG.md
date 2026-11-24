@@ -30,6 +30,17 @@ Fix-only sweep on top of the still-unreleased 2.2.0 below.
   tracked `{prefix}_layer_name`), it just wasn't being read for the
   legend. `layer_display_names()` in `country_pack_import.py`, used by
   `ImportCountryPackTask._load_layers_into_project()`.
+- A country pack bundle mixed CRSes - raw input rasters/vectors (a
+  World Bank Data Catalog hazard raster, an OSM download) kept whatever
+  CRS they arrived in (usually EPSG:4326) while everything else was in
+  the project's own local CRS. Each table was individually valid, but
+  opening the bundle with a tool that isn't CRS-aware per table (e.g.
+  dragging a raster "tiles" table into QGIS via DB Manager, which has
+  no raster awareness and reads it as a plain non-spatial table) showed
+  "no coordinate reference system set". Every `write_raster_source()`/
+  `write_vector_source()` call now reprojects into the study area's own
+  CRS (nearest-neighbor for rasters, so discrete hazard values aren't
+  blended). `country_pack._study_area_target_srs()`.
 - Reopening a project with already-computed results left the native
   QGIS Layers panel empty and nothing visible on the map, even though
   the GeoE3 panel's own tree still showed every item "Completed
