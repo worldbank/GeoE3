@@ -41,6 +41,15 @@ Fix-only sweep on top of the still-unreleased 2.2.0 below.
   `write_vector_source()` call now reprojects into the study area's own
   CRS (nearest-neighbor for rasters, so discrete hazard values aren't
   blended). `country_pack._study_area_target_srs()`.
+- Running a factor/dimension whose child indicators were merely
+  unconfigured (not explicitly disabled) permanently excluded every one
+  of them from the analysis, and the factor along with them once every
+  child's weighting summed to zero - `queue_workflow_task()`'s "Do Not
+  Use" skip conflated "the user disabled this" with "this was never
+  configured yet", zeroing `factor_weighting` and marking it "Excluded
+  from analysis" for both. Configuring the indicator afterwards no
+  longer helped, since its weighting stayed zeroed. The skip no longer
+  mutates anything - it just doesn't queue a workflow for it.
 - Reopening a project with already-computed results left the native
   QGIS Layers panel empty and nothing visible on the map, even though
   the GeoE3 panel's own tree still showed every item "Completed
