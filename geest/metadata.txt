@@ -11,11 +11,11 @@ repository = https://github.com/worldbank/GEOE3
 tags =
 category = ['plugins']
 hasProcessingProvider = no
-about = The Geospatial Enabling Environments for Employment Spatial Tool, developed by the World Bank, supports the evaluation of locations based on its supportiveness for employment and entrepreneurship. It allows for a generic analysis of foundational infrastructure and mobility aspects but also supports the inclusion of women specific considerations that can act as barriers in their economic empowerment. By analyzing spatial factors across three dimensions (Contextual/ Accessibility and Place Characterization) GeoE3 is a stepping stone to identifying the critical employment investments required in cities and regions.
-author = Kartoza for and with The World Bank
+about = The Geospatial Enabling Environments for Employment Spatial Tool, developed by the World Bank Group, supports the evaluation of locations based on its supportiveness for employment and entrepreneurship. It allows for a generic analysis of foundational infrastructure and mobility aspects but also supports the inclusion of women specific considerations that can act as barriers in their economic empowerment. By analyzing spatial factors across three dimensions (Contextual/ Accessibility and Place Characterization) GeoE3 is a stepping stone to identifying the critical employment investments required in cities and regions.
+author = Kartoza for and with The World Bank Group
 email = info@kartoza.com, gost@worldbank.org
 description = Geospatial Enabling Environments for Employment Spatial Tool
-version = 2.2.0
+version = 2.2.1
 changelog = Version 2.0.6 - QGIS 4 Compatibility & Reliability Fixes
 
 	## Bug Fixes
