@@ -204,6 +204,47 @@ def check_grid_completeness(working_directory: Optional[str]) -> list:
     return []
 
 
+def study_area_setup_complete(working_directory: Optional[str]) -> bool:
+    """True once study area creation actually produced usable outputs.
+
+    model.json is written early in the Create Project wizard, well before
+    the study area GeoPackage/grid is built - so its mere presence can't
+    tell a finished project from one where step 1 failed partway through.
+    Used to decide whether reopening a project should land on the
+    indicator tree (ready to analyse) or back on the Create Project
+    wizard (worldbank/GeoE3 #535: a failed study area creation left the
+    user on the indicator tree "as if ready to run", with none of the
+    previous steps actually set up).
+
+    This is a point-in-time check for a previous session's finished (or
+    abandoned) project, not a replacement for CreateProjectPanel's own
+    polling readiness check during an in-progress run (which additionally
+    guards against reading a GeoPackage mid-write, a race that can't
+    happen here).
+
+    Args:
+        working_directory: The project's working directory, or None/"".
+
+    Returns:
+        True if study_area.gpkg exists and its study_area_polygons table
+        has at least one feature.
+    """
+    if not working_directory:
+        return False
+    gpkg_path = os.path.join(working_directory, "study_area", "study_area.gpkg")
+    if not os.path.exists(gpkg_path):
+        return False
+    try:
+        connection = sqlite3.connect(gpkg_path, timeout=0.2)
+        try:
+            row = connection.execute("SELECT COUNT(*) FROM study_area_polygons").fetchone()
+            return bool(row and row[0] > 0)
+        finally:
+            connection.close()
+    except sqlite3.Error:
+        return False
+
+
 def check_network_layer(road_network_layer_path: Optional[str], indicator_attributes_in_scope) -> list:
     """The road network layer must be set and reachable, if anything in scope actually needs it.
 

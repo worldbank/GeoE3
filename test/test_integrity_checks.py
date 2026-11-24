@@ -18,6 +18,7 @@ from geest.core.integrity_checks import (
     is_well_formed_model,
     load_model_json_with_repair,
     save_model_json_atomically,
+    study_area_setup_complete,
 )
 
 
@@ -94,6 +95,34 @@ def _make_study_area_gpkg(path, area_polygons, grid_area_names):
         connection.commit()
     finally:
         connection.close()
+
+
+class TestStudyAreaSetupComplete(unittest.TestCase):
+    def setUp(self):
+        self.tmp_dir = tempfile.mkdtemp(prefix="geoe3_integrity_setup_complete_test_")
+        self.addCleanup(shutil.rmtree, self.tmp_dir, ignore_errors=True)
+        self.study_area_dir = os.path.join(self.tmp_dir, "study_area")
+        os.makedirs(self.study_area_dir)
+        self.gpkg_path = os.path.join(self.study_area_dir, "study_area.gpkg")
+
+    def test_no_working_directory_is_incomplete(self):
+        self.assertFalse(study_area_setup_complete(None))
+        self.assertFalse(study_area_setup_complete(""))
+
+    def test_no_study_area_gpkg_yet_is_incomplete(self):
+        """A model.json copied by the wizard before study area creation ran at all."""
+        self.assertFalse(study_area_setup_complete(self.tmp_dir))
+
+    def test_gpkg_with_no_polygons_is_incomplete(self):
+        """Study area creation failed partway through - the gpkg exists but is empty."""
+        _make_study_area_gpkg(self.gpkg_path, [], grid_area_names=[])
+
+        self.assertFalse(study_area_setup_complete(self.tmp_dir))
+
+    def test_gpkg_with_polygons_is_complete(self):
+        _make_study_area_gpkg(self.gpkg_path, [("AreaOne", 1)], grid_area_names=["AreaOne"])
+
+        self.assertTrue(study_area_setup_complete(self.tmp_dir))
 
 
 class TestCheckGridCompleteness(unittest.TestCase):
