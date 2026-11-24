@@ -51,6 +51,14 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   `constants.is_unconfigured_analysis_mode()`, which also still
   recognises the old `"Do Not Use"`/`""` values so projects saved
   before this version keep working unchanged.
+- The context menu's "Run Item Workflow" stayed clickable for a factor/
+  dimension whose indicators were all unconfigured (or all disabled) -
+  clicking it did nothing visible, since every indicator in scope just
+  got silently skipped. The action is now greyed out in that case,
+  matching how Run All already behaves, instead of letting the user
+  click into a no-op. `TreePanel._run_item_action_state()`; `run_item()`
+  itself also refuses to start for the same reason, as a second line of
+  defence.
 
 ## [2.2.1] - 2026-11-24
 
