@@ -49,7 +49,17 @@ Fix-only sweep on top of the still-unreleased 2.2.0 below.
   configured yet", zeroing `factor_weighting` and marking it "Excluded
   from analysis" for both. Configuring the indicator afterwards no
   longer helped, since its weighting stayed zeroed. The skip no longer
-  mutates anything - it just doesn't queue a workflow for it.
+  mutates anything - it just doesn't queue a workflow for it. Root
+  cause: `analysis_mode` used the single value `"Do Not Use"` for both
+  "the user disabled this" and "this was never configured yet", so
+  nothing could reliably tell the two apart. A fresh/reset dimension,
+  factor or indicator is now given a distinct `"Not Configured"` value
+  instead (`disable()` still writes `"Do Not Use"` - that one case is
+  now unambiguous); every check across the codebase that cared about
+  "is this not usable" now goes through one shared
+  `constants.is_unconfigured_analysis_mode()`, which also still
+  recognises the old `"Do Not Use"`/`""` values so projects saved
+  before this version keep working unchanged.
 - Reopening a project with already-computed results left the native
   QGIS Layers panel empty and nothing visible on the map, even though
   the GeoE3 panel's own tree still showed every item "Completed
