@@ -19,6 +19,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from osgeo import ogr, osr
 
@@ -92,6 +93,19 @@ class TestAreaIteratorSkipsUnpopulatedAreas(unittest.TestCase):
             progresses = [progress for _, _, _, progress, _ in iterator]
 
         self.assertEqual(progresses, [100.0])
+
+    def test_gpkg_layers_are_opened_under_the_shared_access_lock(self):
+        """Two independent GDAL/OGR connections racing to open the same
+        study_area.gpkg (this iterator's read vs. a concurrent workflow's
+        grid write) has been seen in the field as a Windows access
+        violation later, inside getFeatures() on the handle one of them
+        got back. Opening under the same lock grid writes use closes that
+        race (worldbank/GeoE3 #534, #535)."""
+        with patch("geest.core.algorithms.area_iterator.gpkg_access_lock") as mock_lock_getter:
+            AreaIterator(self.gpkg_path)
+            mock_lock_getter.assert_called_once()
+            mock_lock_getter.return_value.__enter__.assert_called_once()
+            mock_lock_getter.return_value.__exit__.assert_called_once()
 
 
 class TestAreaIteratorUnpartitionedGridIsNeverFiltered(unittest.TestCase):
