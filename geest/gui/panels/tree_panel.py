@@ -1396,6 +1396,25 @@ class TreePanel(QWidget):
         self.load_json()
         self.apply_women_considerations_logic()
 
+    @staticmethod
+    def _factor_is_manually_disabled(factor) -> bool:
+        """True if a factor - or its promoted single indicator - was explicitly disabled.
+
+        A single-indicator factor (e.g. FCV) is hidden from the tree in
+        favour of its one child indicator (toggle_single_child_factors_
+        visibility()), so disabling it from the UI actually disables that
+        indicator, not the factor itself. Without this, the factor's own
+        analysis_mode stays untouched and apply_women_considerations_logic()
+        silently re-enabled it on every reload (worldbank/GeoE3 #540).
+        """
+        if factor.attribute("analysis_mode", "") == "Do Not Use":
+            return True
+        if factor.childCount() == 1:
+            only_child = factor.child(0)
+            if only_child and only_child.attribute("analysis_mode", "") == "Do Not Use":
+                return True
+        return False
+
     def apply_women_considerations_logic(self):
         """Apply factor enabled/disabled state based on women considerations setting.
 
@@ -1482,7 +1501,7 @@ class TreePanel(QWidget):
                 for idx in range(dimension.childCount())
                 if dimension.child(idx)
                 and dimension.child(idx).is_enabled()
-                and dimension.child(idx).attribute("analysis_mode", "") != "Do Not Use"
+                and not self._factor_is_manually_disabled(dimension.child(idx))
             ]
             if enabled_factors:
                 equal_weight = 1.0 / len(enabled_factors)
@@ -1493,7 +1512,7 @@ class TreePanel(QWidget):
                 factor = dimension.child(factor_idx)
                 if not factor:
                     continue
-                is_manually_disabled = factor.attribute("analysis_mode", "") == "Do Not Use"
+                is_manually_disabled = self._factor_is_manually_disabled(factor)
                 new_weight = equal_weight if factor.is_enabled() and not is_manually_disabled else 0.0
                 root_item.updateFactorWeighting(factor.guid, new_weight)
 
