@@ -1539,6 +1539,20 @@ class TreePanel(QWidget):
         "Workflow failed",
     }
 
+    #: Statuses meaning an indicator was actually configured (so running
+    #: it does something): already computed, waiting to compute, or
+    #: attempted and failed (re-running makes sense). Deliberately
+    #: narrower than RUN_ALL_ALLOWED_STATUSES, which also allows
+    #: "Excluded from analysis" through for Run All's bulk gate - here,
+    #: a factor whose indicators are all either disabled or unconfigured
+    #: has nothing to run at all, even though neither alone blocks Run
+    #: All.
+    _USABLE_INDICATOR_STATUSES = {
+        "Configured, not run",
+        "Completed successfully",
+        "Workflow failed",
+    }
+
     #: Icon file (under geest/resources/icons/) matching each blocking
     #: status - the exact same icon JsonTreeItem.getStatusIcon() shows
     #: next to that indicator in the tree, so the info panel's hint
@@ -3078,10 +3092,12 @@ class TreePanel(QWidget):
     def _run_item_action_state(self, item, shift_pressed: bool):
         """Whether the context menu's "Run Item Workflow" action should be enabled for this item.
 
-        Same integrity-check scope run_item() itself would check before
-        starting - computed here too so the context menu action is
-        already disabled, rather than letting the user click it and then
-        showing why it didn't start.
+        Same checks run_item() itself would make before starting -
+        computed here too so the context menu action is already
+        disabled, rather than letting the user click it and then
+        showing why it didn't start (or, for the configuredness check,
+        letting them click it and have nothing visibly happen at all -
+        every indicator in scope gets silently skipped rather than run).
 
         Args:
             item: The tree item the context menu was opened on.
@@ -3094,7 +3110,13 @@ class TreePanel(QWidget):
         """
         indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
         problems = self._collect_integrity_problems(indicators_in_scope)
-        return not problems, "; ".join(p.message for p in problems)
+        if problems:
+            return False, "; ".join(p.message for p in problems)
+        if indicators_in_scope and not any(
+            indicator.getStatus() in TreePanel._USABLE_INDICATOR_STATUSES for indicator in indicators_in_scope
+        ):
+            return False, f"'{item.data(0)}' has no configured indicators to run."
+        return True, ""
 
     def run_item(self, item, shift_pressed):
         """Run the item and the ones below it.
@@ -3109,6 +3131,25 @@ class TreePanel(QWidget):
         """
         indicators_in_scope = item.getDescendantIndicators(include_completed=shift_pressed, include_disabled=False)
         if self._block_run_if_needed(indicators_in_scope, f"Can't run '{item.data(0)}'"):
+            return
+        if indicators_in_scope and not any(
+            indicator.getStatus() in TreePanel._USABLE_INDICATOR_STATUSES for indicator in indicators_in_scope
+        ):
+            # Belt and braces: the context menu action is already disabled
+            # for this case (_run_item_action_state()), but run_item()
+            # can also be reached via other paths (e.g. a keyboard
+            # shortcut) - never silently queue a run that would skip
+            # every single indicator in scope.
+            self.item_info_panel.show_blocked(
+                f"Can't run '{item.data(0)}'",
+                "",
+                [
+                    (
+                        f"'{item.data(0)}' has no configured indicators to run.",
+                        resources_path("resources", "icons", "required-not-configured.svg"),
+                    )
+                ],
+            )
             return
 
         self.items_to_run = 0
