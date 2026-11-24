@@ -1139,9 +1139,12 @@ class TreePanel(QWidget):
         # shown here so the user sees it without having to click anything.
         load_problems = getattr(self, "_model_load_problems", [])
         if load_problems:
-            self.item_info_panel.show_blocked(
-                "Your project needed repair", "", [(p.message, p.icon) for p in load_problems]
+            title = (
+                "Your project could not be loaded"
+                if any(p.key == "model_json_corrupt" for p in load_problems)
+                else "Your project needed repair"
             )
+            self.item_info_panel.show_blocked(title, "", [(p.message, p.icon) for p in load_problems])
         self._update_run_all_button_state()
 
     def check_study_area_gpkg_health(self, reason: str = "") -> None:
