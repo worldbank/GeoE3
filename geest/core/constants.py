@@ -156,3 +156,39 @@ DEFAULT_S2S_URBAN_RURAL_MEASURES = {
     "urban": "Urban population share",
     "rural": "Rural population share",
 }
+
+# analysis_mode written for a fresh/reset dimension, factor or indicator
+# that hasn't had a real mode picked yet - distinct from "Do Not Use"
+# (JsonTreeItem.disable(), and the "indicator required?" No radio button),
+# which now means the user explicitly turned this off. The two used to
+# share the single "Do Not Use" value, so running a factor whose children
+# were merely unconfigured (never touched) was indistinguishable from one
+# the user had deliberately disabled (worldbank/GeoE3 field report,
+# 2026-11-24).
+UNCONFIGURED_ANALYSIS_MODE = "Not Configured"
+
+#: Every analysis_mode value meaning "nothing usable has been picked yet",
+#: old and new: "" (JsonTreeItem.enable()'s pre-2.2.1 reset value) and
+#: "Do Not Use" (the pre-2.2.1 default for a never-configured item, still
+#: present in any project saved before this version - there is no way to
+#: tell, after the fact, whether an old "Do Not Use" meant "never touched"
+#: or "the user disabled it", and every consumer already treats both the
+#: same way, so none is attempted) are kept alongside the new sentinel
+#: rather than migrated.
+UNCONFIGURED_ANALYSIS_MODES = frozenset({"", "Do Not Use", UNCONFIGURED_ANALYSIS_MODE})
+
+
+def is_unconfigured_analysis_mode(analysis_mode: str) -> bool:
+    """True if analysis_mode means "nothing usable has been picked yet".
+
+    The single source of truth for this check - see
+    UNCONFIGURED_ANALYSIS_MODES's docstring for exactly which values that
+    covers and why.
+
+    Args:
+        analysis_mode: An item's "analysis_mode" attribute value.
+
+    Returns:
+        True if analysis_mode is unconfigured (old or new sentinel).
+    """
+    return analysis_mode in UNCONFIGURED_ANALYSIS_MODES

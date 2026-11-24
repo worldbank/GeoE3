@@ -10,6 +10,8 @@ import json
 
 import pandas as pd
 
+from geest.core.constants import UNCONFIGURED_ANALYSIS_MODE
+
 
 class SpreadsheetToJsonParser:
     """🎯 Spreadsheet To Json Parser.
@@ -240,7 +242,7 @@ class SpreadsheetToJsonParser:
                     row["Use Environmental Hazards"] if not pd.isna(row["Use Environmental Hazards"]) else ""
                 ),
                 "use_street_lights": (row["Use Street Lights"] if not pd.isna(row["Use Street Lights"]) else ""),
-                "analysis_mode": "Do Not Use",
+                "analysis_mode": UNCONFIGURED_ANALYSIS_MODE,
             }
 
             factor_map[factor]["indicators"].append(indicator_data)

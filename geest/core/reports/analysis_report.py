@@ -29,7 +29,7 @@ from qgis.PyQt.QtCore import QRectF, Qt
 from qgis.PyQt.QtGui import QColor, QImage, QPainter
 
 from geest.core import sparkline_data
-from geest.core.constants import GEOE3_BY_POPULATION_COLORS, SCORE_LEGEND_COLORS
+from geest.core.constants import GEOE3_BY_POPULATION_COLORS, SCORE_LEGEND_COLORS, is_unconfigured_analysis_mode
 from geest.core.settings import setting
 from geest.utilities import log_message, resources_path
 
@@ -1117,7 +1117,7 @@ class AnalysisReport(BaseReport):
             bool: True if at least one indicator is used.
         """
         for indicator in factor.get("indicators", []):
-            if indicator.get("analysis_mode", "") != "Do Not Use":
+            if not is_unconfigured_analysis_mode(indicator.get("analysis_mode", "")):
                 return True
         return False
 
@@ -1245,7 +1245,7 @@ class AnalysisReport(BaseReport):
                 used_indicators = [
                     indicator
                     for indicator in factor.get("indicators", [])
-                    if indicator.get("analysis_mode", "") != "Do Not Use"
+                    if not is_unconfigured_analysis_mode(indicator.get("analysis_mode", ""))
                 ]
                 # A factor with a single indicator produces the same surface
                 # as that indicator — skip the redundant one-cell grid.
@@ -1368,7 +1368,7 @@ class AnalysisReport(BaseReport):
                 for indicator in factor.get("indicators", []):
                     # Skip indicators that are not used
                     analysis_mode = indicator.get("analysis_mode", "")
-                    if analysis_mode == "Do Not Use":
+                    if is_unconfigured_analysis_mode(analysis_mode):
                         continue
 
                     ind_name = indicator.get("indicator", "")

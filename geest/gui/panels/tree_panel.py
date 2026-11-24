@@ -59,7 +59,7 @@ from geest.core.algorithms import (
     WEEByPopulationScoreProcessingTask,
 )
 from geest.core.analysis_outputs import ANALYSIS_OUTPUT_STOPS
-from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD
+from geest.core.constants import DEFAULT_S2S_POPULATION_FIELD, is_unconfigured_analysis_mode
 from geest.core.country_pack import all_sources
 from geest.core.i18n import tr
 from geest.core.integrity_checks import (
@@ -2956,22 +2956,21 @@ class TreePanel(QWidget):
 
         attributes = item.attributes()
 
-        if role == "indicator" and attributes.get("analysis_mode", "") == "Do Not Use":
-            # "Do Not Use" covers two different situations: the user
-            # explicitly disabled this indicator (disable() already
-            # zeroed its factor_weighting itself), or it simply hasn't
-            # been configured yet (factor_weighting is still at its
-            # normal default). Zeroing factor_weighting/marking it
-            # "Excluded from analysis" here used to conflate the two -
-            # running a factor whose children were merely unconfigured
-            # permanently excluded them from the analysis instead of
-            # just skipping this run, since getStatus() reads a zero
-            # factor_weighting as "Excluded from analysis" rather than
-            # "Required and not configured" (worldbank/GeoE3 field
-            # report, 2026-11-24). Just skip queuing it; nothing else
-            # here needs to change.
+        if role == "indicator" and is_unconfigured_analysis_mode(attributes.get("analysis_mode", "")):
+            # Covers both "the user explicitly disabled this" (disable()
+            # already zeroed its factor_weighting itself) and "it simply
+            # hasn't been configured yet" (factor_weighting is still at
+            # its normal default) - see is_unconfigured_analysis_mode()'s
+            # docstring. Zeroing factor_weighting/marking it "Excluded
+            # from analysis" here used to conflate the two - running a
+            # factor whose children were merely unconfigured permanently
+            # excluded them from the analysis instead of just skipping
+            # this run, since getStatus() reads a zero factor_weighting
+            # as "Excluded from analysis" rather than "Required and not
+            # configured" (worldbank/GeoE3 field report, 2026-11-24).
+            # Just skip queuing it; nothing else here needs to change.
             log_message(
-                f"Skipping {item.attribute('id')} because it is set to 'Do Not Use'.",
+                f"Skipping {item.attribute('id')} - no analysis mode configured.",
                 tag="GeoE3",
                 level=Qgis.Info,
             )

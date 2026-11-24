@@ -6,6 +6,7 @@ This module contains functionality for workflow factory.
 
 from qgis.core import Qgis, QgsFeedback, QgsProcessingContext
 
+from geest.core.constants import is_unconfigured_analysis_mode
 from geest.core.workflows import (
     AcledImpactWorkflow,
     AnalysisAggregationWorkflow,
@@ -92,7 +93,7 @@ class WorkflowFactory:
                 return IndexScoreWithOoklaWorkflow(item, cell_size_m, analysis_scale, feedback, context)
             elif analysis_mode == "use_index_score_with_ghsl":
                 return IndexScoreWithGHSLWorkflow(item, cell_size_m, analysis_scale, feedback, context)
-            elif analysis_mode == "Do Not Use":
+            elif is_unconfigured_analysis_mode(analysis_mode):
                 return DontUseWorkflow(item, cell_size_m, analysis_scale, feedback, context)
             elif analysis_mode == "use_multi_buffer_point":
                 use_ors = setting(key="use_ors_for_accessibility", default=False)

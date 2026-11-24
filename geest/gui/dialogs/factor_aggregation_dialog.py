@@ -29,6 +29,7 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
+from geest.core.constants import is_unconfigured_analysis_mode
 from geest.core.json_tree_item import JsonTreeItem as tree_item
 from geest.gui.widgets import CustomBannerLabel
 from geest.utilities import (
@@ -88,9 +89,7 @@ class FactorAggregationDialog(CustomBaseDialog):
         # and set it to the first available usable mode
         for guid in self.guids:
             item = self.tree_item.getItemByGuid(guid)
-            if item and (
-                not item.attribute("analysis_mode", "") or item.attribute("analysis_mode", "") == "Do Not Use"
-            ):
+            if item and (is_unconfigured_analysis_mode(item.attribute("analysis_mode", ""))):
                 item.ensureValidAnalysisMode()
 
         self.weightings = {}  # Temporary weightings
@@ -451,7 +450,7 @@ class FactorAggregationDialog(CustomBaseDialog):
                 is_included_in_analysis = (
                     item.getStatus() != "Excluded from analysis"
                     and weighting_value > 0
-                    and attributes.get("analysis_mode", "") != "Do Not Use"
+                    and not is_unconfigured_analysis_mode(attributes.get("analysis_mode", ""))
                 )
                 weighting_item = QDoubleSpinBox()
                 weighting_item.setRange(0.0, 1.0)
@@ -467,7 +466,7 @@ class FactorAggregationDialog(CustomBaseDialog):
                 is_included_in_analysis = (
                     item.getStatus() != "Excluded from analysis"
                     and weighting_value > 0
-                    and attributes.get("analysis_mode", "") != "Do Not Use"
+                    and not is_unconfigured_analysis_mode(attributes.get("analysis_mode", ""))
                 )
                 checkbox_widget = self.create_checkbox_widget(row, is_included_in_analysis)
             self.table.setCellWidget(row, self.col_use, checkbox_widget)
@@ -650,16 +649,17 @@ class FactorAggregationDialog(CustomBaseDialog):
 
             analysis_mode = indicator_item.attribute("analysis_mode", "")
             old_weighting = float(indicator_item.attribute("factor_weighting", 0.0) or 0.0)
-            was_enabled = analysis_mode != "Do Not Use" and old_weighting > 0.0
+            was_enabled = not is_unconfigured_analysis_mode(analysis_mode) and old_weighting > 0.0
 
-            # If user explicitly re-enables an indicator that was disabled via
-            # analysis_mode="Do Not Use", restore a valid mode first.
-            if checkbox_checked and analysis_mode == "Do Not Use":
+            # If user explicitly re-enables an indicator with no usable
+            # analysis mode yet (disabled, or simply never configured),
+            # restore a valid mode first.
+            if checkbox_checked and is_unconfigured_analysis_mode(analysis_mode):
                 indicator_item.ensureValidAnalysisMode()
                 analysis_mode = indicator_item.attribute("analysis_mode", "")
 
             # No usable analysis mode could be restored; keep it disabled.
-            if analysis_mode == "Do Not Use":
+            if is_unconfigured_analysis_mode(analysis_mode):
                 checkbox_checked = False
 
             new_weighting = old_weighting
@@ -670,7 +670,7 @@ class FactorAggregationDialog(CustomBaseDialog):
             else:
                 new_weighting = 0.0
 
-            will_be_enabled = analysis_mode != "Do Not Use" and new_weighting > 0.0
+            will_be_enabled = not is_unconfigured_analysis_mode(analysis_mode) and new_weighting > 0.0
             if was_enabled != will_be_enabled:
                 indicator_item.clear(recursive=False)
 

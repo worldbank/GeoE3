@@ -221,7 +221,7 @@ class TestJsonTreeItem(unittest.TestCase):
         self.assertEqual(item.attribute("factor_weighting"), 0.0)
 
         item.enable()
-        self.assertEqual(item.attribute("analysis_mode"), "")
+        self.assertEqual(item.attribute("analysis_mode"), "Not Configured")
         self.assertEqual(item.attribute("factor_weighting"), 1.0)
 
     def test_disable_factor_preserves_exclusion_state(self):
