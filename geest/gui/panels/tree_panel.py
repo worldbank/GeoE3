@@ -3148,6 +3148,33 @@ class TreePanel(QWidget):
         log_message(f"Total workflows to run: {self.items_to_run}")
         self.overall_progress_bar.setMaximum(self.items_to_run)
 
+        if self.items_to_run == 0:
+            # Everything in scope already has a result and run_only_incomplete
+            # (a plain, non-Shift Run) skips it - without this, clicking Run
+            # right after changing a setting (e.g. the analysis item's mask)
+            # silently did nothing at all, with no indication why
+            # (worldbank/GeoE3 #541).
+            self.overall_progress_bar.setVisible(False)
+            self.workflow_progress_bar.setVisible(False)
+            self.status_label.setVisible(False)
+            self.item_info_panel.hide_progress()
+            self.prepare_analysis_button.setVisible(True)
+            self.help_button.setVisible(True)
+            self.project_button.setVisible(True)
+            try:
+                iface.messageBar().pushMessage(
+                    tr("GeoE3"),
+                    tr(
+                        "Nothing to run - '{name}' already has a result. "
+                        "Hold Shift and click Run to force a full re-run."
+                    ).format(name=item.data(0)),
+                    level=Qgis.Info,
+                    duration=10,
+                )
+            except Exception:  # nosec B110 — headless/test environments have no iface
+                pass
+            return
+
         self.workflow_queue = workflow_queue
         self.run_next_workflow_queue()
 
