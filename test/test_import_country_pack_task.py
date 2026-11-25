@@ -200,9 +200,21 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
         # The result layer's display name is the indicator's pretty title,
         # not its "{id}_result" internal key (see
         # test_result_layers_use_the_pretty_title_not_the_result_suffix) -
-        # same lookup a live run's own add_to_map() would use.
+        # same lookup a live run's own add_to_map() would use. That's
+        # also the indicator's own raw input display name (both show the
+        # original project's title, by design - see
+        # test_layer_names_preserve_the_original_project_titles_not_internal_keys),
+        # so a name-only lookup across the whole project is ambiguous
+        # between the two and non-deterministic (QGIS layer IDs are
+        # random, and mapLayers() iterates in ID order) - this is a real
+        # bug this test hit flakily in CI (worldbank/GeoE3 PR #546,
+        # 2026-11-25). Disambiguate by group instead: only the "GeoE3
+        # Results" group can contain it.
+        results_group = QgsProject.instance().layerTreeRoot().findGroup("GeoE3 Results")
         result_layer = next(
-            layer for layer in QgsProject.instance().mapLayers().values() if layer.name() == "Generic Raster Indicator"
+            QgsProject.instance().mapLayer(node.layerId())
+            for node in results_group.findLayers()
+            if QgsProject.instance().mapLayer(node.layerId()).name() == "Generic Raster Indicator"
         )
         # indicator.qml sets a singlebandpseudocolor renderer - a freshly
         # loaded raster never gets that renderer on its own, so this only
