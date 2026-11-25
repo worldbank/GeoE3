@@ -112,14 +112,22 @@ class WorkflowQueueManager(QObject):
             )
         except WorkflowNotConfiguredError as error:
             # The workflow declined the job (e.g. no data source configured
-            # for the indicator) — skip it rather than crash the run.
+            # for the indicator) — skip it rather than crash the run. The
+            # caller (TreePanel.queue_workflow_task()) already shows its
+            # own, more specific "'<name>' was skipped — <reason>" message
+            # bar for every `None` return from this method - emitting
+            # processing_error here too duplicated that as a second,
+            # more generic notification (worldbank/GeoE3 field report,
+            # 2026-11-25: a red "GeoE3 Processing Error" bar in the panel
+            # and a yellow one in the main QGIS window for the exact same
+            # failure). _mark_item_errored() below already covers the
+            # tree's own icon/tooltip feedback.
             log_message(
                 f"Skipping {item.attribute('id', item.guid)}: {error}",
                 tag="GeoE3",
                 level=Qgis.Warning,
             )
             self._mark_item_errored(item, str(error))
-            self.processing_error.emit(str(error))
             return None
         except Exception as error:  # one broken indicator must never abort the run
             log_message(
@@ -133,7 +141,6 @@ class WorkflowQueueManager(QObject):
                 "Check its data source configuration and run it again."
             )
             self._mark_item_errored(item, message)
-            self.processing_error.emit(message)
             return None
         self.workflow_queue.add_job(task)
         log_message(f"Task added: {task.description()}")
