@@ -59,6 +59,14 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   click into a no-op. `TreePanel._run_item_action_state()`; `run_item()`
   itself also refuses to start for the same reason, as a second line of
   defence.
+- Clearing a datasource widget's layer selector (selecting "no layer",
+  then clicking OK) didn't actually un-configure the indicator: only an
+  unused `"{widget_key}_layer"` key ever got cleared, so
+  `"_layer_id"`/`"_layer_source"`/etc. stayed at their previous value -
+  the indicator still read as "configured", and reopening the dialog
+  silently re-selected the old layer as if nothing had changed. Fixed
+  in `VectorDataSourceWidget`, `VectorAndFieldDataSourceWidget` and
+  `RasterDataSourceWidget`'s `update_attributes()`.
 
 ## [2.2.1] - 2026-11-24
 
