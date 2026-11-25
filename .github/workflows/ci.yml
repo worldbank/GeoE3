@@ -31,10 +31,11 @@ jobs:
           - release-3_32
           - release-3_34
           - release-3_36
-          #- "3.38"
-          #- "3.40"
-          #- "3.42"
-          #- "3.44"
+          # Docker Hub drops the "release-3_XX" naming past 3.36 - these
+          # are plain version tags instead (must be quoted, else YAML
+          # parses them as floats).
+          - "3.44"
+          - "4.4"
         #os: [ubuntu-24.04]
         os: [ubuntu-22.04]
 
