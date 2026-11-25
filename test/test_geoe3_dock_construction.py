@@ -16,7 +16,7 @@ QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 from qgis.PyQt.QtCore import Qt  # noqa: E402
 
 from geest import _dock_area_to_int, _to_dock_widget_area  # noqa: E402
-from geest.gui.geoe3_dock import GeoE3Dock  # noqa: E402
+from geest.gui.geoe3_dock import CREDITS_PANEL, SETUP_PANEL, TREE_PANEL, GeoE3Dock  # noqa: E402
 from geest.utilities import resources_path  # noqa: E402
 
 
@@ -44,6 +44,29 @@ class TestGeoE3DockConstruction(unittest.TestCase):
                 before,
                 f"panel switched despite invalid working directory {stale!r}",
             )
+
+    def test_setup_panel_back_button_returns_to_tree_when_a_project_is_open(self):
+        """Clicking "Project" on an open project, then "<-" on Setup, must
+        return to the tree - it used to always go to Credits regardless,
+        stranding the user with no way back (worldbank/GeoE3 field
+        report, 2026-11-25)."""
+        dock = GeoE3Dock(parent=PARENT, json_file=resources_path("resources", "model.json"))
+        dock.tree_widget.working_directory = "/some/open/project"
+        dock.stacked_widget.setCurrentIndex(SETUP_PANEL)
+
+        dock._open_previous_panel_before_setup()
+
+        self.assertEqual(dock.stacked_widget.currentIndex(), TREE_PANEL)
+
+    def test_setup_panel_back_button_returns_to_credits_when_no_project_is_open(self):
+        """The original onboarding flow (Credits -> Setup -> ...) is unchanged."""
+        dock = GeoE3Dock(parent=PARENT, json_file=resources_path("resources", "model.json"))
+        dock.tree_widget.working_directory = None
+        dock.stacked_widget.setCurrentIndex(SETUP_PANEL)
+
+        dock._open_previous_panel_before_setup()
+
+        self.assertEqual(dock.stacked_widget.currentIndex(), CREDITS_PANEL)
 
     def test_dock_area_to_int_portable(self):
         """Enum → int works on PyQt5 sip enums and PyQt6 pure Flags alike."""

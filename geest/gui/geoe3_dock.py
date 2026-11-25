@@ -153,10 +153,7 @@ class GeoE3Dock(QDockWidget):
                 lambda: self.stacked_widget.setCurrentIndex(IMPORT_PROJECT_PANEL)
             )
 
-            self.setup_widget.switch_to_previous_tab.connect(
-                # Switch to the previous tab when the button is clicked
-                lambda: self.stacked_widget.setCurrentIndex(CREDITS_PANEL)
-            )
+            self.setup_widget.switch_to_previous_tab.connect(self._open_previous_panel_before_setup)
             # OPEN_PROJECT_PANEL = 3
             # Create and add the "Open Project" panel
 
@@ -542,6 +539,22 @@ class GeoE3Dock(QDockWidget):
             self.stacked_widget.setCurrentIndex(S2S_PANEL)
         else:
             self.stacked_widget.setCurrentIndex(ORS_PANEL)
+
+    def _open_previous_panel_before_setup(self) -> None:
+        """Where the Setup panel's "←" button goes back to.
+
+        The Setup panel is reached two different ways: onboarding (from
+        the Credits panel, no project open yet) and clicking the tree
+        panel's "Project" button on an already-open project - the latter
+        had no way back to the tree at all ("←" always went to Credits
+        regardless), stranding the user on Setup (worldbank/GeoE3 field
+        report, 2026-11-25). A project being open is exactly what
+        distinguishes the two cases.
+        """
+        if self.tree_widget.working_directory:
+            self.stacked_widget.setCurrentIndex(TREE_PANEL)
+        else:
+            self.stacked_widget.setCurrentIndex(CREDITS_PANEL)
 
     def _open_create_project_from_setup(self) -> None:
         """Open create-project panel with a clean new-project UI state."""
