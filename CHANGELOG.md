@@ -77,6 +77,21 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   instead of something consistent with the rest of the row icons.
   `ItemInfoPanel.show_blocked()` now uses the same
   `required-not-configured.svg` the tree rows already use.
+- "Show Analysis Report"/"Show Study Area Report" always regenerated
+  the PDF from scratch on every click, and nothing ever invalidated an
+  already-generated analysis report once the model it was built from
+  changed. Both now open the existing PDF if one's already there
+  instead of rebuilding it, and rerunning, clearing, or re-weighting
+  any item deletes the cached analysis report so the next open rebuilds
+  fresh rather than silently handing back a stale one.
+  `TreePanel._invalidate_analysis_report_cache()`.
+
+### Added
+
+- An "Open Report" button on the GeoE3 Score info card, shown once the
+  analysis actually has a result - opens the analysis report directly
+  (generating it first if nothing is cached yet) without going via the
+  context menu. `ItemInfoPanel.openReportRequested`.
 
 ### Changed
 
