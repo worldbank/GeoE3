@@ -718,7 +718,17 @@ def _study_area_target_srs(study_area_gpkg: str, study_area_layer: str) -> Optio
         determined (no reprojection is attempted in that case - the
         source's own CRS is kept, same as before this existed).
     """
-    dataset = ogr.Open(study_area_gpkg)
+    try:
+        # ogr.Open() returns None on failure under GDAL's legacy error
+        # model, but raises RuntimeError instead once GDAL exceptions
+        # are enabled (the default varies by GDAL build - confirmed
+        # live: QGIS 3.44's bundled GDAL raises here for a missing/empty
+        # path, where QGIS 3.34's returned None) - both mean the same
+        # thing to this function, so both are treated as "can't be
+        # determined" rather than letting one of them crash the caller.
+        dataset = ogr.Open(study_area_gpkg)
+    except RuntimeError:
+        return None
     if dataset is None:
         return None
     layer = dataset.GetLayerByName(study_area_layer)
