@@ -333,7 +333,8 @@ class TreePanel(QWidget):
         # indicator gets configured in the first place, so disabling it
         # alongside Run All would lock the user out of the one action
         # that could resolve why Run All is disabled.
-        self.download_all_resources_button = QPushButton("⬇️ Download all resources")
+        self.download_all_resources_button = QPushButton("⬇️ Download all")
+        self.download_all_resources_button.setToolTip("Download all resources this project's indicators need")
         self.download_all_resources_button.clicked.connect(self.download_all_resources)
         button_bar.addWidget(self.download_all_resources_button)
 
@@ -341,7 +342,9 @@ class TreePanel(QWidget):
         self.project_button.clicked.connect(self.switch_to_setup_tab)
         button_bar.addWidget(self.project_button)
 
-        self.help_button = QPushButton("Help")
+        self.help_button = QPushButton("?")
+        self.help_button.setToolTip("Help")
+        self.help_button.setAccessibleName("Help")
         self.help_button.clicked.connect(self.open_help)
         button_bar.addWidget(self.help_button)
         # The two progress bars live inside item_info_panel now (see
@@ -1686,6 +1689,37 @@ class TreePanel(QWidget):
         """Add a new dimension to the model."""
         self.model.add_dimension()
 
+    @staticmethod
+    def _item_has_a_result(item) -> bool:
+        """Whether this item has an actual computed result worth showing on the map.
+
+        Gates "Add to map"/"Add to map (Grid)"/"Add GeoE3 Score to Map" -
+        those were clickable (and silently did nothing useful) for an
+        item that was never configured, never run, or whose last run
+        failed (worldbank/GeoE3 field report, 2026-11-25).
+        """
+        return item.getStatus() == "Completed successfully"
+
+    @staticmethod
+    def _item_has_clearable_output(item) -> bool:
+        """Whether this item has anything "Clear Item" would actually change.
+
+        Matches exactly what JsonTreeItem.clear() resets: result_file,
+        error, and result (back to its "Not Run" default) - an item still
+        at that default has nothing to clear.
+        """
+        attributes = item.attributes()
+        result = attributes.get("result", "") or ""
+        return (
+            bool(attributes.get("result_file", ""))
+            or bool(attributes.get("error", ""))
+            or result
+            not in (
+                "",
+                "Not Run",
+            )
+        )
+
     def open_context_menu(self, position: QPoint):
         """Handle right-click context menu.
 
@@ -1714,6 +1748,9 @@ class TreePanel(QWidget):
 
         add_to_map_action = QAction("Add to map", self)
         add_to_map_action.triggered.connect(lambda: add_to_map(item))
+        if not self._item_has_a_result(item):
+            add_to_map_action.setEnabled(False)
+            add_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
         run_item_action = QAction("Run Item Workflow", self)
 
@@ -1734,6 +1771,9 @@ class TreePanel(QWidget):
         update_action_text()
         clear_item_action = QAction("Clear Item", self)
         clear_item_action.triggered.connect(self.clear_item)
+        if not self._item_has_clearable_output(item):
+            clear_item_action.setEnabled(False)
+            clear_item_action.setToolTip("Nothing to clear - this item hasn't been run yet.")
         clear_results_action = QAction("Clear Results", self)
         clear_results_action.triggered.connect(self.clear_workflows)
 
@@ -1786,6 +1826,9 @@ class TreePanel(QWidget):
             # setting in "Edit Weights and Settings").
             add_geoe3_score = QAction("Add GeoE3 Score to Map")
             add_geoe3_score.triggered.connect(lambda: self._load_analysis_output(item, "score"))
+            if not self._item_has_a_result(item):
+                add_geoe3_score.setEnabled(False)
+                add_geoe3_score.setToolTip("Nothing to show yet - the analysis hasn't completed a run.")
             menu.addAction(add_geoe3_score)
 
             add_study_area_layers_action = QAction("Add Study Area to Map", self)
@@ -1827,6 +1870,9 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
+            if not self._item_has_a_result(item):
+                add_grid_to_map_action.setEnabled(False)
+                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             add_factor_action.triggered.connect(lambda: self.model.add_factor(item))
@@ -1854,6 +1900,9 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
+            if not self._item_has_a_result(item):
+                add_grid_to_map_action.setEnabled(False)
+                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             edit_aggregation_action.triggered.connect(lambda: self.edit_factor_aggregation(item))  # Connect to method
@@ -1883,6 +1932,9 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
+            if not self._item_has_a_result(item):
+                add_grid_to_map_action.setEnabled(False)
+                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             show_properties_action.triggered.connect(
