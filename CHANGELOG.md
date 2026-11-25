@@ -85,6 +85,17 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   any item deletes the cached analysis report so the next open rebuilds
   fresh rather than silently handing back a stale one.
   `TreePanel._invalidate_analysis_report_cache()`.
+- The context menu's "Disable"/"Enable" changed an item's
+  `analysis_mode` in memory but never saved the project or repainted
+  the tree, unlike every other mutating action in this file - the
+  change was real but looked like a no-op, and was lost on the next
+  reload. `TreePanel.disable_item()`/`enable_item()`.
+- `write_raster_source()`/`write_vector_source()` crashed on QGIS
+  3.44's bundled GDAL whenever no study area GeoPackage was available -
+  `ogr.Open()` raises `RuntimeError` there for a missing/invalid path,
+  where QGIS 3.34's GDAL returned `None`; `_study_area_target_srs()`
+  only handled the `None` case. Caught here too, surfaced by adding
+  3.44 to the test matrix below.
 
 ### Added
 
@@ -99,6 +110,9 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   full description moved to its tooltip) and replaced the "Help" button
   with a narrow, fixed-width "?" button (with a tooltip/accessible
   name), so both fit the button bar better.
+- CI test matrix now also runs against QGIS 3.44 LTR and 4.4, not just
+  3.30-3.36 - Docker Hub drops the "release-3_XX" tag naming past 3.36,
+  so these use plain version tags instead.
 
 ## [2.2.1] - 2026-11-24
 
