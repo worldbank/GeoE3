@@ -583,19 +583,27 @@ class AggregationWorkflowBase(WorkflowBase):
         """
         _ = current_area  # Unused
 
-        # Step 1: Aggregate grid columns
-        try:
-            columns_weights = self.get_grid_columns_and_weights()
-        except ValueError as e:
-            error = str(e)
-            log_message(
-                error,
-                tag="GeoE3",
-                level=Qgis.Warning,
-            )
-            self.attributes[self.result_key] = f"{self.analysis_mode} Aggregation Workflow Skipped"
-            self.attributes["error"] = error
-            return None
+        # Step 1: Aggregate grid columns - get_grid_columns_and_weights()
+        # raises ValueError when a child is neither completed, "Do Not
+        # Use", excluded, nor disabled (i.e. actually broken/
+        # unconfigured, not just legitimately skipped) - that must
+        # surface as a real failure here, not be swallowed into a
+        # "Skipped" result. Catching it and returning None used to do
+        # exactly that: a None return falls through to the
+        # supports_empty_features_fallback branch in execute() (built
+        # for the unrelated "no features found nearby" case), which
+        # built a neutral raster and let the whole aggregation go on to
+        # report "Completed successfully" with the real error message
+        # left stranded in the "error" attribute nobody ever saw
+        # (worldbank/GeoE3 field report, 2026-11-25: a Nigeria Regional
+        # indicator with no point layer set left its parent factor,
+        # dimension and the analysis all showing "Completed
+        # successfully"). Letting it propagate makes execute()'s own
+        # per-area handling treat it as a real area failure instead,
+        # matching what _process_aggregate_raster_first() (the raster-
+        # first sibling of this method) already does for the exact same
+        # exception.
+        columns_weights = self.get_grid_columns_and_weights()
 
         if not columns_weights:
             error = "No valid columns found for aggregation. Cannot proceed (likely all factors disabled or excluded)."

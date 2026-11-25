@@ -21,9 +21,77 @@ class SingleBufferConfigurationWidget(BaseConfigurationWidget):
     A specialized radio button with additional QSpinBox buffer distance.
     """
 
+    @staticmethod
+    def _generate_scale_table_html(scale_label: str, config: dict) -> str:
+        """Render one scale's own table: percentage-overlap scoring
+        (Regional - a single buffer distance, scored by how much of the
+        cell it covers) or binary in/out-of-buffer scoring (National/
+        Local).
+
+        Args:
+            scale_label: Heading text for this table (e.g. "Regional
+                (current)").
+            config: That scale's config dict from the mappings module.
+
+        Returns:
+            HTML for this one scale's table.
+        """
+        buffer_distance = config.get("buffer_distance")
+        scores = config.get("scores", {})
+        scoring_method = config.get("scoring_method", "")
+        percentage_scores = config.get("percentage_scores", {})
+
+        if scoring_method == "percentage_intersection" and percentage_scores:
+            html = f"""
+            <p><b>{scale_label} Scale</b></p>
+            <table border='1' cellpadding='4' cellspacing='0'>
+                <tr><th>Coverage Percentage</th><th>Score</th><th>Legend</th></tr>
+            """
+            # Ranges are computed ascending (each one needs the previous,
+            # lower threshold), then displayed highest-score-first to
+            # match the National/Local tables below (their own "scores"
+            # list is already ordered that way - worldbank/GeoE3 field
+            # report, 2026-11-25).
+            sorted_thresholds = sorted(percentage_scores.items())
+            prev_pct = 0
+            rows = []
+            for i, (min_pct, score) in enumerate(sorted_thresholds):
+                if score == 0:
+                    pct_range = "0% (no intersection)"
+                elif i == len(sorted_thresholds) - 1:
+                    pct_range = f"{prev_pct + 0.01:.2f}% - 100%"
+                elif prev_pct == 0:
+                    pct_range = f"0.01% - {min_pct:.2f}%"
+                else:
+                    pct_range = f"{prev_pct + 0.01:.2f}% - {min_pct:.2f}%"
+                rows.append(f"<tr><td>{pct_range}</td><td>{score}</td>{legend_cell_html(score)}</tr>")
+                prev_pct = min_pct
+            html += "".join(reversed(rows))
+            html += "</table>"
+        else:
+            inside_score = scores.get("intersects", 0)
+            outside_score = scores.get("no_intersection", 0)
+            html = f"""
+            <p><b>{scale_label} Scale</b></p>
+            <table border='1' cellpadding='4' cellspacing='0'>
+                <tr><th>Distance Range (m)</th><th>Score</th><th>Legend</th></tr>
+                <tr><td>≤ {buffer_distance}</td><td>{inside_score}</td>{legend_cell_html(inside_score)}</tr>
+                <tr><td>&gt; {buffer_distance}</td><td>{outside_score}</td>{legend_cell_html(outside_score)}</tr>
+            </table>
+            """
+        return html
+
     def _add_mapping_thresholds_table(self) -> None:
         """
-        Adds a table showing scale-specific buffer distance from the mappings module.
+        Adds reference tables for all three scales side by side - labelling
+        whichever matches this project's actual analysis_scale as
+        "(current)", since Regional's scoring method (a single buffer
+        distance scored by percentage overlap) is genuinely different from
+        National/Local's binary in/out-of-buffer scoring, not just a
+        smaller/larger number (worldbank/GeoE3 field report, 2026-11-25 -
+        same fix as MultiBufferConfigurationWidget, applied here since
+        WATER_SANITATION_ACCESS has the identical national/local-vs-
+        regional split).
         """
         self.mapping_buffer_distance = None
         try:
@@ -35,63 +103,29 @@ class SingleBufferConfigurationWidget(BaseConfigurationWidget):
             if not mapping:
                 return
 
-            config = mapping.get(analysis_scale, mapping.get("national"))
-            if not config:
-                return
+            selected_config = mapping.get(analysis_scale, mapping.get("national"))
+            if selected_config:
+                buffer_distance = selected_config.get("buffer_distance")
+                if buffer_distance is not None:
+                    self.mapping_buffer_distance = buffer_distance
 
-            buffer_distance = config.get("buffer_distance")
-            scores = config.get("scores", {})
-            scoring_method = config.get("scoring_method", "")
-            percentage_scores = config.get("percentage_scores", {})
-
-            if buffer_distance is not None:
-                self.mapping_buffer_distance = buffer_distance
-
-            # Check if this is Regional scale with percentage-based scoring
-            if scoring_method == "percentage_intersection" and percentage_scores:
-                # Show percentage-based table for Regional scale
-                html = f"""
-                <p><b>{factor_name} ({analysis_scale.title()} Scale)</b></p>
-                <p><b>Buffer Distance:</b> {buffer_distance}m</p>
-                <table border='1' cellpadding='4' cellspacing='0'>
-                    <tr><th>Coverage Percentage</th><th>Score</th><th>Legend</th></tr>
-                """
-
-                # Build percentage ranges (same logic as multi_buffer_configuration_widget)
-                sorted_thresholds = sorted(percentage_scores.items())
-                prev_pct = 0
-                for i, (min_pct, score) in enumerate(sorted_thresholds):
-                    if score == 0:
-                        pct_range = "0% (no intersection)"
-                    elif i == len(sorted_thresholds) - 1:
-                        # Last entry (highest score): show prev_pct to 100%
-                        pct_range = f"{prev_pct + 0.01:.2f}% - 100%"
-                    else:
-                        # Use min_pct as upper bound
-                        if prev_pct == 0:
-                            # First non-zero score starts from 0.01%
-                            pct_range = f"0.01% - {min_pct:.2f}%"
-                        else:
-                            pct_range = f"{prev_pct + 0.01:.2f}% - {min_pct:.2f}%"
-                    html += f"<tr><td>{pct_range}</td><td>{score}</td>{legend_cell_html(score)}</tr>"
-                    prev_pct = min_pct
-
-                html += "</table>"
-                html += "<p><i>Note: You can override the buffer distance below</i></p>"
-            else:
-                # Show binary table for National/Local scale
-                inside_score = scores.get("intersects", 0)
-                outside_score = scores.get("no_intersection", 0)
-
-                html = f"""
-                <p><b>{factor_name} ({analysis_scale.title()} Scale)</b></p>
-                <table border='1' cellpadding='4' cellspacing='0'>
-                    <tr><th>Distance Range (m)</th><th>Score</th><th>Legend</th></tr>
-                    <tr><td>≤ {buffer_distance}</td><td>{inside_score}</td>{legend_cell_html(inside_score)}</tr>
-                    <tr><td>&gt; {buffer_distance}</td><td>{outside_score}</td>{legend_cell_html(outside_score)}</tr>
-                </table>
-                <p><i>Note: You can override this default below</i></p>
-                """
+            html = f"<p><b>{factor_name}</b></p>"
+            html += '<table border="0" cellpadding="5" cellspacing="0"><tr>'
+            for scale_name, scale_label in (
+                ("regional", "Regional"),
+                ("national", "National"),
+                ("local", "Local"),
+            ):
+                config = mapping.get(scale_name)
+                if not config:
+                    continue
+                if scale_name == analysis_scale:
+                    scale_label = f"{scale_label} (current)"
+                html += '<td valign="top">'
+                html += self._generate_scale_table_html(scale_label, config)
+                html += "</td>"
+            html += "</tr></table>"
+            html += "<p><i>Note: You can override the current scale's default below</i></p>"
 
             self.mapping_table_label = QLabel()
             self.mapping_table_label.setWordWrap(True)

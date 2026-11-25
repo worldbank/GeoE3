@@ -147,12 +147,23 @@ class TestWorkflowJobEndToEnd(unittest.TestCase):
             }
         )
         manager = WorkflowQueueManager(pool_size=1)
+        processing_error_calls = []
+        manager.processing_error.connect(processing_error_calls.append)
         job = manager.add_workflow(broken, cell_size_m=1000.0, analysis_scale="local")
         self.assertIsNone(job, "broken indicator must be declined, not raise")
         self.assertEqual(broken.getStatus(), "Workflow failed")
         error_text = broken.attribute("error", "")
         self.assertTrue(error_text, "declined item must carry an error message for its tooltip")
         self.assertNotIn("Traceback", error_text, "tooltip must be accessible language, not a traceback")
+        # TreePanel.queue_workflow_task() already shows its own message bar
+        # for every declined job (a `None` return from this method) -
+        # add_workflow() itself emitting processing_error too duplicated
+        # that as a second, redundant notification (a red bar in the
+        # panel and a yellow one in the main QGIS window for the exact
+        # same failure - worldbank/GeoE3 field report, 2026-11-25).
+        self.assertEqual(
+            processing_error_calls, [], "add_workflow() must not emit processing_error - its caller already notifies"
+        )
 
         # The rest of a multi-indicator run continues: a valid indicator is
         # still accepted by the same queue manager afterwards.

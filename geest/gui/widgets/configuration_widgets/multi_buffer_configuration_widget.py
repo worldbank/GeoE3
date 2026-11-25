@@ -106,7 +106,17 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
                 except Exception:  # nosec B110
                     pass
 
-            # Get configs for both national and local scales to display
+            # Get configs for all three scales to display - regional first,
+            # since its scoring method (a single buffer distance + percent-
+            # overlap scoring, not a list of distance-ring thresholds) is
+            # different enough from national/local that showing it next to
+            # them is the clearest way to explain why the input below holds
+            # just one number on a Regional-scale project instead of a
+            # comma-separated list (worldbank/GeoE3 field report,
+            # 2026-11-25: the table only ever showed national/local, so a
+            # Regional project's single-value input looked unexplained -
+            # the regional config driving it was never shown at all).
+            regional_config = mapping.get("regional")
             national_config = mapping.get("national")
             local_config = mapping.get("local")
 
@@ -122,17 +132,23 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
                 else:
                     self.mapping_buffer_distance = None
 
-            # Generate HTML for both scales side by side using a table
+            # Generate HTML for all three scales side by side using a table -
+            # label the one matching this project's actual analysis_scale as
+            # "(current)" so it's obvious which column the input below is
+            # actually bound to.
             html = '<table border="0" cellpadding="5" cellspacing="0"><tr>'
 
-            if national_config:
+            for scale_name, scale_label, config in (
+                ("regional", "Regional", regional_config),
+                ("national", "National", national_config),
+                ("local", "Local", local_config),
+            ):
+                if not config:
+                    continue
+                if scale_name == analysis_scale:
+                    scale_label = f"{scale_label} (current)"
                 html += '<td valign="top">'
-                html += self._generate_scale_table_html("National", "national", national_config, show_note=False)
-                html += "</td>"
-
-            if local_config:
-                html += '<td valign="top">'
-                html += self._generate_scale_table_html("Local", "local", local_config, show_note=False)
+                html += self._generate_scale_table_html(scale_label, scale_name, config, show_note=False)
                 html += "</td>"
 
             html += "</tr></table>"
@@ -168,20 +184,24 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
         thresholds = config.get("thresholds", [])
         scores = config.get("scores", [])
         scoring_method = config.get("scoring_method", "")
-        buffer_distance = config.get("buffer_distance", 0)
         percentage_scores = config.get("percentage_scores", {})
 
         # Regional scale: show buffer distance and percentage classification
         if scoring_method == "percentage_intersection" and percentage_scores:
             html = f"""
             <p><b>{factor_name} Scale</b></p>
-            <p><b>Buffer Distance:</b> {buffer_distance}m</p>
             <table border='1' cellpadding='4' cellspacing='0'>
                 <tr><th>Coverage Percentage</th><th>Score</th><th>Legend</th></tr>
             """
 
+            # Ranges are computed ascending (each one needs the previous,
+            # lower threshold), then displayed highest-score-first to
+            # match the National/Local tables below (their own "scores"
+            # list is already ordered that way - worldbank/GeoE3 field
+            # report, 2026-11-25).
             sorted_thresholds = sorted(percentage_scores.items())
             prev_pct = 0
+            rows = []
             for i, (min_pct, score) in enumerate(sorted_thresholds):
                 if score == 0:
                     pct_range = "0% (no intersection)"
@@ -192,9 +212,10 @@ class MultiBufferConfigurationWidget(BaseConfigurationWidget):
                         pct_range = f"0.01% - {min_pct:.2f}%"
                     else:
                         pct_range = f"{prev_pct + 0.01:.2f}% - {min_pct:.2f}%"
-                html += f"<tr><td>{pct_range}</td><td>{score}</td>{legend_cell_html(score)}</tr>"
+                rows.append(f"<tr><td>{pct_range}</td><td>{score}</td>{legend_cell_html(score)}</tr>")
                 prev_pct = min_pct
 
+            html += "".join(reversed(rows))
             html += "</table>"
             if show_note:
                 html += "<p><i>Note: You can override the buffer distance below</i></p>"
