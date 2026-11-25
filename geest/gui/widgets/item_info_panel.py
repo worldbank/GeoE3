@@ -707,7 +707,15 @@ class ItemInfoPanel(QWidget):
         self._current_output_index = 0
         self._sparkline_eligible = False
         self._active_page = 0
-        self.item_icon_label.clear()
+        # Same glyph the rows below already use for "needs attention" -
+        # clearing this to blank left the tile an empty grey square
+        # instead of a consistent icon (worldbank/GeoE3 field report,
+        # 2026-11-25).
+        icon = QIcon(resources_path("resources", "icons", "required-not-configured.svg"))
+        if not icon.isNull():
+            self.item_icon_label.setPixmap(icon.pixmap(24, 24))
+        else:
+            self.item_icon_label.clear()
         self.item_heading_label.setText(heading)
         rows_html = self._icon_rows_html(rows)
         self.item_meta_label.setHtml(f"{intro}<br>{rows_html}" if intro else rows_html)

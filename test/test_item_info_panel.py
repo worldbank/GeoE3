@@ -728,6 +728,16 @@ class TestShowBlocked(unittest.TestCase):
 
         self.assertFalse(self.panel.more_link.isVisible())
 
+    def test_header_icon_tile_is_not_left_blank(self):
+        """The heading icon used to just clear() to an empty grey tile -
+        same "needs attention" glyph the rows below already use, not blank
+        (worldbank/GeoE3 field report, 2026-11-25)."""
+        icon_path = resources_path("resources", "icons", "integrity-model-corrupt.svg")
+
+        self.panel.show_blocked("Heading", "", [("message", icon_path)])
+
+        self.assertFalse(self.panel.item_icon_label.pixmap().isNull())
+
 
 if __name__ == "__main__":
     unittest.main()
