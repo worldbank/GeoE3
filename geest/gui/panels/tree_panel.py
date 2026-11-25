@@ -2393,6 +2393,15 @@ class TreePanel(QWidget):
             item: The item to disable.
         """
         item.disable()
+        # item.disable() mutates the attributes dict directly, not
+        # through the model's own edit flow - neither the save-on-change
+        # hookup (self.model.dataChanged) nor the tree view's repaint
+        # fires on its own for that, so both have to be driven explicitly
+        # here (same pattern as _on_all_finished()'s save+refresh below) -
+        # without this the context menu's "Disable" looked like a no-op:
+        # the change was real but invisible and lost on the next reload.
+        self.save_json_to_working_directory()
+        self._refresh_tree_view()
         self._update_run_all_button_state()
 
     def enable_item(self, item):
@@ -2402,6 +2411,8 @@ class TreePanel(QWidget):
             item: The item to enable.
         """
         item.enable()
+        self.save_json_to_working_directory()
+        self._refresh_tree_view()
         self._update_run_all_button_state()
 
     def show_attributes(self, item):
