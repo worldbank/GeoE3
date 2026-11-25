@@ -67,6 +67,23 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   silently re-selected the old layer as if nothing had changed. Fixed
   in `VectorDataSourceWidget`, `VectorAndFieldDataSourceWidget` and
   `RasterDataSourceWidget`'s `update_attributes()`.
+- The per-item context menu's "Add to map", "Add to map (Grid)", "Add
+  GeoE3 Score to Map" and "Clear Item" stayed clickable (and did
+  nothing useful) for an item that was never configured, never run, or
+  whose last run failed, at every tree level. Each now greys itself out
+  with a tooltip explaining why. `TreePanel._item_has_a_result()`/
+  `_item_has_clearable_output()`.
+- The "Run All is disabled" info panel header showed a blank icon tile
+  instead of something consistent with the rest of the row icons.
+  `ItemInfoPanel.show_blocked()` now uses the same
+  `required-not-configured.svg` the tree rows already use.
+
+### Changed
+
+- Shortened the "Download all resources" button to "Download all" (the
+  full description moved to its tooltip) and replaced the "Help" button
+  with a "?" (with a tooltip/accessible name), so both fit the button
+  bar better.
 
 ## [2.2.1] - 2026-11-24
 
