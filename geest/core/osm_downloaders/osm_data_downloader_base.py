@@ -248,9 +248,32 @@ class OSMDataDownloaderBase(ABC):
             raise RuntimeError(f"HTTP Error {status_code}: {response.content()}")
 
         if status_code == 200:
+            self._validate_osm_xml_response()
             return
         else:
             raise RuntimeError(f"Request failed with error: {response.errorMessage()}")
+
+    def _validate_osm_xml_response(self) -> None:
+        """Confirm the Overpass response is parseable OSM XML before GDAL ever sees it.
+
+        A 200 response from Overpass can still be an error (a rate-limit or
+        runtime-error page, or an empty body) rather than real OSM data -
+        left unchecked, that file reaches GDAL's OSM driver later and
+        surfaces as an opaque "not recognized as being in a supported file
+        format" error with no indication the download itself is what failed.
+        """
+        try:
+            root = ET.parse(self.output_xml_path).getroot()  # nosec B314
+        except ET.ParseError as e:
+            raise RuntimeError(
+                f"The Overpass API did not return valid OSM data ({e}). "
+                "This usually means the query was rejected or rate-limited - try again shortly."
+            ) from e
+        if root.tag != "osm":
+            raise RuntimeError(
+                f"The Overpass API did not return OSM data (got a '{root.tag}' response instead). "
+                "This usually means the query was rejected or rate-limited - try again shortly."
+            )
 
     def process_response(self) -> bool:
         """Process the downloaded OSM data and save it as a GeoPackage.

@@ -31,10 +31,11 @@ jobs:
           - release-3_32
           - release-3_34
           - release-3_36
-          #- "3.38"
-          #- "3.40"
-          #- "3.42"
-          #- "3.44"
+          # Docker Hub drops the "release-3_XX" naming past 3.36 - these
+          # are plain version tags instead (must be quoted, else YAML
+          # parses them as floats).
+          - "3.44"
+          - "4.4"
         #os: [ubuntu-24.04]
         os: [ubuntu-22.04]
 
@@ -75,7 +76,21 @@ jobs:
           docker pull "${IMAGE}":${{ matrix.qgis_version_tag }}
           python admin.py build --tests
           docker compose up -d
-          sleep 10
+          # Poll instead of a flat sleep: the container's own entrypoint
+          # installs packages missing on newer QGIS images (expect/
+          # coverage/h3) before Xvfb even starts, measured at ~50s on a
+          # cold pull - a fixed sleep here either races that (too short)
+          # or wastes time on every other image in the matrix that never
+          # needed it (too long). Readiness = unbuffer on PATH (needed
+          # by qgis_testrunner.sh) and the X11 lock for :99 (Xvfb up).
+          for i in $(seq 1 60); do
+              if docker compose exec -T qgis-testing-environment bash -c \
+                  "command -v unbuffer >/dev/null 2>&1 && test -e /tmp/.X99-lock"; then
+                  echo "Test container ready after $((i * 2))s."
+                  break
+              fi
+              sleep 2
+          done
 
       - name: Run test suite
         run: |

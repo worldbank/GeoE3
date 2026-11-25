@@ -1,7 +1,7 @@
 # Welcome to GeoE3
 
 <p align="justify">
- Developed by the World Bank, <strong>GeoE3 (The Geospatial Enabling Environments for Employment Spatial Tool)</strong> is a powerful and user-friendly open-source spatial mapping tool that enables a comprehensive analysis of how various spatial factors influence employment and business opportunities in any geographic area of interest.
+ Developed by the World Bank Group, <strong>GeoE3 (The Geospatial Enabling Environments for Employment Spatial Tool)</strong> is a powerful and user-friendly open-source spatial mapping tool that enables a comprehensive analysis of how various spatial factors influence employment and business opportunities in any geographic area of interest.
 
  By using this tool, you can identify key areas for intervention, make data-driven decisions, and ultimately work toward creating more equitable job opportunities for people across different regions.
 

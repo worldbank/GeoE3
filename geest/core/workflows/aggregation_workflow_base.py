@@ -21,6 +21,7 @@ from qgis.core import (
 )
 
 from geest.core import JsonTreeItem
+from geest.core.constants import is_unconfigured_analysis_mode
 from geest.core.grid_column_utils import (
     clear_grid_column,
     rasterize_grid_column,
@@ -197,7 +198,7 @@ class AggregationWorkflowBase(WorkflowBase):
 
             item = self.item.getItemByGuid(guid)
             status = item.getStatus() == "Completed successfully"
-            mode = item.attributes().get("analysis_mode", "Do Not Use") == "Do Not Use"
+            mode = is_unconfigured_analysis_mode(item.attributes().get("analysis_mode", ""))
             excluded = item.getStatus() == "Excluded from analysis"
             disabled = not item.is_enabled()
             id = item.attribute("id").lower().replace(" ", "_")
@@ -290,7 +291,7 @@ class AggregationWorkflowBase(WorkflowBase):
             item = self.item.getItemByGuid(guid)
             raw_status = item.getStatus()
             status = raw_status == "Completed successfully"
-            mode = item.attributes().get("analysis_mode", "Do Not Use") == "Do Not Use"
+            mode = is_unconfigured_analysis_mode(item.attributes().get("analysis_mode", ""))
             excluded = raw_status == "Excluded from analysis"
             disabled = not item.is_enabled()
             raw_id = item.attribute("id").lower().replace(" ", "_").replace("-", "_")

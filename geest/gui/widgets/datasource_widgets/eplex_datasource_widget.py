@@ -5,6 +5,7 @@ This module contains functionality for EPLEX datasource widget.
 """
 
 from qgis.core import Qgis
+from qgis.PyQt.QtCore import QLocale
 from qgis.PyQt.QtWidgets import QDoubleSpinBox, QLabel
 
 from geest.utilities import log_message
@@ -32,6 +33,11 @@ class EPLEXDataSourceWidget(BaseDataSourceWidget):
         try:
             # EPLEX score spinbox (normalized score)
             self.spin_box = QDoubleSpinBox()
+            # Force a dot decimal point regardless of the OS locale - on a
+            # comma-decimal system QGIS's default spin box validator rejects
+            # the "." keystroke outright, making this narrow 0.00-0.99 range
+            # impossible to type (reported as "cannot input numbers").
+            self.spin_box.setLocale(QLocale(QLocale.Language.C))
             self.spin_box.setRange(0.0, 0.99)
             self.spin_box.setDecimals(2)
             self.spin_box.setSingleStep(0.01)

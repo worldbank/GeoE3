@@ -20,128 +20,90 @@ from typing import Optional
 #: technique_key -> {"name", "svg", "description"}. Keep descriptions
 #: concrete and specific - this is read by policy makers with no GIS
 #: background, not by developers.
+#:
+#: Every "description" below must be hand-written by a human, never
+#: AI-generated - this is the plain-language explanation end users and
+#: policy makers rely on to understand the methodology, so its wording
+#: is a deliberate editorial choice, not a drafting task to delegate.
 TECHNIQUES = {
     "index_score": {
         "name": "National Index Score",
         "svg": "index_score.svg",
         "description": (
-            "Some of what this analysis measures doesn't change from one part of the "
-            "country to another. Whether the law formally protects women from workplace "
-            "discrimination, for instance, is set in national legislation — it's true "
-            "(or not) everywhere at once, down to the last village. For indicators like "
-            "this, every grid cell is given the same score, taken directly from a "
-            "published index. A couple of the indicators that work this way are narrowed "
-            "further, scored only where the underlying data actually applies — only "
-            "where broadband coverage exists, say, or only inside built-up settlements. "
-            "Everywhere else is left blank, rather than attaching a labour-force "
-            "statistic to land where nobody lives, or an internet-use figure to a place "
-            "the coverage data never reached."
+            "In a national index score analysis we 'flood fill' the study area with "
+            "the same value. This is because the index has no spatial variance across the "
+            "study area. For example, the legistlative conditions that make the workplace "
+            "conducive to women's employment are uniformly applied accross a whole country."
         ),
     },
     "feature_count": {
         "name": "Feature Count",
         "svg": "feature_count.svg",
         "description": (
-            "For some indicators, what matters is simply how much of something sits "
-            "inside each cell of the grid — the number of clinics, say, or the total "
-            "length of footpaths and cycle lanes running through it. This technique "
-            "overlays the grid on the real-world data and tallies how many points, "
-            "lines or polygons fall inside each cell. The score isn't a smooth slide "
-            "from that count — a cell with nothing nearby scores 0, a cell with "
-            "exactly one feature scores a middle mark, and a cell with two or more "
-            "already scores the maximum. A single clinic is enough to lift a cell "
-            "out of the bottom of the scale; a second one maxes it out."
+            "A feature count analysis counts how many of a feature (e.g. transportation stops) "
+            "exist in each cell. It then assigns a score to the cell depending on whether "
+            "there are none, some or many features in the cells."
         ),
     },
     "distance_buffer": {
         "name": "Straight-Line Distance",
         "svg": "distance_buffer.svg",
         "description": (
-            "Other indicators are less about density and more about proximity. Can a "
-            "woman reach a water point without travelling far, or has a violent "
-            "incident happened nearby? This technique draws a fixed-radius circle around "
-            "every relevant point, measured as the crow flies rather than along any real "
-            "path, and scores a grid cell by whether it falls inside that circle or "
-            "outside it. Being inside the circle is good news for a water point or a "
-            "bank branch, and bad news for a reported violent event. Whether "
-            "“inside” means a high score or a low one depends on what's being "
-            "measured, not on the technique itself."
+            "In theses anlyses we draw a buffer around each point feature and "
+            "use that to rank areas more highly if they are within the buffer. "
+            "For example, we can rank areas within 2km of a bank more highly "
+            "because the people living within the zone around the bank have "
+            "accessible access to financial services."
         ),
     },
     "network_isochrone": {
         "name": "Distance by Road",
         "svg": "network_isochrone.svg",
         "description": (
-            "For indicators about reaching a service, such as a school, a hospital, or "
-            "a bus stop, a straight-line circle overstates how accessible a place really "
-            "is: rivers, dead-end streets and missing roads all make a destination "
-            "further away in practice than it looks on a map. Rather than measuring as "
-            "the crow flies, this technique traces the actual road network outward from "
-            "each facility in several steps (for example a 5-, 10- and 15-minute walk) "
-            "and scores a grid cell by which travel-time ring it falls inside. The "
-            "resulting shape hugs the street layout rather than forming a tidy circle. "
-            "For example, a facility beside the only bridge over a river reaches much "
-            "further along the road than it does across the water."
+            "In many cases, how accessible a facility is depends on the road network "
+            "and the time it takes to traverse the network to reach the facility. "
+            "With IsoChrones we can create contour lines around a facility based "
+            "on travel time. We do this using a routing analysis to estimate how long "
+            "it takes to reach the facility from different parts of the network."
         ),
     },
     "raster_lookup": {
         "name": "Map Value Lookup",
         "svg": "raster_lookup.svg",
         "description": (
-            "Some of the data this analysis draws on arrives as a finished map rather "
-            "than a set of points or lines — a satellite-derived picture of "
-            "night-time brightness, say, or a hazard model showing flood risk across the "
-            "whole country. For indicators like these, there's no counting or buffering "
-            "to do: each grid cell simply reads off the value already present at that "
-            "location, the same way you'd read a figure off a weather map by pointing at "
-            "a city. A brightly lit area scores well on the night-time-lights indicator "
-            "(used here as a rough proxy for how safe a place feels after dark); a "
-            "high-risk zone scores poorly on a hazard indicator."
+            "In some cases, the data we use for the analysis can simply be used 'as is' "
+            "we don't need to analyse and interpret it. For example, night time light data "
+            "can simply be read from the raster and have its value scaled to 0-5."
         ),
     },
     "zone_classification": {
         "name": "Zone Lookup",
         "svg": "zone_classification.svg",
         "description": (
-            "A small number of indicators come from boundary data rather than points, "
-            "lines or a continuous map — a layer of named zones, each carrying its "
-            "own attribute, such as a safety rating reported by residents. This technique "
-            "works out which zone a grid cell falls inside, looks up that zone's "
-            "attribute value in a conversion table, and assigns the matching 0–5 "
-            "score to every cell inside it. Two cells a street apart can end up with very "
-            "different scores if they happen to sit on opposite sides of a zone boundary "
-            "— the result is only ever as fine-grained as the zones it was collected "
-            "in."
+            "If the data for an indicator is provided as polygon boundaries, we "
+            "can treat these boundaries as zones and assign a score to each zone "
+            "based on its category. For example, safety polygons can contain a "
+            "safety category which we can assign into low-medium-high on the Likert "
+            "scale."
         ),
     },
     "population_share": {
         "name": "Population Share",
         "svg": "population_share.svg",
         "description": (
-            "Occasionally the figure an indicator needs has already been calculated by "
-            "somebody else and handed over pre-matched to this analysis's own grid — "
-            "the share of a cell's population living in an urban versus a rural "
-            "settlement, say, taken from aggregated census-style data. There's no "
-            "spatial join or buffering left to do: the value is simply attached to the "
-            "matching grid cell by a shared location key, then rescaled onto the 0–5 "
-            "scale."
+            "If an indicator already has data that is aligned to our analysis grid "
+            "we can simply do a spatial join on the data and scale the value into the "
+            "range of 0-5."
         ),
     },
     "weighted_feature_average": {
         "name": "Weighted Infrastructure Score",
         "svg": "weighted_feature_average.svg",
         "description": (
-            "National-scale Active Transport scores a cell differently from every other "
-            "indicator on this page: rather than taking the single best road or cycle "
-            "path running through it, every road and cycle path intersecting the cell "
-            "contributes its own score, weighted by that same score — a well-rated "
-            "cycle lane counts several times more than a poorly-rated track. A cell "
-            "crossed by one excellent route and nothing else no longer scores as if it "
-            "were uniformly excellent, but a cell genuinely dominated by good "
-            "infrastructure still scores close to the top; a cell with only poor "
-            "infrastructure stays low even if a single short, better-rated segment "
-            "clips its edge. Regional and local scale still use the single-best-feature "
-            "technique described above."
+            "National-scale Active Transport scores a cell differently to the regional "
+            "and local active transport. Whilst regional and local scale use the "
+            "single-best-feature found in each cell, the national scale takes the "
+            "weighted average of the features in the cell."
         ),
     },
 }

@@ -145,6 +145,46 @@ _ROLE_QML = {
     "analysis": "analysis.qml",
 }
 
+#: PROJECT_LEVEL_SOURCES output layer name -> the model.json field that
+#: holds its *original* display name, if one is tracked.
+#: sync_layer_metadata_fields() writes "{prefix}_layer_name" (= the live
+#: layer's own .name()) whenever that project-level input was loaded
+#: into a project at some point - confirmed against a real model.json
+#: ("population_layer_name", "aggregation_layer_name", etc). road_network
+#: has no companion field at all (road_network_layer_path matches none of
+#: _LAYER_FIELD_SUFFIXES - see _layer_field_prefix()), so it's absent
+#: here and keeps its fixed "road_network" name on import; there is no
+#: better name recorded anywhere for it.
+PROJECT_LEVEL_DISPLAY_NAME_FIELD = {
+    "population": "population_layer_name",
+    "point_mask": "point_mask_layer_name",
+    "polygon_mask": "polygon_mask_layer_name",
+    "raster_mask": "raster_mask_layer_name",
+    "aggregation_boundary": "aggregation_layer_name",
+}
+
+#: TOP_LEVEL_RESULT_RASTER_FIELDS/TOP_LEVEL_SUBNATIONAL_AGGREGATION_FIELDS
+#: field name -> the exact label tree_panel.py's own "Add ... to Map"
+#: actions use for that same layer in a live run (confirmed against
+#: tree_panel.py directly, not guessed), so an imported pack's legend
+#: reads the same as a live run's would.
+TOP_LEVEL_RESULT_DISPLAY_NAMES = {
+    "geoe3_score_ghsl_masked_result_file": "Masked GeoE3 Score",
+    "geoe3_by_population": "GeoE3 by Population",
+    "geoe3_score_by_population_ghsl_masked_result_file": "Masked GeoE3 by Population Score",
+    "opportunities_mask_result_file": "Job Opportunities Mask",
+    "geoe3_score_subnational_aggregation": "GeoE3 Score Aggregate",
+    "geoe3_score_ghsl_masked_subnational_aggregation": "GeoE3 Score GHSL Masked Aggregate",
+    "geoe3_by_population_subnational_aggregation": "GeoE3 by Population Aggregate",
+    "geoe3_score_by_population_ghsl_masked_subnational_aggregation": "GeoE3 Score by Population GHSL Masked Aggregate",
+}
+
+#: Label the top-level analysis result gets added to the map under in a
+#: live run (see tree_panel.py's own add_to_map(..., layer_name="GeoE3
+#: Score", ...) calls) - not analysis_name, which the live tree view
+#: itself doesn't use for this either.
+TOP_LEVEL_ANALYSIS_DISPLAY_NAME = "GeoE3 Score"
+
 
 def result_layer_roles(model: dict) -> Dict[str, str]:
     """layer_name -> "role" (dimension/factor/indicator/analysis) for every result_sources() output.
@@ -193,6 +233,72 @@ def result_qml_path(layer_name: str, result_roles: Dict[str, str]) -> Optional[s
     role = result_roles.get(layer_name)
     filename = RESULT_QML_BY_FIELD.get(layer_name) or (_ROLE_QML.get(role) if role else None)
     return resources_path("resources", "qml", filename) if filename else None
+
+
+def layer_display_names(
+    model: dict,
+    indicator_targets: Dict[str, tuple],
+    project_targets: Dict[str, tuple],
+) -> Dict[str, str]:
+    """layer_name -> the human-friendly name the QGIS legend should show for it.
+
+    source.layer_name (an indicator's "id" slug, a fixed project-level
+    key like "road_network", or a "{name}_result" technical key) is a
+    stable machine key, not what the original project's Layers panel
+    showed - importing a country pack must not surface that key
+    verbatim as the layer's display name. This resolves, for every
+    layer_name this import pipeline can produce, the pretty title
+    model.json already carries next to that key (an indicator's
+    "indicator" field, a factor/dimension's "name" field, a project-
+    level input's own tracked "{prefix}_layer_name", or the fixed label
+    a live run's own "Add ... to Map" actions use for a top-level
+    composite product - see TOP_LEVEL_RESULT_DISPLAY_NAMES/
+    TOP_LEVEL_ANALYSIS_DISPLAY_NAME).
+
+    Args:
+        model: The parsed model.json document.
+        indicator_targets: _indicator_import_targets(model, pack_path)'s
+            output - reused rather than recomputed, the caller already
+            has it.
+        project_targets: _project_level_import_targets(model)'s output -
+            reused rather than recomputed, the caller already has it.
+
+    Returns:
+        One entry per layer_name a pretty name could be resolved for.
+        Callers should fall back to the layer_name itself for anything
+        missing (study_area.gpkg layers, and project-level road_network -
+        the two categories with no original display name tracked
+        anywhere in model.json).
+    """
+    names: Dict[str, str] = {}
+
+    for layer_name, (indicator, _field_name, _kind) in indicator_targets.items():
+        title = indicator.get("indicator")
+        if title:
+            names[layer_name] = title
+
+    for output_layer_name, display_field in PROJECT_LEVEL_DISPLAY_NAME_FIELD.items():
+        if output_layer_name not in project_targets:
+            continue
+        title = model.get(display_field)
+        if title:
+            names[output_layer_name] = title
+
+    for layer_name, (node, _field_name, _kind) in _result_import_targets(model).items():
+        if layer_name in TOP_LEVEL_RESULT_DISPLAY_NAMES:
+            names[layer_name] = TOP_LEVEL_RESULT_DISPLAY_NAMES[layer_name]
+        elif node is model:
+            names[layer_name] = TOP_LEVEL_ANALYSIS_DISPLAY_NAME
+        elif layer_name.startswith("dim_") or layer_name.startswith("fac_"):
+            title = node.get("name")
+            if title:
+                names[layer_name] = title
+        else:
+            title = node.get("indicator")
+            if title:
+                names[layer_name] = title
+
+    return names
 
 
 def _all_table_names(pack_path: str) -> set:

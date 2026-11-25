@@ -12,6 +12,7 @@ from qgis.PyQt.QtGui import QFont, QFontMetrics
 from qgis.PyQt.QtWidgets import QComboBox, QFileDialog, QWidget
 
 from geest.core import WorkflowQueueManager
+from geest.core.integrity_checks import study_area_setup_complete
 from geest.gui.widgets import CustomBannerLabel
 from geest.utilities import (
     get_ui_class,
@@ -34,6 +35,7 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
 
     switch_to_next_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
     switch_to_previous_tab = pyqtSignal()  # Signal to notify the parent to switch tabs
+    switch_to_create_project_tab = pyqtSignal()  # model.json exists but study area setup never finished
     set_working_directory = pyqtSignal(str)  # Signal to set the working directory
     project_loaded = pyqtSignal(str)  # Signal emitted after project is fully loaded
 
@@ -192,6 +194,15 @@ class OpenProjectPanel(FORM_CLASS, QWidget):
             return
         model_path = os.path.join(self.working_dir, "model.json")
         if os.path.exists(model_path):
+            if not study_area_setup_complete(self.working_dir):
+                # model.json is written early in the Create Project wizard,
+                # before the study area GeoPackage/grid is built - its
+                # presence alone doesn't mean study area creation ever
+                # finished. Previously this landed straight on the
+                # indicator tree "as if ready to run" with nothing actually
+                # set up (worldbank/GeoE3 #535).
+                self.switch_to_create_project_tab.emit()
+                return
             self.settings.setValue("last_working_directory", self.working_dir)  # Update last used project
             # Switch to the next tab if an existing project is found
             self.switch_to_next_tab.emit()

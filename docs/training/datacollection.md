@@ -69,7 +69,7 @@ to click for those.
 
 This whole process is about collecting data, and there are a bunch of
 different sources you can fetch it from: there's the Space2Stats program,
-which is World Bank hosted data; there's OpenStreetMap, which you
+which is World Bank Group hosted data; there's OpenStreetMap, which you
 wouldn't normally get straight from OpenStreetMap itself. Instead
 you'd get it from a service like the Geofabrik service below, or using
 the QuickOSM downloader tool, or using the button inside of the

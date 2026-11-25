@@ -24,10 +24,11 @@ from geest.core.algorithms.native_network_analysis_processor import (
 )
 
 # The native service-area analysis returns no features for this fixture on
-# QGIS 3.x (isochrones come back empty), but works on QGIS 4.x. Marking it
-# expectedFailure unconditionally makes the 4.x run fail with an
-# "unexpected success".
-_expected_failure_on_qgis3 = unittest.expectedFailure if Qgis.QGIS_VERSION_INT < 40000 else (lambda f: f)
+# QGIS 3.30-3.36 (isochrones come back empty), but works from 3.44 onward,
+# same as on QGIS 4.x - confirmed live (deterministic across repeated runs
+# on both 3.34 and 3.44, not a timing flake). Marking it expectedFailure
+# unconditionally makes those newer runs fail with an "unexpected success".
+_expected_failure_on_qgis3 = unittest.expectedFailure if Qgis.QGIS_VERSION_INT < 34000 else (lambda f: f)
 
 
 class TestNativeNetworkAnalysisProcessingTask(unittest.TestCase):

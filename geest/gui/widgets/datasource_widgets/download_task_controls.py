@@ -137,8 +137,13 @@ class DownloadTaskControls:
 
     def stop_spinner(self) -> None:
         """Stop spinner animation and hide indicator."""
-        self.spinner_movie.stop()
-        self.spinner_label.setVisible(False)
+        try:
+            self.spinner_movie.stop()
+            self.spinner_label.setVisible(False)
+        except RuntimeError:
+            # Underlying Qt widgets were already destroyed (e.g. panel closed
+            # while the download task was still running in the background).
+            pass
 
     def reset(self) -> None:
         """Reset button to initial state."""

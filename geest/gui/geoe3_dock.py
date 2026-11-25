@@ -14,6 +14,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QPainter
 from qgis.PyQt.QtWidgets import QDockWidget, QStackedWidget, QVBoxLayout, QWidget
 
+from geest.core.integrity_checks import study_area_setup_complete
 from geest.core.settings import setting
 from geest.gui.panels import (
     CreateProjectPanel,
@@ -173,6 +174,10 @@ class GeoE3Dock(QDockWidget):
             self.open_project_widget.switch_to_next_tab.connect(
                 # Switch to the next tab when the button is clicked
                 lambda: self.stacked_widget.setCurrentIndex(TREE_PANEL)
+            )
+
+            self.open_project_widget.switch_to_create_project_tab.connect(
+                self._open_incomplete_project_as_create_project
             )
 
             self.open_project_widget.set_working_directory.connect(
@@ -392,6 +397,21 @@ class GeoE3Dock(QDockWidget):
                 level=Qgis.Info,  # noqa E225
             )
             if geoe3_project and os.path.exists(os.path.join(geoe3_project, "model.json")):
+                if not study_area_setup_complete(geoe3_project):
+                    # model.json is written early in the wizard, before the
+                    # study area GeoPackage/grid is built - its presence
+                    # alone doesn't mean study area creation ever finished.
+                    # Previously this landed straight on the indicator tree
+                    # "as if ready to run" with nothing actually set up
+                    # (worldbank/GeoE3 #535).
+                    log_message(
+                        f"{geoe3_project} has model.json but no completed study area - "
+                        "reopening the Create Project wizard instead of the indicator tree.",
+                        tag="GeoE3",
+                        level=Qgis.Warning,
+                    )
+                    self._open_incomplete_project_as_create_project()
+                    return
                 self.tree_widget.set_working_directory(geoe3_project)
                 self.stacked_widget.setCurrentIndex(TREE_PANEL)  # Tree tab
                 self.road_network_widget.set_working_directory(geoe3_project)
@@ -527,6 +547,18 @@ class GeoE3Dock(QDockWidget):
         """Open create-project panel with a clean new-project UI state."""
         self.create_project_widget.reset_for_new_project_flow()
         self.stacked_widget.setCurrentIndex(CREATE_PROJECT_PANEL)
+
+    def _open_incomplete_project_as_create_project(self) -> None:
+        """Open create-project panel for a project whose study area setup never finished.
+
+        Reached from OpenProjectPanel.switch_to_create_project_tab - it has
+        model.json but no usable study area outputs (worldbank/GeoE3 #535).
+        """
+        self._open_create_project_from_setup()
+        self.message_bar.pushWarning(
+            "GeoE3",
+            "This project's study area was never finished being set up - please recreate it.",
+        )
 
     def _open_previous_panel_before_ors(self) -> None:
         """Open the previous panel before ORS based on analysis scale."""

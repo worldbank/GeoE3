@@ -15,6 +15,192 @@ single step begins.
 
 ## [Unreleased]
 
+## [2.2.2] - 2026-11-24
+
+Field-test follow-ups on top of 2.2.1 below, not yet released.
+
+### Fixed
+
+- A country pack bundle mixed CRSes - raw input rasters/vectors (a
+  World Bank Data Catalog hazard raster, an OSM download) kept whatever
+  CRS they arrived in (usually EPSG:4326) while everything else was in
+  the project's own local CRS. Each table was individually valid, but
+  opening the bundle with a tool that isn't CRS-aware per table (e.g.
+  dragging a raster "tiles" table into QGIS via DB Manager, which has
+  no raster awareness and reads it as a plain non-spatial table) showed
+  "no coordinate reference system set". Every `write_raster_source()`/
+  `write_vector_source()` call now reprojects into the study area's own
+  CRS (nearest-neighbor for rasters, so discrete hazard values aren't
+  blended). `country_pack._study_area_target_srs()`.
+- Running a factor/dimension whose child indicators were merely
+  unconfigured (not explicitly disabled) permanently excluded every one
+  of them from the analysis, and the factor along with them once every
+  child's weighting summed to zero - `queue_workflow_task()`'s "Do Not
+  Use" skip conflated "the user disabled this" with "this was never
+  configured yet", zeroing `factor_weighting` and marking it "Excluded
+  from analysis" for both. Configuring the indicator afterwards no
+  longer helped, since its weighting stayed zeroed. The skip no longer
+  mutates anything - it just doesn't queue a workflow for it. Root
+  cause: `analysis_mode` used the single value `"Do Not Use"` for both
+  "the user disabled this" and "this was never configured yet", so
+  nothing could reliably tell the two apart. A fresh/reset dimension,
+  factor or indicator is now given a distinct `"Not Configured"` value
+  instead (`disable()` still writes `"Do Not Use"` - that one case is
+  now unambiguous); every check across the codebase that cared about
+  "is this not usable" now goes through one shared
+  `constants.is_unconfigured_analysis_mode()`, which also still
+  recognises the old `"Do Not Use"`/`""` values so projects saved
+  before this version keep working unchanged.
+- The context menu's "Run Item Workflow" stayed clickable for a factor/
+  dimension whose indicators were all unconfigured (or all disabled) -
+  clicking it did nothing visible, since every indicator in scope just
+  got silently skipped. The action is now greyed out in that case,
+  matching how Run All already behaves, instead of letting the user
+  click into a no-op. `TreePanel._run_item_action_state()`; `run_item()`
+  itself also refuses to start for the same reason, as a second line of
+  defence.
+- Clearing a datasource widget's layer selector (selecting "no layer",
+  then clicking OK) didn't actually un-configure the indicator: only an
+  unused `"{widget_key}_layer"` key ever got cleared, so
+  `"_layer_id"`/`"_layer_source"`/etc. stayed at their previous value -
+  the indicator still read as "configured", and reopening the dialog
+  silently re-selected the old layer as if nothing had changed. Fixed
+  in `VectorDataSourceWidget`, `VectorAndFieldDataSourceWidget` and
+  `RasterDataSourceWidget`'s `update_attributes()`.
+- The per-item context menu's "Add to map", "Add to map (Grid)", "Add
+  GeoE3 Score to Map" and "Clear Item" stayed clickable (and did
+  nothing useful) for an item that was never configured, never run, or
+  whose last run failed, at every tree level. Each is now left out of
+  the menu entirely in that case, instead of appearing dimmed.
+  `TreePanel._item_has_a_result()`/`_item_has_clearable_output()`.
+- The "Run All is disabled" info panel header showed a blank icon tile
+  instead of something consistent with the rest of the row icons.
+  `ItemInfoPanel.show_blocked()` now uses the same
+  `required-not-configured.svg` the tree rows already use.
+- "Show Analysis Report"/"Show Study Area Report" always regenerated
+  the PDF from scratch on every click, and nothing ever invalidated an
+  already-generated analysis report once the model it was built from
+  changed. Both now open the existing PDF if one's already there
+  instead of rebuilding it, and rerunning, clearing, or re-weighting
+  any item deletes the cached analysis report so the next open rebuilds
+  fresh rather than silently handing back a stale one.
+  `TreePanel._invalidate_analysis_report_cache()`.
+- The context menu's "Disable"/"Enable" changed an item's
+  `analysis_mode` in memory but never saved the project or repainted
+  the tree, unlike every other mutating action in this file - the
+  change was real but looked like a no-op, and was lost on the next
+  reload. `TreePanel.disable_item()`/`enable_item()`.
+- `write_raster_source()`/`write_vector_source()` crashed on QGIS
+  3.44's bundled GDAL whenever no study area GeoPackage was available -
+  `ogr.Open()` raises `RuntimeError` there for a missing/invalid path,
+  where QGIS 3.34's GDAL returned `None`; `_study_area_target_srs()`
+  only handled the `None` case. Caught here too, surfaced by adding
+  3.44 to the test matrix below.
+
+### Added
+
+- An "Open Report" button on the GeoE3 Score info card, shown once the
+  analysis actually has a result - opens the analysis report directly
+  (generating it first if nothing is cached yet) without going via the
+  context menu. `ItemInfoPanel.openReportRequested`.
+
+### Changed
+
+- Shortened the "Download all resources" button to "Download all" (the
+  full description moved to its tooltip) and replaced the "Help" button
+  with a narrow, fixed-width "?" button (with a tooltip/accessible
+  name), so both fit the button bar better.
+- CI test matrix now also runs against QGIS 3.44 LTR and 4.4, not just
+  3.30-3.36 - Docker Hub drops the "release-3_XX" tag naming past 3.36,
+  so these use plain version tags instead. Getting these two actually
+  running (not just added to the matrix) needed three separate fixes:
+  no display server on newer images (no supervisord/Xvfb setup -
+  `qgis-testing-entrypoint.sh` now starts Xvfb directly when that
+  config is missing), `qgis_testrunner.sh`'s own `unbuffer` dependency
+  missing there too (silently empty test output - installed via the
+  pre-test script), and `test_suite.py`'s `from qgis.PyQt import Qt`
+  crashing outright under PyQt6 (QGIS 4.x) since that convenience shim
+  module doesn't exist there.
+
+## [2.2.1] - 2026-11-24
+
+Fix-only sweep on top of the still-unreleased 2.2.0 below.
+
+### Fixed
+
+- Restoring a country pack bundle showed internal technical keys in the
+  QGIS legend instead of the original project's layer names (an
+  indicator's `id` slug, a fixed project-level key like `road_network`,
+  or a `{id}_result` key) - `model.json` already carries the original
+  title next to each key (an indicator's `indicator` field, a
+  factor/dimension's `name` field, or a project-level input's own
+  tracked `{prefix}_layer_name`), it just wasn't being read for the
+  legend. `layer_display_names()` in `country_pack_import.py`, used by
+  `ImportCountryPackTask._load_layers_into_project()`.
+- Reopening a project with already-computed results left the native
+  QGIS Layers panel empty and nothing visible on the map, even though
+  the GeoE3 panel's own tree still showed every item "Completed
+  successfully" - closing and reopening only rebuilt the plugin's tree
+  widget from `model.json`, it never re-added the matching output
+  layers to the QGIS project. `TreePanel._restore_completed_layers_to_map()`,
+  called from `working_directory_changed()`; shares the same
+  add-to-map logic as `on_workflow_completed()` via the new
+  `_add_item_result_to_map()`.
+- When `model.json` was corrupted beyond its backup's ability to
+  repair it, the project silently fell back to a blank default state
+  with a misleading "Your project needed repair" notice (implying the
+  repair had worked). That case now shows "Your project could not be
+  loaded" instead.
+- The EPLEX Score spin box silently rejected typed numbers on a
+  system whose locale uses a comma decimal separator - it now forces
+  a dot-decimal locale regardless of the OS setting.
+- Closing the OSM download panel (or switching away) while a download
+  task was still finishing crashed with `RuntimeError: wrapped C/C++
+  object of type QLabel has been deleted` - `DownloadTaskControls.
+  stop_spinner()` now tolerates its widgets already being gone.
+- A failed OSM/Overpass download (rate-limited or rejected query)
+  surfaced as an opaque GDAL "not recognized as being in a supported
+  file format" error instead of a clear message - the Overpass
+  response is now validated as real OSM XML before it ever reaches
+  GDAL's OSM driver. `OSMDataDownloaderBase._validate_osm_xml_response()`.
+- Disabling a single-indicator factor (e.g. FCV) didn't stick: it
+  showed as re-enabled again the next time the model reloaded, because
+  disabling it from the tree UI actually disables its promoted child
+  indicator, not the factor itself, and the weighting rebalance only
+  checked the factor's own `analysis_mode`.
+  `TreePanel._factor_is_manually_disabled()`.
+- Clicking Run right after changing a setting (e.g. the analysis
+  item's mask) could silently do nothing at all, with zero feedback,
+  whenever everything already in scope had a prior result and
+  `run_only_incomplete` skipped it - now shows "Nothing to run... hold
+  Shift to force a full re-run" instead.
+- Hardened against a Windows access-violation crash seen during
+  regional Active Transport and Fire Hazards runs: two independent
+  GDAL/OGR connections racing to open `study_area.gpkg` at the same
+  time (a workflow's `AreaIterator` read vs. a concurrent grid write)
+  could hand one of them a stale/freed dataset handle. `AreaIterator`
+  now opens its layers under the same lock grid writes already use.
+  `grid_column_utils.gpkg_access_lock()`.
+- A project whose study area creation failed partway through (no
+  usable `study_area.gpkg`) still reopened straight onto the
+  indicator tree "as if ready to run", because both reopen paths only
+  checked whether `model.json` existed, not whether study area setup
+  had actually finished. Both now reopen onto the Create Project
+  wizard instead. `integrity_checks.study_area_setup_complete()`.
+
+### Changed
+
+- Report footer/credits, README, SRS and the plugin's own `about`/
+  `author` metadata now say "World Bank Group" rather than "World
+  Bank" for the project's own authorship/credit lines (left citations
+  of external documents/indices, e.g. Women, Business and the Law and
+  the GeoWEAF methodology report, as published - those already read
+  "World Bank Group" where the source itself does).
+- The GitHub Pages landing page now explains the GeoWEAF framework
+  (dimensions diagram + links to the background page and the
+  methodology citation) instead of not mentioning it at all, and moved
+  the demo video below the feature cards per feedback from the field.
+
 ## [2.2.0] - 2026-11-13
 
 Everything below accumulated on top of the last tagged release, v2.0.6;

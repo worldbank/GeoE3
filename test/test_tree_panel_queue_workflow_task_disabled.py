@@ -14,6 +14,15 @@ disabled EPLEX indicator's own workflow, producing a real result.
 aggregation_workflow_base.py already excludes disabled children from the
 weighted combination the same way; queue_workflow_task() must too, or
 the indicator's own result still gets computed for no reason.
+
+Also reproduces a second, related bug in the same function: "Do Not
+Use" covers both an explicitly-disabled indicator AND one that was
+simply never configured yet - zeroing factor_weighting/marking it
+"Excluded from analysis" for both conflated the two, permanently
+excluding a never-configured indicator (and, by extension, its parent
+factor once every child's weighting summed to zero) just from
+attempting a run, instead of leaving it as "Required and not
+configured".
 """
 import unittest
 from unittest.mock import MagicMock
@@ -49,8 +58,31 @@ class TestQueueWorkflowTaskSkipsDisabledIndicators(unittest.TestCase):
 
         TreePanel.queue_workflow_task(panel, item, "indicator")
 
-        self.assertEqual(attributes["factor_weighting"], 0.0)
-        self.assertEqual(attributes["result"], "Excluded from analysis")
+        panel.queue_manager.add_workflow.assert_not_called()
+
+    def test_do_not_use_does_not_exclude_a_never_configured_indicator(self):
+        """ "Do Not Use" is also the default for an indicator that was
+        simply never configured yet (not one the user explicitly
+        disabled) - running its parent factor/dimension used to zero its
+        factor_weighting and mark it "Excluded from analysis" here,
+        which getStatus() reads as permanently excluded rather than
+        "Required and not configured" - the indicator stayed excluded
+        even after the user went on to configure it (worldbank/GeoE3
+        field report, 2026-11-24: running "Environmental Hazards" with
+        its indicators merely unconfigured disabled all of them and the
+        factor itself)."""
+        item = MagicMock()
+        attributes = {"analysis_mode": "Do Not Use", "factor_weighting": 1.0}
+        item.attributes.return_value = attributes
+        item.is_enabled.return_value = True
+        item.attribute.return_value = "Fire_Hazards"
+
+        panel = MagicMock()
+
+        TreePanel.queue_workflow_task(panel, item, "indicator")
+
+        self.assertEqual(attributes["factor_weighting"], 1.0)
+        self.assertNotIn("result", attributes)
 
 
 if __name__ == "__main__":

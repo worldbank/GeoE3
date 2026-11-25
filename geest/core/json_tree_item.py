@@ -13,6 +13,7 @@ from qgis.core import Qgis
 from qgis.PyQt.QtCore import QReadWriteLock, Qt
 from qgis.PyQt.QtGui import QColor, QFont, QIcon
 
+from geest.core.constants import UNCONFIGURED_ANALYSIS_MODE, is_unconfigured_analysis_mode
 from geest.core.settings import setting
 from geest.utilities import is_qgis_dark_theme_active, log_message, resources_path
 
@@ -384,7 +385,7 @@ class JsonTreeItem:
     def enable(self):
         """Enable the item by resetting weights to defaults."""
         data = self.attributes()
-        data["analysis_mode"] = ""
+        data["analysis_mode"] = UNCONFIGURED_ANALYSIS_MODE
         if self.isDimension():
             data["analysis_weighting"] = data.get("default_analysis_weighting", 1.0)
         if self.isFactor():
@@ -589,27 +590,15 @@ class JsonTreeItem:
             if (
                 self.isIndicator()
                 and data.get("result", "") == "Excluded from analysis"
-                and analysis_mode != "Do Not Use"
+                and not is_unconfigured_analysis_mode(analysis_mode)
                 and float(data.get("factor_weighting", 0.0) or 0.0) > 0.0
             ):
                 return "Configured, not run"
 
             # Check item configuration status
-            if "Do Not Use" in analysis_mode and data.get("factor_weighting", 0.0) > 0:
-                return "Required and not configured"
-            if "Do Not Use" in analysis_mode:
-                return "Not configured (optional)"
-            if (
-                self.isIndicator()  # noqa W503
-                and analysis_mode == ""  # noqa W503
-                and data.get("factor_weighting", 0.0) > 0  # noqa W503
-            ):
-                return "Required and not configured"
-            if (
-                self.isIndicator()  # noqa W503
-                and analysis_mode == ""  # noqa W503
-                and data.get("factor_weighting", 0.0) == 0.0  # noqa W503
-            ):
+            if is_unconfigured_analysis_mode(analysis_mode):
+                if data.get("factor_weighting", 0.0) > 0:
+                    return "Required and not configured"
                 return "Not configured (optional)"
 
             # CSV-based indicators are configured when a CSV source path is present.
@@ -815,14 +804,14 @@ class JsonTreeItem:
     def ensureValidAnalysisMode(self):
         """Ensure the analysis mode is valid for this item."""
         if self.isDimension():
-            if self.attribute("analysis_mode", "") == "Do Not Use":
+            if is_unconfigured_analysis_mode(self.attribute("analysis_mode", "")):
                 self.attributes()["analysis_mode"] = "dimension_aggregation"
         if self.isFactor():
-            if self.attribute("analysis_mode", "") == "Do Not Use":
+            if is_unconfigured_analysis_mode(self.attribute("analysis_mode", "")):
                 self.attributes()["analysis_mode"] = "factor_aggregation"
         if self.isIndicator():
-            if self.attribute("analysis_mode", "") == "Do Not Use":
-                log_message(f"Analysis mode for {self.attribute('id')} is set to Do Not Use")
+            if is_unconfigured_analysis_mode(self.attribute("analysis_mode", "")):
+                log_message(f"Analysis mode for {self.attribute('id')} is unconfigured")
                 log_message("Updating it to the first valid analysis mode")
                 # Set the analysis mode to the first matching key below that is not zero
                 # Get a list of all attributes that start with 'use_'

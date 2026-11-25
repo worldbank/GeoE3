@@ -81,7 +81,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Workplace Discrimination involves laws that address gender biases and stereotypes that hinder women's career advancement, especially in male-dominated fields."
@@ -119,7 +119,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Regulatory Frameworks pertain to laws and policies that protect women’s employment rights, such as childcare support and parental leave, influencing their workforce participation"
@@ -157,7 +157,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Financial Inclusion involves laws concerning women’s access to financial resources like loans and credit, which is crucial for starting businesses and investing in economic opportunities."
@@ -206,7 +206,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Location of primary schools",
@@ -234,7 +234,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Location of groceries",
@@ -262,7 +262,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Location of pharmacies",
@@ -290,7 +290,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Location of green spaces",
@@ -318,7 +318,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Women’s Travel Patterns (WTP) refer to the unique travel behaviors of women, often involving multiple stops for household or caregiving tasks, making proximity to essential services like markets, supermarkets, childcare centers, primary schools, pharmacies, and green spaces crucial."
@@ -357,7 +357,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Access to Public Transport focuses on the availability and proximity of public transportation stops, especially those who rely on buses, trains, or trams to access jobs, education, and essential services."
@@ -396,7 +396,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Access to Health Facilities evaluates how easily women can reach healthcare services in terms of distance, impacting their well-being and ability to participate in the workforce."
@@ -435,7 +435,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Access to Education and Training Facilities assesses the proximity to higher education institutions and training centers, influencing the ability to gain necessary qualifications."
@@ -474,7 +474,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Access to Financial Facilities focuses on the proximity of banks and financial institutions, which is essential for economic empowerment and the ability to access credit."
@@ -523,7 +523,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Active Transport refers to the presence of walkable infrastructure and is based on different road types that are assessed with respect to the possibility of walking and/ or cycling."
@@ -561,7 +561,7 @@
                             "use_nighttime_lights": 1,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 1,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Safety addresses the perceived security of public spaces, evaluated through the availability of adequate lighting, which affects women’s ability to move freely, seek employment, and access essential services."
@@ -599,7 +599,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Fragility, Conflict, and Violence (FCV) considers the frequency of events related to political unrest, conflict, and violence in a region, which can increase vulnerability and limit access to employment and essential services."
@@ -647,7 +647,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Education refers to the proportion of people in a region who have attained higher education, particularly in the specific field of analysis, serving as an indicator of the general education level and workforce qualifications in that sector."
@@ -685,7 +685,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Digital Inclusion assesses the presence of digital infrastructure in a specific location, which is essential for people to pursue job opportunities, access training and education opportunities, and use financial services. Each polygon is assigned a normalized value on a scale from 0 to 5 based on the proportion of people with internet access, masked using the Ookla dataset where internet coverage has been mapped."
@@ -723,7 +723,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 1,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Flood Hazards",
@@ -750,7 +750,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 1,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Landslide",
@@ -777,7 +777,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 1,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Tropical Cyclone",
@@ -804,7 +804,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 1,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         },
                         {
                             "indicator": "Drought",
@@ -831,7 +831,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 1,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "Environmental Hazards relate to the impact of environmental risks, such as floods, droughts, landslides, fires, and extreme weather events, which can disrupt job stability."
@@ -870,7 +870,7 @@
                             "use_nighttime_lights": 0,
                             "use_environmental_hazards": 0,
                             "use_street_lights": 0,
-                            "analysis_mode": "Do Not Use"
+                            "analysis_mode": "Not Configured"
                         }
                     ],
                     "description": "This factor captures access to water and sanitation indirectly, using the spatial distribution of facilities whose operation depends on reliable water supply and sanitation services. The presence of these points of interest suggests the existence of minimum water and sanitation infrastructure necessary for service delivery, even where direct household level data are unavailable."

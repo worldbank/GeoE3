@@ -44,6 +44,7 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
                             "indicators": [
                                 {
                                     "id": "Childcare_Location",
+                                    "indicator": "Childcare Access",
                                     "analysis_mode": "use_point_per_cell",
                                     "point_per_cell_layer_source": os.path.join(
                                         TEST_DATA, "points", "fake_childcare.gpkg|layername=fake_childcare"
@@ -51,6 +52,7 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
                                 },
                                 {
                                     "id": "Generic_Raster",
+                                    "indicator": "Generic Raster Indicator",
                                     "analysis_mode": "use_nighttime_lights",
                                     "nighttime_lights_raster": os.path.join(TEST_DATA, "rasters", "raster.tif"),
                                 },
@@ -70,8 +72,8 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
 
         layers = QgsProject.instance().mapLayers()
         names = {layer.name() for layer in layers.values()}
-        self.assertIn("Childcare_Location", names)
-        self.assertIn("Generic_Raster", names)
+        self.assertIn("Childcare Access", names)
+        self.assertIn("Generic Raster Indicator", names)
         self.assertIn("study_area_grid", names)
         self.assertTrue(all(layer.isValid() for layer in layers.values()))
 
@@ -120,9 +122,7 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
 
         childcare_node = root.findLayer(
             next(
-                layer.id()
-                for layer in QgsProject.instance().mapLayers().values()
-                if layer.name() == "Childcare_Location"
+                layer.id() for layer in QgsProject.instance().mapLayers().values() if layer.name() == "Childcare Access"
             )
         )
         study_area_grid_node = root.findLayer(
@@ -197,13 +197,67 @@ class TestImportCountryPackTaskLoadsLayers(unittest.TestCase):
         self.assertTrue(task.run())
         task.finished(True)
 
+        # The result layer's display name is the indicator's pretty title,
+        # not its "{id}_result" internal key (see
+        # test_result_layers_use_the_pretty_title_not_the_result_suffix) -
+        # same lookup a live run's own add_to_map() would use. That's
+        # also the indicator's own raw input display name (both show the
+        # original project's title, by design - see
+        # test_layer_names_preserve_the_original_project_titles_not_internal_keys),
+        # so a name-only lookup across the whole project is ambiguous
+        # between the two and non-deterministic (QGIS layer IDs are
+        # random, and mapLayers() iterates in ID order) - this is a real
+        # bug this test hit flakily in CI (worldbank/GeoE3 PR #546,
+        # 2026-11-25). Disambiguate by group instead: only the "GeoE3
+        # Results" group can contain it.
+        results_group = QgsProject.instance().layerTreeRoot().findGroup("GeoE3 Results")
         result_layer = next(
-            layer for layer in QgsProject.instance().mapLayers().values() if layer.name() == "Generic_Raster_result"
+            QgsProject.instance().mapLayer(node.layerId())
+            for node in results_group.findLayers()
+            if QgsProject.instance().mapLayer(node.layerId()).name() == "Generic Raster Indicator"
         )
         # indicator.qml sets a singlebandpseudocolor renderer - a freshly
         # loaded raster never gets that renderer on its own, so this only
         # passes if the style file was actually applied.
         self.assertEqual(result_layer.renderer().type(), "singlebandpseudocolor")
+
+    def test_layer_names_preserve_the_original_project_titles_not_internal_keys(self):
+        """Regression test: a country-pack round trip must show the same
+        legend names the original project did, not the internal keys
+        (indicator "id" slugs, fixed project-level keys, "{id}_result"
+        technical names) the pack uses as its own GeoPackage table names.
+        """
+        model = self._model()
+        model["dimensions"][0]["factors"][0]["indicators"][1]["result_file"] = os.path.join(
+            TEST_DATA, "rasters", "raster.tif"
+        )
+        # A project-level input whose original display name was tracked
+        # via sync_layer_metadata_fields() during a live run (see
+        # "point_mask_layer_name" in country_pack_import.py's
+        # PROJECT_LEVEL_DISPLAY_NAME_FIELD) - the pack's own output key is
+        # always the fixed "point_mask", regardless of this.
+        model["point_mask_shapefile"] = os.path.join(
+            TEST_DATA, "points", "fake_childcare.gpkg|layername=fake_childcare"
+        )
+        model["point_mask_layer_name"] = "My Point Mask"
+
+        build_country_pack(working_directory=TEST_DATA, model=model, output_path=self.pack_path)
+
+        task = ImportCountryPackTask(self.pack_path, self.import_dir)
+        self.assertTrue(task.run())
+        task.finished(True)
+
+        names = {layer.name() for layer in QgsProject.instance().mapLayers().values()}
+        # Indicator input: pretty title, not the "id" slug.
+        self.assertIn("Childcare Access", names)
+        self.assertNotIn("Childcare_Location", names)
+        # Indicator result: the same pretty title, not "{id}_result".
+        self.assertIn("Generic Raster Indicator", names)
+        self.assertNotIn("Generic_Raster_result", names)
+        # Project-level input: its tracked original name, not the fixed
+        # "point_mask" pack key.
+        self.assertIn("My Point Mask", names)
+        self.assertNotIn("point_mask", names)
 
 
 if __name__ == "__main__":

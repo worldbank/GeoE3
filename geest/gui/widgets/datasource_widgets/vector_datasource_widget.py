@@ -756,7 +756,20 @@ class VectorDataSourceWidget(BaseDataSourceWidget):
         """
         layer = self.layer_combo.currentLayer()
         if not layer:
+            # Clear every key the layer combo ever wrote, not just the
+            # (unused) "_layer" one - leaving "_layer_id"/"_layer_source"
+            # at their previous value meant clearing the selection here
+            # didn't actually un-configure the indicator (getStatus()
+            # still saw a real source) and silently re-selected the old
+            # layer the next time this dialog opened (worldbank/GeoE3
+            # field report, 2026-11-25).
             self.attributes[f"{self.widget_key}_layer"] = None
+            self.attributes[f"{self.widget_key}_layer_name"] = ""
+            self.attributes[f"{self.widget_key}_layer_source"] = ""
+            self.attributes[f"{self.widget_key}_layer_provider_type"] = ""
+            self.attributes[f"{self.widget_key}_layer_crs"] = ""
+            self.attributes[f"{self.widget_key}_layer_wkb_type"] = None
+            self.attributes[f"{self.widget_key}_layer_id"] = ""
         else:
             self.attributes[f"{self.widget_key}_layer_name"] = layer.name()
             self.attributes[f"{self.widget_key}_layer_source"] = layer.source()

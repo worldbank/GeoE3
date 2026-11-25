@@ -24,6 +24,7 @@ from qgis.core import (
 )
 
 from geest.core import JsonTreeItem
+from geest.core.constants import is_unconfigured_analysis_mode
 from geest.core.grid_column_utils import _quote_sql_identifier
 from geest.core.settings import setting
 from geest.utilities import log_message, resources_path
@@ -416,7 +417,10 @@ class SubnationalAggregationProcessingTask(QgsTask):
                 factor
                 for factor in dimension.childItems
                 if factor.isFactor()
-                and any(indicator.attribute("analysis_mode", "") != "Do Not Use" for indicator in factor.childItems)
+                and any(
+                    not is_unconfigured_analysis_mode(indicator.attribute("analysis_mode", ""))
+                    for indicator in factor.childItems
+                )
             ]
             if not used_factors:
                 continue

@@ -69,7 +69,7 @@ from qgis.core import (
     QgsVectorLayer,
 )
 
-from geest.core.constants import ENV_HAZARD_SOURCE_URLS
+from geest.core.constants import ENV_HAZARD_SOURCE_URLS, is_unconfigured_analysis_mode
 from geest.core.osm_downloaders import resolve_point_osm_download_type
 from geest.core.tasks.env_hazard_downloader_task import EnvHazardDownloaderTask
 from geest.core.tasks.ntl_downloader_task import NTLDownloaderTask
@@ -132,8 +132,8 @@ def resource_spec_for_indicator(item) -> Optional[ResourceSpec]:
     mode = attrs.get("analysis_mode", "")
     mode_to_set = None
 
-    if mode == "Do Not Use":
-        # "Do Not Use" is just the unconfigured default, not necessarily
+    if is_unconfigured_analysis_mode(mode):
+        # An unconfigured mode is just the default, not necessarily
         # "exclude this". An indicator checked on in its factor's
         # aggregation dialog (positive factor_weighting) but never pointed
         # at a specific data source shows as "Required and not

@@ -22,6 +22,7 @@ from geest.core.country_pack import (
     study_area_mask_sources,
     study_area_sources,
     write_raster_source,
+    write_vector_source,
 )
 from geest.core.country_pack_import import _extract_study_area_mask, _rebuild_combined_mask_vrt
 
@@ -865,6 +866,90 @@ class TestWriteRasterSourceByteRasterKeepsExactValues(unittest.TestCase):
         finally:
             if os.path.exists(mask_path):
                 os.remove(mask_path)
+
+
+class TestWriteSourcesReprojectIntoTheProjectCrs(unittest.TestCase):
+    """Regression test: a drag-and-dropped country pack showed some
+    layers (a raw World Bank Data Catalog hazard raster, an OSM
+    download) in their own native CRS (EPSG:4326) while everything else
+    was in the project's local UTM zone - each layer was individually
+    valid, but a pack should read as one consistent CRS throughout
+    rather than a mix. Every write_raster_source()/write_vector_source()
+    call now reprojects into the study area's own CRS."""
+
+    def setUp(self):
+        self.study_area_gpkg = os.path.join(TEST_DATA, "study_area", "study_area.gpkg")
+        self.out_gpkg = os.path.join(TEST_DATA, "_write_sources_reproject_test.gpkg")
+        self.raster_path = os.path.join(TEST_DATA, "rasters", "_reproject_test_raster.tif")
+        self.wgs84_points_path = os.path.join(TEST_DATA, "_reproject_test_points.gpkg")
+        for path in (self.out_gpkg, self.raster_path, self.wgs84_points_path):
+            if os.path.exists(path):
+                os.remove(path)
+
+        driver = gdal.GetDriverByName("GTiff")
+        dataset = driver.Create(self.raster_path, 2, 2, 1, gdal.GDT_Byte)
+        dataset.SetGeoTransform((-61.5, 0.01, 0, 14.0, 0, -0.01))
+        srs = osr.SpatialReference()
+        srs.ImportFromEPSG(4326)
+        dataset.SetProjection(srs.ExportToWkt())
+        dataset.GetRasterBand(1).WriteArray(np.array([[10, 50], [90, 110]], dtype="uint8"))
+        dataset = None
+
+        wgs84_srs = osr.SpatialReference()
+        wgs84_srs.ImportFromEPSG(4326)
+        points_ds = ogr.GetDriverByName("GPKG").CreateDataSource(self.wgs84_points_path)
+        points_layer = points_ds.CreateLayer("wgs84_points", srs=wgs84_srs, geom_type=ogr.wkbPoint)
+        feature = ogr.Feature(points_layer.GetLayerDefn())
+        feature.SetGeometry(ogr.CreateGeometryFromWkt("POINT(-61.5 14.0)"))
+        points_layer.CreateFeature(feature)
+        points_ds = None
+
+    def tearDown(self):
+        for path in (self.out_gpkg, self.raster_path, self.wgs84_points_path):
+            if os.path.exists(path):
+                os.remove(path)
+
+    def test_raster_source_lands_in_the_study_area_crs(self):
+        source = PackSource("cyclone_test", self.raster_path, "raster", clip=False)
+        write_raster_source(source, self.study_area_gpkg, "study_area_clip_polygons", self.out_gpkg, append=False)
+
+        dataset = gdal.Open(f"GPKG:{self.out_gpkg}:cyclone_test")
+        srs = osr.SpatialReference()
+        srs.ImportFromWkt(dataset.GetProjection())
+        dataset = None
+
+        self.assertEqual(srs.GetAuthorityCode(None), "32620")
+
+    def test_raster_values_are_unchanged_by_the_reprojection(self):
+        """Nearest-neighbor resampling, not the default smoothing
+        resampler, so reprojecting doesn't blend discrete hazard values
+        into ones that were never in the source."""
+        source = PackSource("cyclone_test", self.raster_path, "raster", clip=False)
+        write_raster_source(source, self.study_area_gpkg, "study_area_clip_polygons", self.out_gpkg, append=False)
+
+        dataset = gdal.Open(f"GPKG:{self.out_gpkg}:cyclone_test")
+        array = dataset.GetRasterBand(1).ReadAsArray()
+        dataset = None
+
+        self.assertEqual(sorted(set(int(v) for row in array for v in row if v != 0)), [10, 50, 90, 110])
+
+    def test_vector_source_lands_in_the_study_area_crs(self):
+        write_vector_source(
+            PackSource("wgs84_points_test", f"{self.wgs84_points_path}|layername=wgs84_points", "vector", clip=False),
+            self.study_area_gpkg,
+            "study_area_clip_polygons",
+            self.out_gpkg,
+            append=False,
+        )
+
+        dataset = ogr.Open(self.out_gpkg)
+        layer = dataset.GetLayerByName("wgs84_points_test")
+        srs = layer.GetSpatialRef()
+        feature_count = layer.GetFeatureCount()
+        dataset = None
+
+        self.assertEqual(srs.GetAuthorityCode(None), "32620")
+        self.assertEqual(feature_count, 1)
 
 
 class TestWriteRasterSourceNodataOverflow(unittest.TestCase):

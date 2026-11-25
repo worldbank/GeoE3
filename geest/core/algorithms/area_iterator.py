@@ -9,7 +9,7 @@ from typing import Iterator, Tuple
 
 from qgis.core import Qgis, QgsFeatureRequest, QgsGeometry, QgsVectorLayer
 
-from geest.core.grid_column_utils import populated_area_names
+from geest.core.grid_column_utils import gpkg_access_lock, populated_area_names
 from geest.utilities import log_message
 
 
@@ -62,18 +62,25 @@ class AreaIterator:
         """
         self.gpkg_path = gpkg_path
 
-        # Load the polygon and bbox layers from the GeoPackage
-        self.polygon_layer: QgsVectorLayer = QgsVectorLayer(
-            f"{gpkg_path}|layername=study_area_polygons", "study_area_polygons", "ogr"
-        )
-        self.clip_polygon_layer: QgsVectorLayer = QgsVectorLayer(
-            f"{gpkg_path}|layername=study_area_clip_polygons",
-            "study_area_clip_polygons",
-            "ogr",
-        )
-        self.bbox_layer: QgsVectorLayer = QgsVectorLayer(
-            f"{gpkg_path}|layername=study_area_bboxes", "study_area_bboxes", "ogr"
-        )
+        # Load the polygon and bbox layers from the GeoPackage. Opened under
+        # the same lock a concurrent workflow's grid write uses (one process
+        # can run several workflows at once via "concurrent_tasks") - two
+        # independent GDAL/OGR connections racing to open the same
+        # study_area.gpkg at once has been seen in the field as a Windows
+        # access violation later, inside getFeatures() on the handle one of
+        # them got back (worldbank/GeoE3 #534, #535).
+        with gpkg_access_lock():
+            self.polygon_layer: QgsVectorLayer = QgsVectorLayer(
+                f"{gpkg_path}|layername=study_area_polygons", "study_area_polygons", "ogr"
+            )
+            self.clip_polygon_layer: QgsVectorLayer = QgsVectorLayer(
+                f"{gpkg_path}|layername=study_area_clip_polygons",
+                "study_area_clip_polygons",
+                "ogr",
+            )
+            self.bbox_layer: QgsVectorLayer = QgsVectorLayer(
+                f"{gpkg_path}|layername=study_area_bboxes", "study_area_bboxes", "ogr"
+            )
 
         # Verify that both layers were loaded correctly
         if not self.polygon_layer.isValid():

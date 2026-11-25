@@ -3,7 +3,7 @@
 ## 1.1 Purpose
 
 This document specifies GeoE3 — the Geospatial Enabling Environments for Employment
-spatial tool: a QGIS plugin, developed by Kartoza for and with the World Bank, that
+spatial tool: a QGIS plugin, developed by Kartoza for and with the World Bank Group, that
 measures how enabling places are for employment and entrepreneurship, with particular
 attention to the barriers that affect women's economic empowerment. The plugin scores a
 study area on a regular analysis grid across three dimensions — Contextual,
@@ -36,7 +36,7 @@ In scope:
 Out of scope:
 
 - The scientific derivation and validation of the indicator scoring rubrics (owned by
-  the World Bank GOST methodology documents).
+  the World Bank Group GOST methodology documents).
 - QGIS itself, GDAL/OGR, and the external data services' internals.
 - Web or server deployments — GeoE3 is a desktop QGIS plugin.
 
@@ -55,7 +55,7 @@ Out of scope:
 | WEE | Women's Economic Empowerment (the analytical framing of the tool). |
 | GHSL | Global Human Settlement Layer (settlement extent polygons). |
 | ORS | OpenRouteService routing API (optional isochrone provider). |
-| S2S | Space2Stats — World Bank zonal-statistics API used at regional scale. |
+| S2S | Space2Stats — World Bank Group zonal-statistics API used at regional scale. |
 | Likert scale | The 0–5 enablement scoring convention used for every layer. |
 
 ## 1.4 References
@@ -65,7 +65,7 @@ Out of scope:
 - GDAL/OGR documentation — GeoPackage driver, VRT format, rasterize/clip algorithms.
 - OGC GeoPackage 1.3 specification — rtree spatial index and triggers.
 - Kartoza Brand Pack and Brand Templates v1.0.0 — the document system this SRS follows.
-- World Bank GOST GEEST methodology — indicator definitions and scoring rubrics.
+- World Bank Group GOST GEEST methodology — indicator definitions and scoring rubrics.
 
 ## 1.5 Background
 

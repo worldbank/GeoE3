@@ -59,6 +59,18 @@ def _serialize_grid_writes(func: Callable) -> Callable:
     return wrapper
 
 
+def gpkg_access_lock() -> threading.Lock:
+    """The process-wide lock serializing GDAL/OGR connections to study_area.gpkg.
+
+    Exposed for other modules (e.g. AreaIterator) that open their own
+    independent GDAL/OGR connection to the same GeoPackage and need to avoid
+    racing against a concurrent grid write while that connection is being
+    established - see _GRID_WRITE_LOCK's docstring above for why opening a
+    connection to this file is not safe to do fully concurrently.
+    """
+    return _GRID_WRITE_LOCK
+
+
 def _open_gpkg_for_write(gpkg_path: str):
     """Open GeoPackage with safer SQLite write pragmas applied."""
     ds = ogr.Open(gpkg_path, 1)

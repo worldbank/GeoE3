@@ -25,14 +25,10 @@ close the gap.
 ## Welcome to GeoE3
 
 <p align="center">
-  <img src="images/geoe3-marquee.gif" alt="GeoE3 running in QGIS: selecting indicators in the model tree and watching the enablement score map update" style="max-width:100%;">
-</p>
-
-<p align="center">
   <img src="images/framework.png" alt="A diverse group of people connected by a winding road through infrastructure: wind turbines, schools, clinics, transport, housing. Illustrates the spatial factors the GeoWEAF framework scores." style="max-width:360px;">
 </p>
 
-Developed by the World Bank, **GeoE3 (The Geospatial Enabling Environments
+Developed by the World Bank Group, **GeoE3 (The Geospatial Enabling Environments
 for Employment Spatial Tool)** is a powerful and user-friendly open-source
 spatial mapping tool that enables a comprehensive analysis of how various
 spatial factors influence employment and business opportunities in any
@@ -53,6 +49,19 @@ Run it against a city, a region or a whole country. The output tells you two
 things: where conditions already support women's employment, and which
 specific missing piece of infrastructure would raise the score where it's
 weakest. That could be a clinic, a bus route, or broadband.
+
+### The GeoWEAF framework
+
+The Geospatial Women's Employment Analytical Framework (GeoWEAF) groups 15
+factors, both spatial and non-spatial, into the three dimensions GeoE3
+scores: Contextual, Accessibility and Place Characterization.
+
+<p align="center">
+  <img src="images/legacy/GeoWEAF.png" alt="The GeoWEAF framework: Contextual, Accessibility and Place Characterization dimensions, each made up of several factors such as Active Transport, Digital Inclusion, Education Level and Access to Health Facilities." style="max-width:500px;">
+</p>
+
+- [The framework and the theory behind it](about/background.md)
+- [Methodology Report and how to cite GeoE3](about/citation.md)
 
 ## What's in the box
 
@@ -95,6 +104,10 @@ weakest. That could be a clinic, a bus route, or broadband.
     [:octicons-arrow-right-24: Installation](training/installation.md)
 
 </div>
+
+<p align="center">
+  <img src="images/geoe3-marquee.gif" alt="GeoE3 running in QGIS: selecting indicators in the model tree and watching the enablement score map update" style="max-width:100%;">
+</p>
 
 ## Learn more
 
