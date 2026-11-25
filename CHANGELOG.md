@@ -112,7 +112,15 @@ Field-test follow-ups on top of 2.2.1 below, not yet released.
   name), so both fit the button bar better.
 - CI test matrix now also runs against QGIS 3.44 LTR and 4.4, not just
   3.30-3.36 - Docker Hub drops the "release-3_XX" tag naming past 3.36,
-  so these use plain version tags instead.
+  so these use plain version tags instead. Getting these two actually
+  running (not just added to the matrix) needed three separate fixes:
+  no display server on newer images (no supervisord/Xvfb setup -
+  `qgis-testing-entrypoint.sh` now starts Xvfb directly when that
+  config is missing), `qgis_testrunner.sh`'s own `unbuffer` dependency
+  missing there too (silently empty test output - installed via the
+  pre-test script), and `test_suite.py`'s `from qgis.PyQt import Qt`
+  crashing outright under PyQt6 (QGIS 4.x) since that convenience shim
+  module doesn't exist there.
 
 ## [2.2.1] - 2026-11-24
 
