@@ -345,6 +345,7 @@ class TreePanel(QWidget):
         self.help_button = QPushButton("?")
         self.help_button.setToolTip("Help")
         self.help_button.setAccessibleName("Help")
+        self.help_button.setFixedWidth(28)
         self.help_button.clicked.connect(self.open_help)
         button_bar.addWidget(self.help_button)
         # The two progress bars live inside item_info_panel now (see
@@ -1693,10 +1694,11 @@ class TreePanel(QWidget):
     def _item_has_a_result(item) -> bool:
         """Whether this item has an actual computed result worth showing on the map.
 
-        Gates "Add to map"/"Add to map (Grid)"/"Add GeoE3 Score to Map" -
-        those were clickable (and silently did nothing useful) for an
-        item that was never configured, never run, or whose last run
-        failed (worldbank/GeoE3 field report, 2026-11-25).
+        Gates whether "Add to map"/"Add to map (Grid)"/"Add GeoE3 Score
+        to Map" appear in the context menu at all - they used to stay
+        clickable (and silently did nothing useful) for an item that was
+        never configured, never run, or whose last run failed
+        (worldbank/GeoE3 field report, 2026-11-25).
         """
         return item.getStatus() == "Completed successfully"
 
@@ -1704,6 +1706,7 @@ class TreePanel(QWidget):
     def _item_has_clearable_output(item) -> bool:
         """Whether this item has anything "Clear Item" would actually change.
 
+        Gates whether "Clear Item" appears in the context menu at all.
         Matches exactly what JsonTreeItem.clear() resets: result_file,
         error, and result (back to its "Not Run" default) - an item still
         at that default has nothing to clear.
@@ -1748,9 +1751,7 @@ class TreePanel(QWidget):
 
         add_to_map_action = QAction("Add to map", self)
         add_to_map_action.triggered.connect(lambda: add_to_map(item))
-        if not self._item_has_a_result(item):
-            add_to_map_action.setEnabled(False)
-            add_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
+        item_has_a_result = self._item_has_a_result(item)
 
         run_item_action = QAction("Run Item Workflow", self)
 
@@ -1771,9 +1772,7 @@ class TreePanel(QWidget):
         update_action_text()
         clear_item_action = QAction("Clear Item", self)
         clear_item_action.triggered.connect(self.clear_item)
-        if not self._item_has_clearable_output(item):
-            clear_item_action.setEnabled(False)
-            clear_item_action.setToolTip("Nothing to clear - this item hasn't been run yet.")
+        item_has_clearable_output = self._item_has_clearable_output(item)
         clear_results_action = QAction("Clear Results", self)
         clear_results_action.triggered.connect(self.clear_workflows)
 
@@ -1806,7 +1805,8 @@ class TreePanel(QWidget):
             menu.addAction(set_network_layers_action)
             menu.addAction(set_ors_action)
             menu.addAction(show_json_attributes_action)
-            menu.addAction(clear_item_action)
+            if item_has_clearable_output:
+                menu.addAction(clear_item_action)
             menu.addAction(clear_results_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
@@ -1826,10 +1826,8 @@ class TreePanel(QWidget):
             # setting in "Edit Weights and Settings").
             add_geoe3_score = QAction("Add GeoE3 Score to Map")
             add_geoe3_score.triggered.connect(lambda: self._load_analysis_output(item, "score"))
-            if not self._item_has_a_result(item):
-                add_geoe3_score.setEnabled(False)
-                add_geoe3_score.setToolTip("Nothing to show yet - the analysis hasn't completed a run.")
-            menu.addAction(add_geoe3_score)
+            if item_has_a_result:
+                menu.addAction(add_geoe3_score)
 
             add_study_area_layers_action = QAction("Add Study Area to Map", self)
             add_study_area_layers_action.triggered.connect(self.add_study_area_to_map)
@@ -1870,9 +1868,6 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
-            if not self._item_has_a_result(item):
-                add_grid_to_map_action.setEnabled(False)
-                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             add_factor_action.triggered.connect(lambda: self.model.add_factor(item))
@@ -1881,9 +1876,11 @@ class TreePanel(QWidget):
             menu = SolidMenu(self)
             menu.addAction(edit_aggregation_action)
             menu.addAction(show_json_attributes_action)
-            menu.addAction(clear_item_action)
-            menu.addAction(add_to_map_action)
-            menu.addAction(add_grid_to_map_action)
+            if item_has_clearable_output:
+                menu.addAction(clear_item_action)
+            if item_has_a_result:
+                menu.addAction(add_to_map_action)
+                menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -1900,9 +1897,6 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
-            if not self._item_has_a_result(item):
-                add_grid_to_map_action.setEnabled(False)
-                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             edit_aggregation_action.triggered.connect(lambda: self.edit_factor_aggregation(item))  # Connect to method
@@ -1913,9 +1907,11 @@ class TreePanel(QWidget):
             menu = SolidMenu(self)
             menu.addAction(edit_aggregation_action)
             menu.addAction(show_json_attributes_action)
-            menu.addAction(clear_item_action)
-            menu.addAction(add_to_map_action)
-            menu.addAction(add_grid_to_map_action)
+            if item_has_clearable_output:
+                menu.addAction(clear_item_action)
+            if item_has_a_result:
+                menu.addAction(add_to_map_action)
+                menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
@@ -1932,9 +1928,6 @@ class TreePanel(QWidget):
             add_grid_to_map_action.triggered.connect(
                 lambda _, col=column_name, i=item: add_grid_layer_to_map(i, col, self.working_directory)
             )
-            if not self._item_has_a_result(item):
-                add_grid_to_map_action.setEnabled(False)
-                add_grid_to_map_action.setToolTip("Nothing to show yet - this item hasn't completed a run.")
 
             # Connect actions
             show_properties_action.triggered.connect(
@@ -1944,9 +1937,11 @@ class TreePanel(QWidget):
             menu = SolidMenu(self)
             menu.addAction(show_properties_action)
             menu.addAction(show_json_attributes_action)
-            menu.addAction(clear_item_action)
-            menu.addAction(add_to_map_action)
-            menu.addAction(add_grid_to_map_action)
+            if item_has_clearable_output:
+                menu.addAction(clear_item_action)
+            if item_has_a_result:
+                menu.addAction(add_to_map_action)
+                menu.addAction(add_grid_to_map_action)
             menu.addAction(run_item_action)
             menu.addAction(open_working_directory_action)
             menu.addAction(disable_action)
