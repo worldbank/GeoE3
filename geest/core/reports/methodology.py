@@ -62,7 +62,7 @@ TECHNIQUES = {
         "description": (
             "In many cases, how accessible a facility is depends on the road network "
             "and the time it takes to traverse the network to reach the facility. "
-            "With IsoChrones we can create contour lines around a facility based "
+            "With Isochrones we can create contour lines around a facility based "
             "on travel time. We do this using a routing analysis to estimate how long "
             "it takes to reach the facility from different parts of the network."
         ),
