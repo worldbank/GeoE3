@@ -227,7 +227,16 @@ class RasterDataSourceWidget(BaseDataSourceWidget):
         # Collect data for the raster layer
         raster_layer = self.raster_layer_combo.currentLayer()
         if not raster_layer:
+            # Clear every key the layer combo ever wrote, not just the
+            # (unused) "_layer" one - see vector_datasource_widget.py's
+            # matching fix for why (worldbank/GeoE3 field report,
+            # 2026-11-25).
             self.attributes[f"{self.widget_key}_layer"] = None
+            self.attributes[f"{self.widget_key}_layer_name"] = ""
+            self.attributes[f"{self.widget_key}_layer_source"] = ""
+            self.attributes[f"{self.widget_key}_layer_provider_type"] = ""
+            self.attributes[f"{self.widget_key}_layer_crs"] = ""
+            self.attributes[f"{self.widget_key}_layer_id"] = ""
         if raster_layer:
             self.attributes[f"{self.widget_key}_layer_name"] = raster_layer.name()
             self.attributes[f"{self.widget_key}_layer_source"] = raster_layer.source()
