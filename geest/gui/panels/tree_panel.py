@@ -844,6 +844,7 @@ class TreePanel(QWidget):
         # on_workflow_completed(), just triggered by the user clearing an
         # item rather than re-running one.
         invalidation_start.invalidateAncestors()
+        self._invalidate_analysis_report_cache()
 
         self.save_json_to_working_directory()
 
@@ -1949,14 +1950,35 @@ class TreePanel(QWidget):
         # Show the menu at the cursor's position
         menu.exec(self.treeView.viewport().mapToGlobal(position))
 
+    def _invalidate_analysis_report_cache(self) -> None:
+        """Delete any already-generated analysis report so it rebuilds fresh next time.
+
+        The PDF/QPT are a cached rendering of the analysis's current
+        result - once any item's result changes (a rerun, a cleared
+        item, an edited weighting), that cached pair no longer reflects
+        the model and must not be handed back to the user as-is by
+        generate_analysis_report()'s own cache check.
+        """
+        if not self.working_directory:
+            return
+        for filename in ("analysis_report.pdf", "analysis_report.qpt"):
+            path = os.path.join(self.working_directory, filename)
+            if os.path.exists(path):
+                os.remove(path)
+
     def generate_analysis_report(self):
-        """Add a report showing analysis results."""
+        """Show the analysis report, generating it first if nothing cached exists yet."""
         if not self.working_directory:
             log_message(
                 "No working directory set, cannot generate analysis report.",
                 tag="GeoE3",
                 level=Qgis.Warning,
             )
+            return
+
+        pdf_path = os.path.join(self.working_directory, "analysis_report.pdf")
+        if os.path.exists(pdf_path):
+            open_with_system_handler(pdf_path)
             return
 
         # Show progress bar in indeterminate mode
@@ -2118,7 +2140,12 @@ class TreePanel(QWidget):
         self.item_info_panel.hide_progress()
 
     def generate_study_area_report(self):
-        """Add a report showing population information for the study area."""
+        """Show the study area report, generating it first if nothing cached exists yet."""
+        study_area_report_path = os.path.join(self.working_directory, "study_area_report.pdf")
+        if os.path.exists(study_area_report_path):
+            open_with_system_handler(study_area_report_path)
+            return
+
         gpkg_path = os.path.join(self.working_directory, "study_area", "study_area.gpkg")
         self.item_info_panel.show_progress("Generating study area report...")
         with StudyAreaReport(gpkg_path=gpkg_path, report_name="Study Area Summary") as report:
@@ -2802,6 +2829,7 @@ class TreePanel(QWidget):
             return
         self._clear_single_item_outputs(item)
         item.invalidateAncestors()
+        self._invalidate_analysis_report_cache()
 
     def edit_analysis_aggregation(self, analysis_item):
         """Open the AnalysisAggregationDialog for editing the weightings of factors in the analysis.
@@ -2864,6 +2892,8 @@ class TreePanel(QWidget):
                 if indicator_item is not None:
                     self._clear_single_item_outputs(indicator_item)
                     indicator_item.invalidateAncestors()
+            if dialog.changed_indicator_guids:
+                self._invalidate_analysis_report_cache()
             self.save_json_to_working_directory()  # Save changes to the JSON if necessary
 
     def start_workflows(self, workflow_type=None):
@@ -3462,6 +3492,7 @@ class TreePanel(QWidget):
         # untouched, so ancestors aren't actually any staler than before.
         if success:
             item.invalidateAncestors()
+            self._invalidate_analysis_report_cache()
 
         self.save_json_to_working_directory()
 
