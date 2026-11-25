@@ -732,6 +732,37 @@ class JsonTreeItem:
                 attrs["result_file"] = ""
             ancestor = ancestor.parentItem
 
+    def markAncestorsFailed(self, reason: str) -> None:
+        """Mark every ancestor as failed because this item's own workflow just did.
+
+        A factor/dimension/analysis aggregate is only ever as good as the
+        children it was computed from - a failed child left every
+        ancestor showing its last cached "Completed successfully" (or
+        "Configured, not run") untouched, since only a SUCCESSFUL run
+        called invalidateAncestors() at all. The aggregate itself only
+        catches up once something explicitly re-runs that aggregation
+        stage - which a single failed indicator's own run never does -
+        so until then the tree kept claiming everything above the
+        failure completed normally (worldbank/GeoE3 field report,
+        2026-11-25: a Nigeria Regional indicator with no point layer set
+        failed correctly, but its parent factor, dimension and the
+        top-level analysis all still showed "Completed successfully").
+        Setting result/error here (matching the exact strings
+        getStatus()/WorkflowQueueManager._mark_item_errored() already use
+        for "Workflow failed") makes every ancestor honestly reflect the
+        failure immediately, not just eventually once re-aggregated.
+
+        Args:
+            reason: Human-readable explanation, shown as the ancestor's
+                own error tooltip.
+        """
+        ancestor = self.parentItem
+        while ancestor is not None:
+            with ancestor.atomicAttributeUpdate() as attrs:
+                attrs["result"] = "Workflow Error"
+                attrs["error"] = reason
+            ancestor = ancestor.parentItem
+
     def attributes(self):
         """Return a reference to the dict of attributes for this item.
 

@@ -3505,6 +3505,17 @@ class TreePanel(QWidget):
         if success:
             item.invalidateAncestors()
             self._invalidate_analysis_report_cache()
+        else:
+            # Mark every ancestor failed immediately, rather than leaving
+            # them claiming "Completed successfully" until something
+            # separately re-runs that aggregation stage (which a single
+            # failed indicator's own run never does on its own) - see
+            # JsonTreeItem.markAncestorsFailed()'s docstring.
+            failed_id = item.attribute("id", item.guid)
+            detail = item.attribute("error", "")
+            reason = f"{failed_id} failed: {detail}" if detail else f"{failed_id} failed."
+            item.markAncestorsFailed(reason)
+            self._refresh_tree_view()
 
         self.save_json_to_working_directory()
 
