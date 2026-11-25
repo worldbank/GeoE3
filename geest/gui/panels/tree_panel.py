@@ -298,6 +298,7 @@ class TreePanel(QWidget):
         self._current_item = None
         self.item_info_panel.outputChanged.connect(self._on_analysis_output_changed)
         self.item_info_panel.sparklineRequested.connect(self._on_sparkline_requested)
+        self.item_info_panel.openReportRequested.connect(self.generate_analysis_report)
 
         button_bar = QHBoxLayout()
 

@@ -113,6 +113,11 @@ class ItemInfoPanel(QWidget):
     #: only worth paying for when the page is actually opened.
     sparklineRequested = pyqtSignal(str)
 
+    #: Emitted when the user clicks the "Open Report" button shown on the
+    #: GeoE3 Score stop once it's been calculated - the host (TreePanel)
+    #: owns the actual report generation/caching, this panel just asks.
+    openReportRequested = pyqtSignal()
+
     def __init__(self, parent=None):
         """🏗️ Initialize the instance.
 
@@ -212,6 +217,17 @@ class ItemInfoPanel(QWidget):
                 font-style: italic;
                 font-size: 9pt;
             }}
+            QToolButton#openReportButton {{
+                border: 1px solid {RULE};
+                border-radius: 4px;
+                background-color: {ICON_TILE_BG};
+                color: {NAVY};
+                font-size: 8.5pt;
+                padding: 2px 8px;
+            }}
+            QToolButton#openReportButton:hover {{
+                background-color: {MIST};
+            }}
             """
         )
 
@@ -306,6 +322,24 @@ class ItemInfoPanel(QWidget):
         # reader has no way to finish reading.
         self.item_meta_label = _scrollable_text("metaLabel")
         text_col.addWidget(self.item_meta_label, 1)
+
+        # Only ever shown for the GeoE3 Score carousel stop once it has
+        # a calculated result (see _render_current_output()) - hidden
+        # the rest of the time, so it never crowds the description for
+        # every other item/stop. The stretch + margins keep it off both
+        # the right and bottom edges of the card instead of looking
+        # jammed into the corner.
+        report_button_row = QHBoxLayout()
+        report_button_row.setContentsMargins(0, 4, 4, 2)
+        report_button_row.addStretch(1)
+        self.open_report_button = QToolButton()
+        self.open_report_button.setObjectName("openReportButton")
+        self.open_report_button.setText("📄 Open Report")
+        self.open_report_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.open_report_button.setVisible(False)
+        self.open_report_button.clicked.connect(self.openReportRequested.emit)
+        report_button_row.addWidget(self.open_report_button)
+        text_col.addLayout(report_button_row)
 
         row.addLayout(text_col, 1)
         return page
@@ -628,6 +662,10 @@ class ItemInfoPanel(QWidget):
         self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
         self.more_link.setStyleSheet(f"color: {CYAN};")
         self.more_link.setVisible(True)
+        # Only the GeoE3 Score stop itself, and only once it actually has
+        # a result - "available" here means exactly that (see
+        # TreePanel._build_analysis_output_stops()).
+        self.open_report_button.setVisible(self._current_output_index == 0 and stop.get("available", False))
 
     def clear(self):
         """⚙️ Show a neutral placeholder when nothing is selected."""
@@ -970,6 +1008,10 @@ class ItemInfoPanel(QWidget):
         self.more_link.setCursor(Qt.CursorShape.PointingHandCursor)
         self.more_link.setStyleSheet(f"color: {CYAN};")
         self._set_header_as_label()
+        # Only the analysis carousel's GeoE3 Score stop ever shows this
+        # (see _render_current_output()) - this path is everything else
+        # (indicator/factor/dimension, or no carousel active at all).
+        self.open_report_button.setVisible(False)
         self.stack.setCurrentIndex(0)
         self._active_page = 0
 

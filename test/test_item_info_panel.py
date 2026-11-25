@@ -666,6 +666,85 @@ class TestItemInfoPanelAnalysisCarouselLabels(unittest.TestCase):
         self.assertEqual(self.panel.more_link.text(), "Sparkline  →")
 
 
+class TestItemInfoPanelOpenReportButton(unittest.TestCase):
+    """The "Open Report" button only ever belongs on the GeoE3 Score
+    stop once it has a calculated result ("available" - see
+    TreePanel._build_analysis_output_stops()) - every other stop, and
+    every non-analysis item, must never show it.
+    """
+
+    def setUp(self):
+        self.panel = ItemInfoPanel()
+        self.panel.show()
+        self.item = make_fake_item("analysis", "GeoE3 Score")
+        self.panel.show_item(self.item)
+        self.available_stops = [
+            {"key": "score", "label": "GeoE3 Score", "icon": "geoe3_score.svg", "description": "", "available": True},
+            {
+                "key": "by_population",
+                "label": "GeoE3 by Population",
+                "icon": "geoe3_by_population.svg",
+                "description": "",
+                "available": True,
+            },
+        ]
+        self.unavailable_stops = [
+            {"key": "score", "label": "GeoE3 Score", "icon": "geoe3_score.svg", "description": "", "available": False},
+            {
+                "key": "by_population",
+                "label": "GeoE3 by Population",
+                "icon": "geoe3_by_population.svg",
+                "description": "",
+                "available": True,
+            },
+        ]
+
+    def test_hidden_before_any_carousel_is_active(self):
+        self.assertFalse(self.panel.open_report_button.isVisible())
+
+    def test_shown_on_the_score_stop_once_it_has_a_result(self):
+        self.panel.set_analysis_outputs(self.available_stops, current_index=0)
+
+        self.assertTrue(self.panel.open_report_button.isVisible())
+
+    def test_hidden_on_the_score_stop_when_it_has_no_result_yet(self):
+        self.panel.set_analysis_outputs(self.unavailable_stops, current_index=0)
+
+        self.assertFalse(self.panel.open_report_button.isVisible())
+
+    def test_hidden_on_a_different_stop_even_if_that_stop_is_available(self):
+        self.panel.set_analysis_outputs(self.available_stops, current_index=1)
+
+        self.assertFalse(self.panel.open_report_button.isVisible())
+
+    def test_hidden_again_after_selecting_a_non_analysis_item(self):
+        self.panel.set_analysis_outputs(self.available_stops, current_index=0)
+        self.assertTrue(self.panel.open_report_button.isVisible())
+
+        indicator = make_fake_item("indicator", "Some Indicator")
+        self.panel.show_item(indicator)
+        self.panel.set_analysis_outputs(None)
+
+        self.assertFalse(self.panel.open_report_button.isVisible())
+
+    def test_hidden_by_clear(self):
+        self.panel.set_analysis_outputs(self.available_stops, current_index=0)
+        self.assertTrue(self.panel.open_report_button.isVisible())
+
+        self.panel.clear()
+
+        self.assertFalse(self.panel.open_report_button.isVisible())
+
+    def test_clicking_it_emits_open_report_requested(self):
+        self.panel.set_analysis_outputs(self.available_stops, current_index=0)
+        received = []
+        self.panel.openReportRequested.connect(lambda: received.append(True))
+
+        self.panel.open_report_button.click()
+
+        self.assertEqual(received, [True])
+
+
 class TestShowRunAllBlocked(unittest.TestCase):
     def setUp(self):
         self.panel = ItemInfoPanel()
